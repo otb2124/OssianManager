@@ -3,14 +3,15 @@
   "versionTags": [
     "dev_start"
   ],
+  "appTitle": "OssianManager",
   "settings": {
     "themeColor": "#b3a2e0"
   },
-  "engineProjectPath": "C:/Users/orest/Downloads/pojects/CSPlatformerSandbox/projects/game/src/CSPlatformerSandbox.sln",
+  "engineProjectPath": "C:\\Users\\orest\\Downloads\\pojects\\OssianEngine",
   "openTabs": [
     "/general/home",
     "/general/settings",
     "/general/notification-log"
   ],
-  "activeTab": "/general/home"
+  "activeTab": "/general/settings"
 }

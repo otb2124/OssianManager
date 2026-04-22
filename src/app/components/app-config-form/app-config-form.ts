@@ -27,6 +27,7 @@ export class AppConfigForm implements OnInit {
 
   version = '';
   versionTags: string[] = [];
+  title = '';
   newTag = '';
   themeColor = '';
   engineProjectPath = '';
@@ -36,12 +37,13 @@ export class AppConfigForm implements OnInit {
     if (!config) return;
     this.version = config.version;
     this.versionTags = [...config.versionTags];
+    this.title = config.appTitle;
     this.themeColor = config.settings.themeColor;
     this.engineProjectPath = config.engineProjectPath ?? '';
   }
 
   pickEnginePath(): void {
-    this.dialog.pickFile([{ name: 'Solution', extensions: ['sln'] }]).subscribe(path => {
+    this.dialog.pickFolder().subscribe(path => {
       if (path) this.engineProjectPath = path;
     });
   }
@@ -61,6 +63,7 @@ export class AppConfigForm implements OnInit {
     this.appConfigService.update({
       version: this.version,
       versionTags: [...this.versionTags],
+      appTitle: this.title,
       engineProjectPath: this.engineProjectPath || undefined,
       settings: {
         themeColor: this.themeColor,
