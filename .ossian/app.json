@@ -11,7 +11,8 @@
   "openTabs": [
     "/general/home",
     "/general/settings",
-    "/general/notification-log"
+    "/general/notification-log",
+    "/general/engine"
   ],
-  "activeTab": "/general/settings"
+  "activeTab": "/general/engine"
 }

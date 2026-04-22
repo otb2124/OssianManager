@@ -5,6 +5,7 @@ import { AppConfigService } from '../../services/app-config/app-config.service';
 import { CommonModule } from '@angular/common';
 import { GitService } from '../../services/git/git.service';
 import { GitCommit } from '../../model/git.model';
+import { EngineService } from '../../services/engine-config/engine.service';
 
 @Component({
   selector: 'app-title',
@@ -13,6 +14,7 @@ import { GitCommit } from '../../model/git.model';
 })
 export class AppTitle implements OnInit {
   protected appConfigService = inject(AppConfigService);
+  protected engineConfigService = inject(EngineService);
   private gitService = inject(GitService);
 
   @ViewChild('op') op!: Popover;

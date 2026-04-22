@@ -47,6 +47,13 @@ export const routes: RouteChild[] =
         icon: 'pi pi-cog',
         displayInNavigation: true,
         loadComponent: () => import('./modules/general/settings/settings.js').then(m => m.Settings),
+      },
+      {
+        path: 'engine',
+        title: 'Engine',
+        icon: 'pi pi-cog',
+        displayInNavigation: true,
+        loadComponent: () => import('./modules/general/engine-page/engine-page').then(m => m.EnginePage),
       }
     ]
   },

@@ -1,5 +1,42 @@
 <div class="flex flex-col gap-4">
 
+
+    <!-- Engine Project Path -->
+    <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Engine Project Path</label>
+        <div class="flex gap-2">
+          <input
+            pInputText
+            [(ngModel)]="engineProjectPath"
+            placeholder="Path to the project folder"
+            class="flex-1 min-w-0 font-mono text-xs">
+          <p-button
+            icon="pi pi-folder-open"
+            severity="secondary"
+            (click)="pickEnginePath()">
+          </p-button>
+        </div>
+      </div>
+
+    <!-- Executable Path -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Executable Path</label>
+      <div class="flex gap-2">
+        <input
+          pInputText
+          [(ngModel)]="executablePath"
+          placeholder="Path to engine executable"
+          class="flex-1 min-w-0 font-mono text-xs">
+        <p-button
+          icon="pi pi-folder-open"
+          severity="secondary"
+          (click)="pickExecutablePath()">
+        </p-button>
+      </div>
+    </div>
+
+    
+  
     <!-- Version -->
     <div class="flex flex-col gap-1.5">
       <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Version</label>
@@ -34,23 +71,14 @@
         </p-button>
       </div>
     </div>
-
-    <!-- App title -->
+  
+    <!-- App Title -->
     <div class="flex flex-col gap-1.5">
       <label class="text-xs font-medium text-gray-500 dark:text-gray-400">App Title</label>
       <input
         pInputText
         [(ngModel)]="title"
-        placeholder="0.1">
-    </div>
-  
-    <!-- Theme Color -->
-    <div class="flex flex-col gap-1.5">
-      <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Theme Color</label>
-      <div class="flex items-center gap-2">
-        <p-colorpicker [(ngModel)]="themeColor"></p-colorpicker>
-        <span class="text-sm text-gray-500 font-mono">{{ themeColor }}</span>
-      </div>
+        placeholder="My Engine">
     </div>
   
     <!-- Actions -->
