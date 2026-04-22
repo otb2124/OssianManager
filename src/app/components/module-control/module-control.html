@@ -1,0 +1,27 @@
+<div class="flex items-center border-b border-[var(--theme-color-border)] gap-1 px-2 shrink-0 text-xs">
+  @for (nav of navRoutes(); track nav.route.path) {
+    <p-select
+      [options]="nav.options"
+      [ngModel]="getSelectedValue(nav.route, nav.options)"
+      (ngModelChange)="onRouteSelect($event)"
+      optionLabel="label"
+      [placeholder]="nav.route.title ?? ''"
+      [showClear]="false"
+      [dropdownIcon]="'none'"
+      appendTo="body"
+    >
+      <ng-template #selectedItem let-option>
+        <span >{{ nav.route.title }}</span>
+      </ng-template>
+
+      <ng-template #item let-option>
+        <div class="flex items-center gap-1.5 text-xs">
+          @if (option.icon) {
+            <i [class]="option.icon + ' text-xs'"></i>
+          }
+          <span>{{ option.label }}</span>
+        </div>
+      </ng-template>
+    </p-select>
+  }
+</div>

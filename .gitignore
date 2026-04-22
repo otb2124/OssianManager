@@ -1,0 +1,68 @@
+# Angular / Node.js
+node_modules/
+dist/
+.angular/
+.angular-cache/
+.tmp/
+out/
+coverage/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Angular build artifacts
+.angular/
+src/.angular/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Tauri
+src-tauri/target/
+src-tauri/.cargo/
+src-tauri/Cargo.lock
+src-tauri/**/debug/
+src-tauri/**/release/
+
+# Tauri build outputs
+src-tauri/tauri.conf.json.bak
+src-tauri/icons/
+*.app
+*.dmg
+*.deb
+*.rpm
+*.msi
+*.AppImage
+*.exe
+*.msix
+
+# Rust / Cargo
+**/target/
+**/.rustup/
+**/.cargo/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Misc
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+*.local
+.nyc_output/
+.cache/
+
+# Optional: Tauri development files
+src-tauri/gen/
+src-tauri/src-tauri.log

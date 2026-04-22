@@ -1,0 +1,41 @@
+<div class="flex items-end h-full">
+
+  <div
+    *ngFor="let tab of tabsService.tabs()"
+    (click)="tabsService.activateTab(tab)"
+    class="group relative flex items-center gap-2 px-3 h-full border-r border-[var(--theme-color-border)]
+          cursor-pointer select-none transition-colors shrink-0
+           min-w-0 max-w-[180px]"
+    [ngClass]="tab.path === tabsService.activeTab()
+      ? 'bg-white dark:bg-gray-950 text-gray-900 dark:text-white'
+      : 'bg-white dark:bg-gray-950 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'">
+
+    <span
+      *ngIf="tab.path === tabsService.activeTab()"
+      class="absolute top-0 left-0 right-0 h-[2px]"
+      [style.background-color]="'var(--theme-color)'">
+    </span>
+
+    <i *ngIf="tab.icon"
+       [class]="tab.icon + ' text-xs shrink-0'">
+    </i>
+
+    <span
+      pTooltip="{{ tab.title }}"
+      tooltipPosition="bottom"
+      class="text-sm truncate">
+      {{ tab.title }}
+    </span>
+
+    <button
+      (click)="closeTab(tab, $event)"
+      class="shrink-0 w-4 h-4 flex items-center justify-center rounded
+             opacity-0 group-hover:opacity-100 transition-opacity ml-1
+             hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
+      [class.opacity-100!]="tab.path === tabsService.activeTab()">
+      <i class="pi pi-times text-[10px]"></i>
+    </button>
+
+  </div>
+
+</div>

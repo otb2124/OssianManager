@@ -1,0 +1,60 @@
+<div class="flex flex-col gap-4">
+
+    <!-- Title -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Title</label>
+      <input
+        pInputText
+        [(ngModel)]="title"
+        placeholder="Project title"
+        class="w-full">
+    </div>
+  
+    <!-- Description -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Description</label>
+      <textarea
+        pTextarea
+        [(ngModel)]="description"
+        placeholder="Optional description"
+        rows="3"
+        class="w-full resize-none">
+      </textarea>
+    </div>
+  
+    <!-- Tags -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Tags</label>
+      <app-tag-selector [(ngModel)]="selectedTags"></app-tag-selector>
+    </div>
+  
+    <!-- Color + Favorite -->
+    <div class="flex items-center gap-6">
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Color</label>
+        <p-colorpicker [(ngModel)]="color"></p-colorpicker>
+      </div>
+  
+      <div class="flex items-center gap-2 mt-4">
+        <p-checkbox [(ngModel)]="isFavorite" [binary]="true" inputId="favorite"></p-checkbox>
+        <label for="favorite" class="text-sm text-gray-600 dark:text-gray-400 cursor-pointer">Favourite</label>
+      </div>
+    </div>
+  
+    <!-- Actions -->
+    <div class="flex items-center gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+      <p-button
+        [label]="project() ? 'Save' : 'Create'"
+        icon="pi pi-check"
+        (click)="submit()">
+      </p-button>
+      <p-button
+        label="Cancel"
+        icon="pi pi-times"
+        severity="secondary"
+        [text]="true"
+        (click)="cancel()">
+      </p-button>
+    </div>
+  
+  </div>

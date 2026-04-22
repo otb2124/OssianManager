@@ -1,0 +1,23 @@
+<p-accordion [multiple]="true" [value]="activeValues()">
+  <p-accordion-panel
+    *ngFor="let entry of entries"
+    [value]="entry.project.id"
+    [id]="'panel-' + entry.project.id">
+
+    <p-accordion-header>
+      <app-project-record-overview
+        [project]="entry.project"
+        [directoryPath]="entry.directoryPath" />
+    </p-accordion-header>
+
+    <p-accordion-content>
+      <app-project-record-details
+        [project]="entry.project"
+        [directoryPath]="entry.directoryPath"
+        (deleted)="onDeleted(entry.project.id)"
+        (updated)="onUpdated($event)">
+      </app-project-record-details>
+    </p-accordion-content>
+
+  </p-accordion-panel>
+</p-accordion>

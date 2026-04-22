@@ -1,0 +1,41 @@
+<div class="flex items-center gap-3 w-full min-w-0 pr-4">
+
+  <span
+    class="w-2.5 h-2.5 rounded-full shrink-0"
+    [style.background]="project.color ?? '#6b7280'">
+  </span>
+
+  <a
+    (click)="openProject($event)"
+    class="font-medium truncate transition-colors"
+    [class.text-gray-900]="!isActive()"
+    [class.dark:text-white]="!isActive()"
+    [class.hover:underline]="!isActive()"
+    [class.cursor-pointer]="!isActive()"
+    [class.cursor-default]="isActive()"
+    [style.color]="isActive() ? 'var(--theme-color)' : null">
+    {{ project.title }}
+  </a>
+
+  <p-button
+    (click)="toggleFavorite($event)"
+    [text]="true"
+    [icon]="project.isFavorite ? 'pi pi-star-fill' : 'pi pi-star'">
+  </p-button>
+
+  <div class="hidden sm:flex items-center gap-1.5 ml-2 flex-wrap">
+    <p-tag
+      *ngFor="let tag of project.tags"
+      [value]="tag.label"
+      severity="secondary"
+      styleClass="text-xs px-2 py-0.5"
+      [style.background-color]="tag.color ?? '#6b7280'">
+    </p-tag>
+  </div>
+
+  <span class="ml-auto text-xs text-gray-400 dark:text-gray-500 shrink-0"
+        *ngIf="project.lastOpenedAt">
+    opened {{ project.lastOpenedAt | date:'mediumDate' }}
+  </span>
+
+</div>

@@ -1,0 +1,74 @@
+<div class="flex flex-col gap-4">
+
+    <!-- Version -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Version</label>
+      <input
+        pInputText
+        [(ngModel)]="version"
+        placeholder="0.1">
+    </div>
+  
+    <!-- Version Tags -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Version Tags</label>
+      <div class="flex flex-wrap gap-1.5 mb-1">
+        <p-chip
+          *ngFor="let tag of versionTags"
+          [label]="tag"
+          [removable]="true"
+          (onRemove)="removeTag(tag)">
+        </p-chip>
+      </div>
+      <div class="flex gap-2">
+        <input
+          pInputText
+          [(ngModel)]="newTag"
+          placeholder="Add tag"
+          (keydown.enter)="addTag()"
+          class="flex-1">
+        <p-button
+          icon="pi pi-plus"
+          severity="secondary"
+          (click)="addTag()">
+        </p-button>
+      </div>
+    </div>
+  
+    <!-- Theme Color -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Theme Color</label>
+      <div class="flex items-center gap-2">
+        <p-colorpicker [(ngModel)]="themeColor"></p-colorpicker>
+        <span class="text-sm text-gray-500 font-mono">{{ themeColor }}</span>
+      </div>
+    </div>
+  
+    <!-- Engine Project Path -->
+    <div class="flex flex-col gap-1.5">
+      <label class="text-xs font-medium text-gray-500 dark:text-gray-400">Engine Project Path</label>
+      <div class="flex gap-2">
+        <input
+          pInputText
+          [(ngModel)]="engineProjectPath"
+          placeholder="Path to .sln file"
+          class="flex-1 min-w-0 font-mono text-xs">
+        <p-button
+          icon="pi pi-folder-open"
+          severity="secondary"
+          (click)="pickEnginePath()">
+        </p-button>
+      </div>
+    </div>
+  
+    <!-- Actions -->
+    <div class="flex items-center gap-2 border-t border-gray-100 dark:border-gray-800">
+      <p-button
+        label="Save"
+        icon="pi pi-check"
+        class="text-xs"
+        (click)="submit()">
+      </p-button>
+    </div>
+  
+  </div>

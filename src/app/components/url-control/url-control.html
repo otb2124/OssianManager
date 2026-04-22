@@ -1,0 +1,36 @@
+<div class="flex items-center gap-1 w-full min-w-0">
+
+  <button
+    (click)="goBack()"
+    class="flex items-center justify-center w-7 h-7 shrink-0 rounded
+           text-gray-400 dark:text-gray-500 transition-colors focus:outline-none
+           hover:bg-gray-100 dark:hover:bg-gray-800"
+    [style.color]="'var(--theme-color)'" >
+    <i class="pi pi-chevron-left text-xs"></i>
+  </button>
+
+  <button
+    (click)="goForward()"
+    class="flex items-center justify-center w-7 h-7 shrink-0 rounded
+           text-gray-400 dark:text-gray-500 transition-colors focus:outline-none
+           hover:bg-gray-100 dark:hover:bg-gray-800"
+    [style.color]="'var(--theme-color)'">
+    <i class="pi pi-chevron-right text-xs"></i>
+  </button>
+
+  <button
+    (click)="refreshPage()"
+    class="flex items-center justify-center w-7 h-7 shrink-0 rounded
+           text-gray-400 dark:text-gray-500 transition-colors focus:outline-none
+           hover:bg-gray-100 dark:hover:bg-gray-800 group"
+    [style.color]="'var(--theme-color)'">
+    <i class="pi pi-refresh text-xs group-hover:rotate-180 transition-transform duration-300"></i>
+  </button>
+
+  <span class="w-px h-4 bg-gray-200 dark:bg-gray-700 shrink-0 mx-1"></span>
+
+  <div class="flex-1 min-w-0">
+    <app-url-breadcrumb></app-url-breadcrumb>
+  </div>
+
+</div>

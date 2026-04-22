@@ -1,0 +1,117 @@
+<div class="flex flex-col gap-4 py-1">
+
+  <p *ngIf="project.description"
+     class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+    {{ project.description }}
+  </p>
+
+  <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-gray-500 dark:text-gray-400">
+    <div class="flex items-center gap-1.5">
+      <i class="pi pi-folder text-gray-400"></i>
+      <span class="font-mono truncate max-w-xs">{{ this.directoryPath }}</span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <i class="pi pi-calendar text-gray-400"></i>
+      <span>created {{ project.createdAt | date:'mediumDate' }}</span>
+    </div>
+    <div class="flex items-center gap-1.5">
+      <i class="pi pi-pencil text-gray-400"></i>
+      <span>updated {{ project.updatedAt | date:'mediumDate' }}</span>
+    </div>
+  </div>
+
+  <div class="flex sm:hidden flex-wrap gap-1.5">
+    <p-tag
+      *ngFor="let tag of project.tags"
+      [value]="tag.label"
+      severity="secondary"
+      styleClass="text-xs">
+    </p-tag>
+  </div>
+
+  <div class="flex items-center gap-2 pt-1 border-t border-gray-100 dark:border-gray-800">
+
+    <p-button
+      *ngIf="!isActive()"
+      label="Open"
+      icon="pi pi-folder-open"
+      severity="secondary"
+      size="small"
+      (click)="openProject($event)">
+    </p-button>
+
+    <p-button
+      *ngIf="isActive()"
+      label="Close"
+      icon="pi pi-times"
+      severity="secondary"
+      size="small"
+      (click)="closeProject($event)">
+    </p-button>
+
+    <p-button
+      label="Reveal in File Explorer"
+      icon="pi pi-folder"
+      severity="secondary"
+      size="small"
+      (click)="openInExplorer($event)">
+    </p-button>
+
+    <p-button
+      label="Edit"
+      icon="pi pi-pencil"
+      severity="secondary"
+      size="small"
+      (click)="openEditDialog($event)">
+    </p-button>
+
+      <p-button
+        label="Remove"
+        icon="pi pi-minus-circle"
+        severity="warn"
+        size="small"
+        [text]="true"
+        (click)="openRemoveDialog($event)">
+      </p-button>
+
+      <p-button
+        label="Delete"
+        icon="pi pi-trash"
+        severity="danger"
+        size="small"
+        [text]="true"
+        (click)="openDeleteDialog($event)">
+      </p-button>
+    </div>
+
+</div>
+
+<app-dialog-wrapper
+  header="Edit Project"
+  [(visible)]="showEditDialog">
+  <app-project-record-form
+    [project]="project"
+    (submitted)="onEditSubmitted($event)"
+    (cancelled)="showEditDialog = false">
+  </app-project-record-form>
+</app-dialog-wrapper>
+
+<app-dialog-wrapper
+  header="Remove Project"
+  [(visible)]="showRemoveDialog">
+  <app-confirm-form
+    [message]="'Remove ' + project.title + ' from the list? Files will not be deleted.'"
+    (confirmed)="confirmRemove()"
+    (cancelled)="showRemoveDialog = false">
+  </app-confirm-form>
+</app-dialog-wrapper>
+
+<app-dialog-wrapper
+  header="Delete Project"
+  [(visible)]="showDeleteDialog">
+  <app-confirm-form
+    [message]="'Permanently delete ' + project.title + ' and all its files? This cannot be undone.'"
+    (confirmed)="confirmDelete()"
+    (cancelled)="showDeleteDialog = false">
+  </app-confirm-form>
+</app-dialog-wrapper>

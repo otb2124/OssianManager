@@ -1,0 +1,51 @@
+<div
+  class="flex items-center gap-3 px-4 border-l border-b border-[var(--theme-color-border)] shrink-0 cursor-default h-full"
+  (mouseenter)="onTriggerEnter($event)"
+  (mouseleave)="onTriggerLeave($event)">
+
+  <img src="assets/logo.png" alt="logo" class="w-16 h-16 object-contain shrink-0">
+  <div class="flex flex-col"> 
+    <span class="text-sm font-semibold text-[var(--theme-color)] leading-tight">Ossian Engine</span>
+    <span class="text-xs text-gray-400 dark:text-gray-500 leading-tight">
+      {{ appConfigService.version() }}
+    </span>
+    <span class="flex items-center gap-1">
+      <p-tag
+        *ngFor="let tag of appConfigService.versionTags()"
+        severity="secondary"
+        class="text-xs">
+        {{ tag }}
+      </p-tag>
+    </span>
+  </div>
+</div>
+
+<p-popover #op appendTo="body">
+  <div
+    *ngIf="commit() as c"
+    class="flex flex-col gap-2 text-xs"
+    style="width: 300px;"
+    (mouseenter)="onPopoverEnter()"
+    (mouseleave)="onPopoverLeave()">
+    <div class="flex gap-2">
+      <span class="text-gray-400 w-16 shrink-0">Branch</span>
+      <span class="font-mono select-all">{{ c.branch }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="text-gray-400 w-16 shrink-0">Commit</span>
+      <span class="font-mono break-all select-all">{{ c.hash }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="text-gray-400 w-16 shrink-0">Message</span>
+      <span class="select-all">{{ c.message }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="text-gray-400 w-16 shrink-0">Author</span>
+      <span class="select-all">{{ c.author }}</span>
+    </div>
+    <div class="flex gap-2">
+      <span class="text-gray-400 w-16 shrink-0">Date</span>
+      <span class="select-all">{{ c.date | date:'medium' }}</span>
+    </div>
+  </div>
+</p-popover>

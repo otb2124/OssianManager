@@ -1,0 +1,63 @@
+<div class="flex items-center gap-0.5 text-sm w-full min-w-0">
+
+  <ng-container *ngFor="let item of items(); let i = index; let last = last">
+
+    <button
+      (click)="toggleSiblings($event, i)"
+      class="flex items-center justify-center w-5 h-5 shrink-0 rounded
+             text-gray-300 dark:text-gray-600 select-none focus:outline-none
+             hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors relative group"
+      [class.bg-gray-100!]="openIndex === i"
+      [class.dark:bg-gray-800!]="openIndex === i"
+      [style.color]="openIndex === i ? 'var(--theme-color)' : null">
+
+      <span class="transition-opacity" [class.opacity-0]="openIndex === i">/</span>
+      <span class="absolute inset-0 flex items-center justify-center transition-opacity opacity-0
+                   group-hover:opacity-100"
+            [class.opacity-100!]="openIndex === i">
+        <i class="pi pi-chevron-down text-[10px]"
+           [class.rotate-180]="openIndex === i"
+           style="transition: transform 0.15s"></i>
+      </span>
+
+      <div
+        *ngIf="openIndex === i && item.siblings && item.siblings.length > 0"
+        class="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[11rem]
+               bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700
+               rounded-lg shadow-xl z-50 overflow-hidden py-1">
+        <div
+          *ngFor="let sib of item.siblings"
+          (click)="selectSibling(sib)"
+          class="flex items-center gap-2.5 px-3 py-1.5 cursor-pointer transition-colors
+                 hover:bg-gray-50 dark:hover:bg-gray-800 text-left">
+          <i class="pi text-xs shrink-0"
+             [style.color]="sib.label === item.label ? 'var(--theme-color)' : 'transparent'"
+             [ngClass]="sib.label === item.label ? 'pi-check' : 'pi-minus'">
+          </i>
+          <span
+            class="text-sm truncate"
+            [class.font-medium]="sib.label === item.label"
+            [class.text-gray-600]="sib.label !== item.label"
+            [class.dark:text-gray-400]="sib.label !== item.label"
+            [style.color]="sib.label === item.label ? 'var(--theme-color)' : null">
+            {{ sib.label }}
+          </span>
+        </div>
+      </div>
+    </button>
+
+    <span
+      [routerLink]="item.routerLink"
+      class="px-1.5 py-1 rounded cursor-pointer truncate transition-colors select-none
+             hover:bg-gray-100 dark:hover:bg-gray-800"
+      [style.color]="last ? 'var(--theme-color)' : null"
+      [class.font-medium]="last"
+      [class.text-gray-500]="!last"
+      [class.dark:text-gray-400]="!last"
+      [class.hover:text-gray-700]="!last"
+      [class.dark:hover:text-gray-300]="!last">
+      {{ item.label }}
+    </span>
+
+  </ng-container>
+</div>

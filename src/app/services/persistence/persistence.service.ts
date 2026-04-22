@@ -1,0 +1,37 @@
+import { Injectable } from '@angular/core';
+import { from, map, Observable } from 'rxjs';
+import { invoke } from '@tauri-apps/api/core';
+
+@Injectable({ providedIn: 'root' })
+export class PersistenceService {
+
+  private readonly basePath = '../.ossian';
+
+  read<T>(fileName: string): Observable<T> {
+    const path = `${this.basePath}/${fileName}`;
+    return from(invoke<string>('read_config', { relativePath: path })).pipe(
+      map(text => JSON.parse(text) as T)
+    );
+  }
+
+  write<T>(fileName: string, data: T): Observable<void> {
+    const path = `${this.basePath}/${fileName}`;
+    return from(invoke<void>('write_config', {
+      relativePath: path,
+      content: JSON.stringify(data, null, 2)
+    }));
+  }
+
+  readAbsolute<T>(absolutePath: string): Observable<T> {
+    return from(invoke<string>('read_config_absolute', { path: absolutePath })).pipe(
+      map(text => JSON.parse(text) as T)
+    );
+  }
+
+  writeAbsolute<T>(absolutePath: string, data: T): Observable<void> {
+    return from(invoke<void>('write_config_absolute', {
+      path: absolutePath,
+      content: JSON.stringify(data, null, 2)
+    }));
+  }
+}

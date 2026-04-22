@@ -1,0 +1,16 @@
+{
+  "version": "v.0.2",
+  "versionTags": [
+    "dev_start"
+  ],
+  "settings": {
+    "themeColor": "#b3a2e0"
+  },
+  "engineProjectPath": "C:/Users/orest/Downloads/pojects/CSPlatformerSandbox/projects/game/src/CSPlatformerSandbox.sln",
+  "openTabs": [
+    "/general/home",
+    "/general/settings",
+    "/general/notification-log"
+  ],
+  "activeTab": "/general/home"
+}

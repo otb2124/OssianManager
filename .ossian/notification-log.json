@@ -1,0 +1,228 @@
+[
+  {
+    "severity": "info",
+    "title": "Project closed",
+    "description": "Test Project1321",
+    "life": 3000,
+    "id": "6aadb4e2-8b4f-4e7c-a9fb-0bc74ade6524",
+    "timestamp": "2026-04-22T13:44:27.074Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project1321",
+    "life": 3000,
+    "id": "c895d017-3a08-4a2d-86c1-598e0d8dfbd7",
+    "timestamp": "2026-04-22T13:44:22.276Z"
+  },
+  {
+    "severity": "success",
+    "title": "test project created",
+    "life": 3000,
+    "id": "6a7d3ed7-17cd-4866-a273-9a540b4e97b5",
+    "timestamp": "2026-04-22T13:44:19.857Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project1321",
+    "life": 3000,
+    "id": "61f4d8b9-d292-4cc4-aea5-e1cc653eb577",
+    "timestamp": "2026-04-22T13:43:35.997Z"
+  },
+  {
+    "severity": "info",
+    "title": "Test Project1321 record saved",
+    "description": "title: \"Test Project\" → \"Test Project1321\"\ndescription: \"test description\" → \"test description1231\"\ncolor: \"#2f8182\" → \"#2f4882\"\nisFavorite: true → false\nupdatedAt: \"2026-04-22T02:01:28.314Z\" → \"2026-04-22T13:42:01.889Z\"\ntags: [\"c2ac8980-05d2-4b8b-8fac-d89d664d9fbc\",\"02c3a5fd-0722-4bab-a8fe-4900fdc2dda2\"] → [\"02c3a5fd-0722-4bab-a8fe-4900fdc2dda2\"]",
+    "life": 3000,
+    "id": "312117f9-7bdc-47bc-9283-5aea0f845945",
+    "timestamp": "2026-04-22T13:42:01.926Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project closed",
+    "description": "Test Project",
+    "life": 3000,
+    "id": "077bd5dc-5d90-4182-a99b-57274ba3c7c0",
+    "timestamp": "2026-04-22T13:41:46.546Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project",
+    "life": 3000,
+    "id": "3dde3864-7f91-4df4-9237-c79ac4a184e3",
+    "timestamp": "2026-04-22T13:41:41.770Z"
+  },
+  {
+    "severity": "success",
+    "title": "Project imported",
+    "description": "Test Project",
+    "life": 3000,
+    "id": "79290c33-9103-468c-a015-4c7cbe1e2209",
+    "timestamp": "2026-04-22T13:41:39.665Z"
+  },
+  {
+    "severity": "success",
+    "title": "Project imported",
+    "description": "Test Project",
+    "life": 3000,
+    "id": "fc6bc0bf-7d1a-46dc-a17d-8ebe5b9541a5",
+    "timestamp": "2026-04-22T13:30:11.803Z"
+  },
+  {
+    "severity": "success",
+    "title": "Project imported",
+    "description": "Test Project",
+    "life": 3000,
+    "id": "03d3b9dc-f757-4945-bfea-ac5361415fc0",
+    "timestamp": "2026-04-22T13:29:34.187Z"
+  },
+  {
+    "severity": "success",
+    "title": "Project imported",
+    "description": "Test Project",
+    "life": 3000,
+    "id": "15fa8351-8868-4031-818e-d68d146051ff",
+    "timestamp": "2026-04-22T13:29:03.461Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project",
+    "life": 3000,
+    "id": "68bad58a-abae-473e-9584-50b7bee3699a",
+    "timestamp": "2026-04-22T13:13:03.322Z"
+  },
+  {
+    "severity": "success",
+    "title": "Tag updated",
+    "life": 3000,
+    "id": "9de88a62-a30c-48a8-a325-e045df5fca9c",
+    "timestamp": "2026-04-22T02:01:42.033Z"
+  },
+  {
+    "severity": "info",
+    "title": "Test Project record saved",
+    "description": "updatedAt: \"2026-04-22T02:01:16.854Z\" → \"2026-04-22T02:01:28.314Z\"",
+    "life": 3000,
+    "id": "ab76a204-6e43-4dae-9f86-da373ff82bf2",
+    "timestamp": "2026-04-22T02:01:28.356Z"
+  },
+  {
+    "severity": "success",
+    "title": "Tag updated",
+    "life": 3000,
+    "id": "f3d9d2e6-b3cc-444d-9c66-6fdd2533f3d8",
+    "timestamp": "2026-04-22T02:01:26.731Z"
+  },
+  {
+    "severity": "info",
+    "title": "Test Project record saved",
+    "description": "updatedAt: \"2026-04-22T02:01:06.645Z\" → \"2026-04-22T02:01:16.854Z\"",
+    "life": 3000,
+    "id": "64e5cf00-5631-4049-9bde-d26e6be93ad3",
+    "timestamp": "2026-04-22T02:01:16.892Z"
+  },
+  {
+    "severity": "success",
+    "title": "Tag updated",
+    "life": 3000,
+    "id": "26e293d1-6766-4e9b-a7e8-9460ffe16674",
+    "timestamp": "2026-04-22T02:01:15.475Z"
+  },
+  {
+    "severity": "info",
+    "title": "Test Project record saved",
+    "description": "updatedAt: \"2026-04-22T01:55:51.539Z\" → \"2026-04-22T02:01:06.645Z\"",
+    "life": 3000,
+    "id": "3a868541-d5de-4861-bf48-343b9ceb52b0",
+    "timestamp": "2026-04-22T02:01:06.683Z"
+  },
+  {
+    "severity": "info",
+    "title": "Test Project record saved",
+    "description": "title: \"Test Project name\" → \"Test Project\"\ndescription: \"test description desc\" → \"test description\"\ncolor: \"#a81b1b\" → \"#2f8182\"\nupdatedAt: \"2026-04-22T01:52:33.669Z\" → \"2026-04-22T01:55:51.539Z\"\ntags: [\"c2ac8980-05d2-4b8b-8fac-d89d664d9fbc\",\"4f590ebc-01a3-41ae-a26d-da4ea81d6125\",\"02c3a5fd-0722-4bab-a8fe-4900fdc2dda2\"] → [\"c2ac8980-05d2-4b8b-8fac-d89d664d9fbc\",\"02c3a5fd-0722-4bab-a8fe-4900fdc2dda2\"]",
+    "life": 3000,
+    "id": "38459d44-dd65-4e1f-9df4-5968cb234a94",
+    "timestamp": "2026-04-22T01:55:51.587Z"
+  },
+  {
+    "severity": "success",
+    "title": "Test Project edited",
+    "description": "Changes have been written to disk.",
+    "life": 3000,
+    "id": "bb78b109-98df-420a-a315-94e3d1c7b518",
+    "timestamp": "2026-04-22T01:52:33.671Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project closed",
+    "life": 3000,
+    "id": "a2b4119a-3155-425d-871f-638e9b20af7b",
+    "timestamp": "2026-04-22T01:52:18.972Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project",
+    "life": 3000,
+    "id": "99977922-7697-45bc-b157-4f6bf7bee1c7",
+    "timestamp": "2026-04-22T01:52:14.779Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project",
+    "life": 3000,
+    "id": "a212e0a5-2c67-483e-8063-2830d54ae27b",
+    "timestamp": "2026-04-22T01:52:08.585Z"
+  },
+  {
+    "severity": "success",
+    "title": "Project imported",
+    "description": "Test Project",
+    "life": 3000,
+    "id": "59058531-ddd4-46c2-adac-1e14db87d83d",
+    "timestamp": "2026-04-22T01:52:05.395Z"
+  },
+  {
+    "severity": "success",
+    "title": "Project removed",
+    "description": "2b4c6236-e8e4-4b1b-9799-466558472941",
+    "life": 3000,
+    "id": "f6383d95-43d7-4c3b-9f12-6e10b72bb346",
+    "timestamp": "2026-04-22T01:51:52.859Z"
+  },
+  {
+    "severity": "success",
+    "title": "Test Project removed",
+    "description": "Changes have been written to disk.",
+    "life": 3000,
+    "id": "5f412992-8650-4e41-9b99-9a966fe75434",
+    "timestamp": "2026-04-22T01:51:52.810Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project closed",
+    "life": 3000,
+    "id": "2f575386-1e9f-4911-b545-cafee3fa1396",
+    "timestamp": "2026-04-22T01:51:46.787Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project",
+    "life": 3000,
+    "id": "d0d7b5a0-2450-4b68-b879-90968a79c263",
+    "timestamp": "2026-04-22T01:51:37.090Z"
+  },
+  {
+    "severity": "success",
+    "title": "new projectttttttt edited",
+    "description": "Changes have been written to disk.",
+    "life": 3000,
+    "id": "0fad0ea2-839a-4a25-9ee8-b0326e1df583",
+    "timestamp": "2026-04-22T01:41:21.597Z"
+  }
+]

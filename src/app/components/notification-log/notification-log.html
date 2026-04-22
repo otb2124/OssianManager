@@ -1,0 +1,31 @@
+<div class="flex flex-col gap-2 p-4">
+
+    <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-gray-900 dark:text-white">Notification Log</span>
+        <p-button label="Clear" icon="pi pi-trash" size="small" severity="secondary" [text]="true"
+            (click)="notificationService.clearLog()">
+        </p-button>
+    </div>
+
+    <div *ngFor="let entry of notificationService.log()"
+        class="flex flex-col gap-0.5 px-3 py-2 rounded-lg border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950">
+        <div class="flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full shrink-0" [style.background-color]="severityStyle(entry.severity)">
+            </span>
+            <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ entry.title }}</span>
+            <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">
+                {{ entry.timestamp | date:'HH:mm:ss' }}
+            </span>
+        </div>
+        <p *ngIf="entry.description" class="text-xs text-gray-500 dark:text-gray-400 pl-3.5"
+            style="white-space: pre-wrap;">
+            {{ entry.description }}
+        </p>
+    </div>
+
+    <div *ngIf="!notificationService.log().length"
+        class="text-xs text-gray-400 dark:text-gray-500 italic text-center py-4">
+        No notifications yet
+    </div>
+
+</div>

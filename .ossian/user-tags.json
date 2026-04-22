@@ -1,0 +1,17 @@
+[
+  {
+    "id": "4f590ebc-01a3-41ae-a26d-da4ea81d6125",
+    "label": "testing",
+    "color": "#d98b8b"
+  },
+  {
+    "id": "02c3a5fd-0722-4bab-a8fe-4900fdc2dda2",
+    "label": "new tag",
+    "color": "#fa0707"
+  },
+  {
+    "id": "c2ac8980-05d2-4b8b-8fac-d89d664d9fbc",
+    "label": "newest tag",
+    "color": "#c800ff"
+  }
+]
