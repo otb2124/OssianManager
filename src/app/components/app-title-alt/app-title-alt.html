@@ -1,0 +1,50 @@
+<div
+  class="flex items-center justify-center h-full px-3 cursor-default"
+  (mouseenter)="onTriggerEnter($event)"
+  (mouseleave)="onTriggerLeave()">
+  <span class="text-sm font-semibold text-[var(--theme-color)]">
+    {{ appConfigService.appTitle() }}
+  </span>
+</div>
+
+<p-popover #infoPopover appendTo="body">
+  <div
+    class="flex gap-6 text-xs"
+    (mouseenter)="onPopoverEnter()"
+    (mouseleave)="onPopoverLeave()">
+
+    <app-title class="border-b border-t border-[var(--theme-color-border)]"></app-title>
+
+    <!-- Divider -->
+    <div class="w-px bg-[var(--theme-color)] self-stretch shrink-0"></div>
+
+    <!-- Git commit column -->
+    <div class="flex flex-col gap-2" style="width: 240px;">
+      @if (commit(); as c) {
+        <div class="flex gap-2">
+          <span class="text-gray-400 w-14 shrink-0">Branch</span>
+          <span class="font-mono select-all">{{ c.branch }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="text-gray-400 w-14 shrink-0">Commit</span>
+          <span class="font-mono break-all select-all">{{ c.hash }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="text-gray-400 w-14 shrink-0">Message</span>
+          <span class="select-all">{{ c.message }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="text-gray-400 w-14 shrink-0">Author</span>
+          <span class="select-all">{{ c.author }}</span>
+        </div>
+        <div class="flex gap-2">
+          <span class="text-gray-400 w-14 shrink-0">Date</span>
+          <span class="select-all">{{ c.date | date:'medium' }}</span>
+        </div>
+      } @else {
+        <span class="text-gray-400 italic">Loading commit...</span>
+      }
+    </div>
+
+  </div>
+</p-popover>

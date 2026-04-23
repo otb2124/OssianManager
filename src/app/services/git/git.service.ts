@@ -7,7 +7,7 @@ import { GitCommit, RawGitCommit } from '../../model/git.model';
 @Injectable({ providedIn: 'root' })
 export class GitService {
 
-  private readonly repoPath = '../..';
+  private readonly repoPath = '../';
 
   getLatestCommit(): Observable<GitCommit> {
     return from(invoke<RawGitCommit>('get_latest_commit', { path: this.repoPath })).pipe(

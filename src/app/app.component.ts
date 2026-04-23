@@ -9,10 +9,11 @@ import { ThemeService } from './services/theme/theme.service';
 import { ToastModule } from 'primeng/toast';
 import { ProjectService } from './services/projects/project.service';
 import { EngineService } from './services/engine-config/engine.service';
+import { Bottombar } from "./components/bottombar/bottombar";
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, CommonModule, RouterOutlet, Topbar, ToastModule],
+  imports: [FormsModule, CommonModule, RouterOutlet, Topbar, ToastModule, Bottombar],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

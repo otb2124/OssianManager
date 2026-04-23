@@ -1,10 +1,11 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { SelectModule } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
+import { PopoverModule, Popover } from 'primeng/popover';
 import { routes, RouteChild } from '../../app.routes';
 import { ProjectService } from '../../services/projects/project.service';
+import { ButtonModule } from "primeng/button";
 
 export interface RouteOption {
   label: string;
@@ -19,14 +20,20 @@ export interface NavRoute {
 
 @Component({
   selector: 'app-module-control',
-  imports: [CommonModule, SelectModule, FormsModule],
+  imports: [CommonModule, FormsModule, PopoverModule, ButtonModule],
   templateUrl: './module-control.html',
-  styleUrl: './module-control.css',
-  host: { class: 'block shrink-0' }
 })
 export class ModuleControl {
   private router = inject(Router);
   private projectService = inject(ProjectService);
+
+  @ViewChildren('pop') pops!: QueryList<Popover>;
+
+  activeNavOptions: RouteOption[] = [];
+  activeNavRoute: NavRoute | null = null;
+  private isOpen = false;
+  private switching = false;
+  private activeIndex = -1;
 
   readonly navRoutes = computed(() => {
     const hasProject = this.projectService.hasProject();
@@ -42,14 +49,10 @@ export class ModuleControl {
       }));
   });
 
-  /** Walk down redirect chains to get the actual leaf children with display:true */
   private resolveOptions(route: RouteChild): RouteOption[] {
     const children = route.children;
     if (!children?.length) return [];
-
-    // Follow redirectTo until we reach a non-redirect layer
     const leafChildren = this.resolveLeafChildren(children);
-
     return leafChildren
       .filter(c => c.displayInNavigation && c.path)
       .map(c => ({
@@ -60,25 +63,74 @@ export class ModuleControl {
   }
 
   private resolveLeafChildren(children: RouteChild[]): RouteChild[] {
-    // Check if ALL displayable children are themselves redirects with their own children
     const displayable = children.filter(c => c.displayInNavigation && c.path);
     const allHaveChildren = displayable.length > 0 && displayable.every(c => c.children?.length);
-
     if (allHaveChildren) {
-      // Recurse deeper — flatten all grandchildren
       return displayable.flatMap(c => this.resolveLeafChildren(c.children!));
     }
-
     return children;
   }
 
   getSelectedValue(route: RouteChild, options: RouteOption[]): RouteOption | null {
-    return options.find(o => this.router.isActive(o.value, { paths: 'subset', queryParams: 'ignored', fragment: 'ignored', matrixParams: 'ignored' })) ?? null;
+    return options.find(o =>
+      this.router.isActive(o.value, {
+        paths: 'subset',
+        queryParams: 'ignored',
+        fragment: 'ignored',
+        matrixParams: 'ignored',
+      })
+    ) ?? null;
   }
 
-  onRouteSelect(option: RouteOption | null): void {
-    if (option?.value) {
-      this.router.navigateByUrl(option.value);
+  isActiveOption(option: RouteOption): boolean {
+    return this.router.isActive(option.value, {
+      paths: 'subset',
+      queryParams: 'ignored',
+      fragment: 'ignored',
+      matrixParams: 'ignored',
+    });
+  }
+
+  openNav(event: Event, index: number): void {
+    event.stopPropagation();
+    const popsArray = this.pops.toArray();
+  
+    if (this.isOpen && this.activeIndex === index) {
+      popsArray[index]?.hide();
+      this.isOpen = false;
+      this.activeIndex = -1;
+      return;
     }
+  
+    popsArray.forEach((p, i) => { if (i !== index) p.hide(); });
+    popsArray[index]?.show(event);
+    this.isOpen = true;
+    this.activeIndex = index;
+  }
+
+  onRouteSelect(option: RouteOption): void {
+    this.router.navigateByUrl(option.value);
+  }
+
+  hoverNav(event: Event, index: number): void {
+    if (!this.isOpen || this.activeIndex === index) return;
+    event.stopPropagation();
+    this.switching = true;
+    const popsArray = this.pops.toArray();
+    popsArray.forEach((p, i) => { if (i !== index) p.hide(); });
+    popsArray[index]?.show(event);
+    this.activeIndex = index;
+    setTimeout(() => this.switching = false, 100);
+  }
+
+  closeAll(): void {
+    this.isOpen = false;
+    this.pops.toArray().forEach(p => p.hide());
+  }
+
+  onPopoverHide(): void {
+    if (this.switching) return;
+    this.isOpen = false;
+    this.activeIndex = -1;
   }
 }

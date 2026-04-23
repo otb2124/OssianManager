@@ -1,27 +1,31 @@
-<div class="flex items-center border-b border-[var(--theme-color-border)] gap-1 px-2 shrink-0 text-xs">
-  @for (nav of navRoutes(); track nav.route.path) {
-    <p-select
-      [options]="nav.options"
-      [ngModel]="getSelectedValue(nav.route, nav.options)"
-      (ngModelChange)="onRouteSelect($event)"
-      optionLabel="label"
-      [placeholder]="nav.route.title ?? ''"
-      [showClear]="false"
-      [dropdownIcon]="'none'"
-      appendTo="body"
-    >
-      <ng-template #selectedItem let-option>
-        <span >{{ nav.route.title }}</span>
-      </ng-template>
+<div class="flex items-center border-b border-[var(--theme-color-border)] gap-0.5 px-2 shrink-0 h-10">
+  @for (nav of navRoutes(); track nav.route.path; let i = $index) {
 
-      <ng-template #item let-option>
-        <div class="flex items-center gap-1.5 text-xs">
-          @if (option.icon) {
-            <i [class]="option.icon + ' text-xs'"></i>
-          }
+    <span
+      class="flex items-center px-2 py-1 rounded text-xs cursor-pointer transition-colors
+            hover:bg-gray-100 dark:hover:bg-gray-800 select-none"
+      [style.color]="getSelectedValue(nav.route, nav.options) ? 'var(--theme-color)' : null"
+      (click)="openNav($event, i)"
+      (mouseenter)="hoverNav($event, i)">
+      {{ nav.route.title }}
+    </span>
+
+    <p-popover #pop appendTo="body"
+      styleClass="!rounded-none [&::before]:hidden [&::after]:hidden"
+      (onHide)="onPopoverHide()">
+      <div class="flex flex-col">
+        <div
+          *ngFor="let option of nav.options"
+          (click)="onRouteSelect(option); pop.hide()"
+          class="flex items-center gap-2 px-1.5 py-1.5 cursor-pointer transition-colors text-xs
+                hover:bg-gray-50 dark:hover:bg-gray-800"
+          [class.font-medium]="isActiveOption(option)"
+          [style.color]="isActiveOption(option) ? 'var(--theme-color)' : null">
+          <i *ngIf="option.icon" [class]="option.icon + ' text-xs shrink-0'"></i>
           <span>{{ option.label }}</span>
         </div>
-      </ng-template>
-    </p-select>
+      </div>
+    </p-popover>
+
   }
 </div>

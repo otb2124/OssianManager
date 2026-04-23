@@ -5,14 +5,18 @@
   ],
   "appTitle": "OssianManager",
   "settings": {
-    "themeColor": "#b3a2e0"
+    "themeColor": "#6147a8"
   },
   "engineProjectPath": "C:\\Users\\orest\\Downloads\\pojects\\OssianEngine",
   "openTabs": [
     "/general/home",
-    "/general/notification-log",
-    "/project/overview"
+    "/general/settings",
+    "/general/engine",
+    "/general/log",
+    "/project/overview",
+    "/entities/entities",
+    "/entities/environment"
   ],
-  "activeTab": "/project/overview",
+  "activeTab": "/general/home",
   "currentProjectId": "2b4c6236-e8e4-4b1b-9799-466558472941"
 }

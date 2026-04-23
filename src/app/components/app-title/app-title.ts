@@ -1,10 +1,8 @@
-import { Component, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { TagModule } from "primeng/tag";
 import { Popover, PopoverModule } from 'primeng/popover';
 import { AppConfigService } from '../../services/app-config/app-config.service';
 import { CommonModule } from '@angular/common';
-import { GitService } from '../../services/git/git.service';
-import { GitCommit } from '../../model/git.model';
 import { EngineService } from '../../services/engine-config/engine.service';
 
 @Component({
@@ -12,21 +10,15 @@ import { EngineService } from '../../services/engine-config/engine.service';
   imports: [TagModule, CommonModule, PopoverModule],
   templateUrl: './app-title.html',
 })
-export class AppTitle implements OnInit {
+export class AppTitle {
   protected appConfigService = inject(AppConfigService);
   protected engineConfigService = inject(EngineService);
-  private gitService = inject(GitService);
 
   @ViewChild('op') op!: Popover;
-
-  readonly commit = signal<GitCommit | null>(null);
 
   private triggerHovered = false;
   private popoverHovered = false;
 
-  ngOnInit(): void {
-    this.gitService.getLatestCommit().subscribe(c => this.commit.set(c));
-  }
 
   onTriggerEnter(event: Event): void {
     this.triggerHovered = true;

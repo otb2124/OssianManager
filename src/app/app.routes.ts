@@ -35,13 +35,6 @@ export const routes: RouteChild[] =
         loadComponent: () => import('./modules/general/home/home.js').then(m => m.Home),
       },
       {
-        path: 'notification-log',
-        title: 'Notification Log',
-        icon: 'pi pi-bell',
-        displayInNavigation: true,
-        loadComponent: () => import('./modules/general/notifications-page/notifications-page.js').then(m => m.NotificationsPage),
-      },
-      {
         path: 'settings',
         title: 'Settings',
         icon: 'pi pi-cog',
@@ -54,7 +47,14 @@ export const routes: RouteChild[] =
         icon: 'pi pi-cog',
         displayInNavigation: true,
         loadComponent: () => import('./modules/general/engine-page/engine-page').then(m => m.EnginePage),
-      }
+      },
+      {
+        path: 'log',
+        title: 'Log',
+        icon: 'pi pi-align-justify',
+        displayInNavigation: true,
+        loadComponent: () => import('./modules/general/notifications-page/notifications-page.js').then(m => m.NotificationsPage),
+      },
     ]
   },
   {
@@ -73,16 +73,8 @@ export const routes: RouteChild[] =
       {
         path: 'overview',
         title: 'Overview',
-        icon: 'pi pi-home',
         displayInNavigation: true,
         loadComponent: () => import('./modules/project/project-overview/project-overview.js').then(m => m.ProjectOverview),
-      },
-      {
-        path: 'settings',
-        title: 'Settings',
-        icon: 'pi pi-cog',
-        displayInNavigation: true,
-        loadComponent: () => import('./modules/general/settings/settings.js').then(m => m.Settings),
       }
     ]
   },
