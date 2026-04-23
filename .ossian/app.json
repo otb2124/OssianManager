@@ -10,9 +10,9 @@
   "engineProjectPath": "C:\\Users\\orest\\Downloads\\pojects\\OssianEngine",
   "openTabs": [
     "/general/home",
-    "/general/settings",
     "/general/notification-log",
-    "/general/engine"
+    "/project/overview"
   ],
-  "activeTab": "/general/engine"
+  "activeTab": "/project/overview",
+  "currentProjectId": "2b4c6236-e8e4-4b1b-9799-466558472941"
 }

@@ -1,6 +1,62 @@
 [
   {
     "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project1321",
+    "life": 3000,
+    "id": "48658ff1-be46-43c5-967f-b67e2f3a08dd",
+    "timestamp": "2026-04-23T00:39:20.879Z"
+  },
+  {
+    "severity": "info",
+    "title": "Test Project1321 record saved",
+    "description": "isFavorite: false → true",
+    "life": 3000,
+    "id": "6dc7528c-f1ae-4ed2-8aed-8b519c25448c",
+    "timestamp": "2026-04-23T00:39:18.559Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project1321",
+    "life": 3000,
+    "id": "3bb2ea87-c6f8-4a37-8afe-fe6a5801f451",
+    "timestamp": "2026-04-23T00:37:57.479Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project1321",
+    "life": 3000,
+    "id": "ababf401-edd4-44f2-9325-451654a0470a",
+    "timestamp": "2026-04-23T00:36:29.738Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project1321",
+    "life": 3000,
+    "id": "d69cf29a-f205-4e9f-9497-38b57346ca80",
+    "timestamp": "2026-04-23T00:33:59.835Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project1321",
+    "life": 3000,
+    "id": "e9d67ebc-25e2-4c34-a022-10a23958d37a",
+    "timestamp": "2026-04-23T00:33:32.928Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "Test Project1321",
+    "life": 3000,
+    "id": "060f5f9e-19c8-4bbc-a79b-6595428bfa38",
+    "timestamp": "2026-04-23T00:30:27.768Z"
+  },
+  {
+    "severity": "info",
     "title": "Project closed",
     "description": "Test Project1321",
     "life": 3000,

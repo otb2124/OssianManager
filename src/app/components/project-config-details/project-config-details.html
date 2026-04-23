@@ -16,6 +16,41 @@
             <span class="text-gray-400 dark:text-gray-500 w-24 shrink-0">Resources</span>
             <span class="font-mono">{{ projectService.currentConfig()?.resDirectory }}</span>
           </div>
+
+          <div class="flex flex-col gap-2">
+            <span class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wide font-medium">Modules</span>
+    
+            <div class="flex flex-col gap-2">
+              @for (module of projectService.currentConfig()!.data!.modules; track module.id) {
+                <div class="flex flex-col gap-1 rounded-lg border border-gray-100 dark:border-gray-800 p-3">
+    
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="w-2 h-2 rounded-full shrink-0"
+                      [class.bg-green-400]="module.enabled"
+                      [class.bg-gray-300]="!module.enabled"
+                      [class.dark:bg-gray-600]="!module.enabled">
+                    </span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ module.title }}</span>
+                    <span class="ml-auto text-xs text-gray-400 dark:text-gray-500">
+                      {{ module.elements.length }} element{{ module.elements.length !== 1 ? 's' : '' }}
+                    </span>
+                  </div>
+    
+                  @if (module.elements.length) {
+                    <div class="flex flex-wrap gap-1.5 mt-1 pl-4">
+                      @for (element of module.elements; track element.id) {
+                        <span class="px-2 py-0.5 rounded text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 font-mono">
+                          {{ element.title }}
+                        </span>
+                      }
+                    </div>
+                  }
+    
+                </div>
+              }
+            </div>
+          </div>
         </div>
       </div>
     } @else {

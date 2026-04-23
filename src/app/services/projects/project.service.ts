@@ -4,7 +4,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { PersistenceService } from '../persistence/persistence.service';
 import { AppConfigService } from '../app-config/app-config.service';
 import { HydratedProjectRecord, ProjectRecord, ProjectRecordTag, ProjectRegistryEntry } from '../../model/project-record.model';
-import { ProjectConfig } from '../../model/project-config.model';
+import { ProjectConfig, ProjectData } from '../../model/project-config.model';
 import { UserTagService } from '../user-tags/user-tag.service';
 import { NotificationService } from '../notifications/notification.service';
 
@@ -34,6 +34,9 @@ export class ProjectService {
   readonly hasConfig = computed(() => this._currentConfig() !== null);
   readonly resDirectory = computed(() => this._currentConfig()?.resDirectory ?? null);
   readonly targetDirectory = computed(() => this._currentConfig()?.targetDirectory ?? null);
+
+  readonly projectData = computed(() => this._currentConfig()?.data ?? null);
+  
   readonly currentDirectoryPath = this._currentDirectoryPath.asReadonly();
 
   private readonly currentProject$ = toObservable(this._currentProject);
