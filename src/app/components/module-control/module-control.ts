@@ -16,6 +16,7 @@ export interface RouteOption {
   icon?: string;
   shortcut?: KeyboardShortcut | null;
   actionId?: string;
+  navigates?: boolean;
 }
 
 export interface NavRoute {
@@ -78,6 +79,7 @@ export class ModuleControl {
             icon: c.icon,
             shortcut: action.shortcut,
             actionId: action.id,
+            navigates: c.navigatesModule
           });
         }
       } else {
@@ -86,6 +88,7 @@ export class ModuleControl {
           label: c.title ?? c.path,
           value,
           icon: c.icon,
+          navigates: c.navigatesModule
         });
       }
     }
@@ -138,7 +141,8 @@ export class ModuleControl {
   onRouteSelect(option: RouteOption): void {
     if (option.actionId) {
       this.actionRegistry.invoke(option.actionId);
-    } else {
+    }
+    if (option.navigates) {
       this.router.navigateByUrl(option.value);
     }
   }

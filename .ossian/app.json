@@ -21,8 +21,7 @@
     "/project/build/tree",
     "/project/build/startup",
     "/project/display/window",
-    "/project/input/keys",
-    "/file/action-import-project"
+    "/project/input/keys"
   ],
-  "activeTab": "/file/action-import-project"
+  "activeTab": "/file/projects/recents"
 }

@@ -11,6 +11,7 @@ export interface RouteChild extends Route {
   displaySidebar?: boolean;
   displayOnProjectLoad?: boolean;
   actions?: RouteAction[];
+  navigatesModule?: boolean;
 }
 
 export const routes: RouteChild[] =
@@ -44,6 +45,7 @@ export const routes: RouteChild[] =
         icon: 'pi pi-folder',
         displayBreadcrumb: true,
         displayModule: true,
+        navigatesModule: true,
         displaySidebar: true,
         children:
         [
@@ -124,6 +126,7 @@ export const routes: RouteChild[] =
         icon: 'pi pi-cog',
         displayBreadcrumb: true,
         displayModule: true,
+        navigatesModule: true,
         displaySidebar: true,
         children:
         [
@@ -161,6 +164,7 @@ export const routes: RouteChild[] =
         icon: 'pi pi-book',
         displayBreadcrumb: true,
         displayModule: true,
+        navigatesModule: true,
         displaySidebar: true,
         children:
         [
@@ -191,6 +195,7 @@ export const routes: RouteChild[] =
         icon: 'pi pi-align-justify',
         displayBreadcrumb: true,
         displayModule: true,
+        navigatesModule: true,
         loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
       },
     ]
@@ -284,6 +289,7 @@ export const routes: RouteChild[] =
         title: 'Build',
         displayBreadcrumb: true,
         displayModule: true,
+        navigatesModule: true,
         displaySidebar: true,
         children:
         [
@@ -320,6 +326,7 @@ export const routes: RouteChild[] =
         title: 'Display',
         displayBreadcrumb: true,
         displayModule: true,
+        navigatesModule: true,
         displaySidebar: true,
         children:
         [
@@ -370,6 +377,7 @@ export const routes: RouteChild[] =
         title: 'Input',
         displayBreadcrumb: true,
         displayModule: true,
+        navigatesModule: true,
         displaySidebar: true,
         children:
         [
