@@ -4,7 +4,8 @@ export interface RouteChild extends Route {
   title?: string;
   icon?: string;
   children?: RouteChild[];
-  displayInNavigation?: boolean;
+  displayBreadcrumb?: boolean;
+  displaySidebar?: boolean;
   displayOnProjectLoad?: boolean;
 }
 
@@ -18,7 +19,7 @@ export const routes: RouteChild[] =
   {
     path: 'general',
     title: 'General',
-    displayInNavigation: true,
+    displayBreadcrumb: true,
     loadComponent: () => import('./components/shell/shell.js').then(m => m.Shell),
     children:
     [
@@ -31,28 +32,53 @@ export const routes: RouteChild[] =
         path: 'home',
         title: 'Home',
         icon: 'pi pi-home',
-        displayInNavigation: true,
-        loadComponent: () => import('./modules/general/home/home.js').then(m => m.Home),
+        displayBreadcrumb: true,
+        displaySidebar: true,
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'recents',
+            pathMatch: 'full'
+          },
+          {
+            path: 'recents',
+            title: 'Recents',
+            icon: 'pi pi-clock',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+          },
+          {
+            path: 'my-projects',
+            title: 'My Projects',
+            icon: 'pi pi-history',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+          },
+        ]
       },
       {
         path: 'settings',
         title: 'Settings',
         icon: 'pi pi-cog',
-        displayInNavigation: true,
+        displayBreadcrumb: true,
+        displaySidebar: true,
         loadComponent: () => import('./modules/general/settings/settings.js').then(m => m.Settings),
       },
       {
         path: 'engine',
         title: 'Engine',
         icon: 'pi pi-cog',
-        displayInNavigation: true,
+        displayBreadcrumb: true,
+        displaySidebar: true,
         loadComponent: () => import('./modules/general/engine-page/engine-page').then(m => m.EnginePage),
       },
       {
         path: 'log',
         title: 'Log',
         icon: 'pi pi-align-justify',
-        displayInNavigation: true,
+        displayBreadcrumb: true,
+        displaySidebar: true,
         loadComponent: () => import('./modules/general/notifications-page/notifications-page.js').then(m => m.NotificationsPage),
       },
     ]
@@ -60,7 +86,7 @@ export const routes: RouteChild[] =
   {
     path: 'project',
     title: 'Project',
-    displayInNavigation: true,
+    displayBreadcrumb: true,
     displayOnProjectLoad: true,
     loadComponent: () => import('./components/shell/shell.js').then(m => m.Shell),
     children:
@@ -73,7 +99,7 @@ export const routes: RouteChild[] =
       {
         path: 'overview',
         title: 'Overview',
-        displayInNavigation: true,
+        displayBreadcrumb: true,
         loadComponent: () => import('./modules/project/project-overview/project-overview.js').then(m => m.ProjectOverview),
       }
     ]
@@ -81,7 +107,7 @@ export const routes: RouteChild[] =
   {
     path: 'entities',
     title: 'Entities',
-    displayInNavigation: true,
+    displayBreadcrumb: true,
     displayOnProjectLoad: true,
     loadComponent: () => import('./components/shell/shell.js').then(m => m.Shell),
     children:
@@ -95,21 +121,21 @@ export const routes: RouteChild[] =
         path: 'overview',
         title: 'Overview',
         icon: 'pi pi-sync',
-        displayInNavigation: true,
-        loadComponent: () => import('./modules/general/home/home.js').then(m => m.Home),
+        displayBreadcrumb: true,
+        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
       },
       {
         path: 'entities',
         title: 'Entities',
         icon: 'pi pi-sync',
-        displayInNavigation: true,
-        loadComponent: () => import('./modules/general/home/home.js').then(m => m.Home),
+        displayBreadcrumb: true,
+        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
       },
       {
         path: 'environment',
         title: 'Environment',
         icon: 'pi pi-cog',
-        displayInNavigation: true,
+        displayBreadcrumb: true,
         loadComponent: () => import('./modules/general/settings/settings.js').then(m => m.Settings),
       }
     ]
@@ -117,7 +143,7 @@ export const routes: RouteChild[] =
   {
     path: 'environment',
     title: 'Environment',
-    displayInNavigation: true,
+    displayBreadcrumb: true,
     displayOnProjectLoad: true,
     loadComponent: () => import('./components/shell/shell.js').then(m => m.Shell),
     children:
@@ -131,21 +157,21 @@ export const routes: RouteChild[] =
         path: 'overview',
         title: 'Overview',
         icon: 'pi pi-sync',
-        displayInNavigation: true,
-        loadComponent: () => import('./modules/general/home/home.js').then(m => m.Home),
+        displayBreadcrumb: true,
+        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
       },
       {
         path: 'entities',
         title: 'Entities',
         icon: 'pi pi-sync',
-        displayInNavigation: true,
-        loadComponent: () => import('./modules/general/home/home.js').then(m => m.Home),
+        displayBreadcrumb: true,
+        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
       },
       {
         path: 'environment',
         title: 'Environment',
         icon: 'pi pi-cog',
-        displayInNavigation: true,
+        displayBreadcrumb: true,
         loadComponent: () => import('./modules/general/settings/settings.js').then(m => m.Settings),
       }
     ]
@@ -153,7 +179,7 @@ export const routes: RouteChild[] =
   {
     path: 'resources',
     title: 'Resources',
-    displayInNavigation: true,
+    displayBreadcrumb: true,
     displayOnProjectLoad: true,
     loadComponent: () => import('./components/shell/shell.js').then(m => m.Shell),
     children:
@@ -167,21 +193,21 @@ export const routes: RouteChild[] =
         path: 'overview',
         title: 'Overview',
         icon: 'pi pi-sync',
-        displayInNavigation: true,
-        loadComponent: () => import('./modules/general/home/home.js').then(m => m.Home),
+        displayBreadcrumb: true,
+        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
       },
       {
         path: 'entities',
         title: 'Entities',
         icon: 'pi pi-sync',
-        displayInNavigation: true,
-        loadComponent: () => import('./modules/general/home/home.js').then(m => m.Home),
+        displayBreadcrumb: true,
+        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
       },
       {
         path: 'environment',
         title: 'Environment',
         icon: 'pi pi-cog',
-        displayInNavigation: true,
+        displayBreadcrumb: true,
         loadComponent: () => import('./modules/general/settings/settings.js').then(m => m.Settings),
       }
     ]
@@ -189,7 +215,7 @@ export const routes: RouteChild[] =
   {
     path: 'empty',
     title: undefined,
-    displayInNavigation: false,
+    displayBreadcrumb: false,
     loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
   },
 ]

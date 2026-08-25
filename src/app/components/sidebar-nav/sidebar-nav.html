@@ -1,0 +1,49 @@
+@if (nav.visible())
+{
+  <aside
+  class="h-full flex flex-col border-r border-[var(--theme-color-border)] transition-all duration-200 ease-in-out overflow-hidden"
+  [class.w-16]="!nav.expanded()"
+  [class.w-64]="nav.expanded()">
+
+  <!-- Toggle -->
+  <div class="flex items-center px-3 py-3 border-b border-[var(--theme-color-border)]"
+       [class.justify-center]="!nav.expanded()"
+       [class.justify-end]="nav.expanded()">
+    <p-button
+      [icon]="nav.expanded() ? 'pi pi-chevron-left' : 'pi pi-chevron-right'"
+      severity="secondary"
+      [text]="true"
+      [rounded]="true"
+      (click)="nav.toggle()">
+    </p-button>
+  </div>
+
+  <!-- Nav items -->
+  <nav class="flex flex-col gap-1 px-2 py-3 overflow-y-auto">
+    @for (item of nav.items(); track item.route) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="bg-[var(--theme-color-border)] text-gray-900 dark:text-gray-100"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="flex items-center gap-3 rounded-md px-2.5 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-[var(--theme-color-border)] hover:text-gray-900 dark:hover:text-gray-100 cursor-pointer transition-colors"
+        [class.justify-center]="!nav.expanded()">
+
+        <i [class]="item.icon" class="text-base shrink-0"></i>
+
+        @if (nav.expanded()) {
+          <span class="flex-1 truncate">{{ item.label }}</span>
+
+          @if (item.tag) {
+            <p-tag
+              [value]="item.tag"
+              [severity]="item.tagSeverity ?? 'info'"
+              class="shrink-0">
+            </p-tag>
+          }
+        }
+      </a>
+    }
+  </nav>
+
+</aside>
+}

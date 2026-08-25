@@ -122,7 +122,7 @@ export class TabsService {
     return {
       ...found,
       path: url,
-      title: this.routesService.getFullTitle(url),
+      //title: this.routesService.getT(url),
     };
   }
 

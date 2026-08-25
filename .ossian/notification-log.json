@@ -1,5 +1,44 @@
 [
   {
+    "severity": "info",
+    "title": "Project closed",
+    "description": "new project",
+    "life": 3000,
+    "id": "30698a5b-af5a-4c4e-9679-99213cc09276",
+    "timestamp": "2026-08-25T15:52:16.407Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "dad38617-ab02-4f61-81cc-60e373461f75",
+    "timestamp": "2026-08-25T15:48:34.321Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project closed",
+    "description": "new project",
+    "life": 3000,
+    "id": "241fc7d0-f576-4a2c-92ca-35a7b7e6d88e",
+    "timestamp": "2026-08-25T15:40:36.683Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "f3d599ac-28fc-42a9-ab99-ee8d0552408b",
+    "timestamp": "2026-08-25T15:40:29.039Z"
+  },
+  {
+    "severity": "success",
+    "title": "new project created",
+    "life": 3000,
+    "id": "d04a9113-de92-452b-96fb-2c0b7fd0e073",
+    "timestamp": "2026-08-25T15:17:02.885Z"
+  },
+  {
     "severity": "success",
     "title": "Project removed",
     "description": "5028e81d-781c-43d2-99db-abb840a7c947",

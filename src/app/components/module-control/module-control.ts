@@ -39,7 +39,7 @@ export class ModuleControl {
     const hasProject = this.projectService.hasProject();
     return routes
       .filter(r => {
-        if (!r.displayInNavigation || !r.path) return false;
+        if (!r.displayBreadcrumb || !r.path) return false;
         if (r.displayOnProjectLoad && !hasProject) return false;
         return true;
       })
@@ -54,7 +54,7 @@ export class ModuleControl {
     if (!children?.length) return [];
     const leafChildren = this.resolveLeafChildren(children);
     return leafChildren
-      .filter(c => c.displayInNavigation && c.path)
+      .filter(c => c.displayBreadcrumb && c.path)
       .map(c => ({
         label: c.title ?? c.path!,
         value: `/${route.path}/${c.path}`,
@@ -63,7 +63,7 @@ export class ModuleControl {
   }
 
   private resolveLeafChildren(children: RouteChild[]): RouteChild[] {
-    const displayable = children.filter(c => c.displayInNavigation && c.path);
+    const displayable = children.filter(c => c.displayBreadcrumb && c.path);
     const allHaveChildren = displayable.length > 0 && displayable.every(c => c.children?.length);
     if (allHaveChildren) {
       return displayable.flatMap(c => this.resolveLeafChildren(c.children!));

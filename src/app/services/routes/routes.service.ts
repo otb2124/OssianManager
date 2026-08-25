@@ -10,7 +10,7 @@ export class RoutesService {
   // Get all top-level displayable routes
   getModules(onlyProjectRoutes?: boolean): RouteChild[] {
     return routes.filter(r =>
-      r.displayInNavigation &&
+      r.displayBreadcrumb &&
       r.path &&
       (!onlyProjectRoutes || r.displayOnProjectLoad)
     );
@@ -24,7 +24,7 @@ export class RoutesService {
 
   // Get displayable children of a route
   getChildren(route: RouteChild): RouteChild[] {
-    return (route.children ?? []).filter(c => c.displayInNavigation && c.path && !c.redirectTo);
+    return (route.children ?? []).filter(c => c.displayBreadcrumb && c.path && !c.redirectTo);
   }
 
   // Get siblings of the current route at the same level
@@ -43,7 +43,7 @@ export class RoutesService {
       level = match.children ?? [];
     }
 
-    return level.filter(r => r.displayInNavigation && r.path && !r.redirectTo);
+    return level.filter(r => r.displayBreadcrumb && r.path && !r.redirectTo);
   }
 
   // Build full title from url: "General - Home" or "Project - Overview - Detail"
@@ -86,5 +86,36 @@ export class RoutesService {
   // Get current url's route
   getCurrent(): RouteChild | null {
     return this.findByPath(this.router.url);
+  }
+
+  getFullPath(target: RouteChild): string | null {
+    const walk = (nodes: RouteChild[], prefix: string): string | null => {
+      for (const node of nodes) {
+        const path = node.path ? `${prefix}/${node.path}` : prefix;
+        if (node === target) return path;
+        if (node.children) {
+          const found = walk(node.children, path);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+  
+    return walk(routes, '');
+  }
+
+
+  getSidebarSection(url: string): RouteChild | null {
+    const segments = url.split('/').filter(Boolean);
+    let level: RouteChild[] = routes;
+  
+    for (const segment of segments) {
+      const match = level.find(r => r.path === segment);
+      if (!match) return null;
+      if (match.displaySidebar) return match;
+      level = match.children ?? [];
+    }
+  
+    return null;
   }
 }

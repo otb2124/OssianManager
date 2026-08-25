@@ -10,10 +10,11 @@ import { ToastModule } from 'primeng/toast';
 import { ProjectService } from './services/projects/project.service';
 import { EngineService } from './services/engine-config/engine.service';
 import { Bottombar } from "./components/bottombar/bottombar";
+import { SidebarNav } from "./components/sidebar-nav/sidebar-nav";
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, CommonModule, RouterOutlet, Topbar, ToastModule, Bottombar],
+  imports: [FormsModule, CommonModule, RouterOutlet, Topbar, ToastModule, Bottombar, SidebarNav],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

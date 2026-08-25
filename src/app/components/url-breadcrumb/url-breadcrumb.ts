@@ -81,7 +81,7 @@ export class UrlBreadcrumbComponent {
       const siblings: SiblingItem[] = configLevel
         .filter(r =>
           r.path && r.path !== '' && r.title && !r.redirectTo &&
-          r.displayInNavigation && (!r.displayOnProjectLoad || hasProject)
+          r.displayBreadcrumb && (!r.displayOnProjectLoad || hasProject)
         )
         .map(r => {
           const sibPath = accumulatedPath.split('/').slice(0, -1).join('/') + '/' + r.path!;

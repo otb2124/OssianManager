@@ -5,14 +5,15 @@
   ],
   "appTitle": "OssianManager",
   "settings": {
-    "themeColor": "#134d17"
+    "themeColor": "#eb1e92"
   },
   "engineProjectPath": "C:\\Users\\orest\\Downloads\\pojects\\OssianEngine",
   "openTabs": [
-    "/general/home",
     "/general/settings",
     "/general/engine",
-    "/general/log"
+    "/general/log",
+    "/general/home/my-projects",
+    "/general/home/recents"
   ],
-  "activeTab": "/general/home"
+  "activeTab": "/general/home/my-projects"
 }

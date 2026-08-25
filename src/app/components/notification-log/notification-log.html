@@ -2,13 +2,13 @@
 
     <div class="flex items-center justify-between mb-2">
         <span class="text-sm font-medium text-gray-900 dark:text-white">Notification Log</span>
-        <p-button label="Clear" icon="pi pi-trash" size="small" severity="secondary" [text]="true"
+        <p-button label="Clear" icon="pi pi-trash" size="small" severity="secondary" [text]="true"s
             (click)="notificationService.clearLog()">
         </p-button>
     </div>
 
     <div *ngFor="let entry of notificationService.log()"
-        class="flex flex-col gap-0.5 px-3 py-2 rounded-lg border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-950">
+        class="flex flex-col gap-0.5 px-3 py-2 rounded-lg border border-[var(--theme-color-border)]">
         <div class="flex items-center gap-2">
             <span class="w-1.5 h-1.5 rounded-full shrink-0" [style.background-color]="severityStyle(entry.severity)">
             </span>
