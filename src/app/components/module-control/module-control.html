@@ -14,7 +14,7 @@
       styleClass="!rounded-none [&::before]:hidden [&::after]:hidden"
       (onHide)="onPopoverHide()">
       <div class="grid gap-x-2" style="grid-template-columns: 1rem 1fr auto;">
-        @for (option of nav.options; track option.value) {
+        @for (option of nav.options; track option.key) {
           <div
             (click)="onRouteSelect(option); pop.hide()"
             class="col-span-3 grid grid-cols-subgrid items-center px-1 py-1.5 cursor-pointer transition-colors text-xs

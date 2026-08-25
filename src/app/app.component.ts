@@ -11,7 +11,7 @@ import { ProjectService } from './services/projects/project.service';
 import { EngineService } from './services/engine-config/engine.service';
 import { Bottombar } from "./components/bottombar/bottombar";
 import { SidebarNav } from "./components/sidebar-nav/sidebar-nav";
-import { ShortcutService } from './services/system/key-shortcut-service';
+import { KeyShortcutService } from './services/system/key-shortcut.service';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +26,7 @@ export class AppComponent {
   private themeService = inject(ThemeService);
   private engineService = inject(EngineService);
 
-  private readonly shortcuts = inject(ShortcutService);
+  private readonly shortcuts = inject(KeyShortcutService);
 
   ngOnInit(): void {
     this.appConfigService.load().pipe(

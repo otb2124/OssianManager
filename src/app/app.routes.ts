@@ -1,5 +1,6 @@
 import { Route } from "@angular/router";
-import { KeyboardShortcut } from "./services/system/key-shortcut-service";
+import { KeyboardShortcut } from "./services/system/key-shortcut.service";
+import { RouteAction } from "./services/system/action-registry.service";
 
 export interface RouteChild extends Route {
   title?: string;
@@ -9,8 +10,7 @@ export interface RouteChild extends Route {
   displayModule?: boolean;
   displaySidebar?: boolean;
   displayOnProjectLoad?: boolean;
-  //TODO: add action type on click: 'navigate' | 'new form' etc
-  shortcut?: KeyboardShortcut | null;
+  actions?: RouteAction[];
 }
 
 export const routes: RouteChild[] =
@@ -84,14 +84,18 @@ export const routes: RouteChild[] =
         path: 'action-save-project',
         title: 'Save',
         displayModule: true,
-        shortcut: { key: 's', ctrl: true },
+        actions: [
+          { id: 'save_project', shortcut: { key: 's', ctrl: true } },
+        ],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-save-as-project',
         title: 'Save as',
         displayModule: true,
-        shortcut: { key: 's', ctrl: true, shift: true },
+        actions: [
+          { id: 'save_project_as', shortcut: { key: 's', ctrl: true, shift: true } },
+        ],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
@@ -219,6 +223,10 @@ export const routes: RouteChild[] =
         path: 'action-copy',
         title: 'Copy',
         displayModule: true,
+        actions: [
+          { id: 'copy_selection', shortcut: { key: 'c', ctrl: true } },
+          { id: 'copy_as_reference', shortcut: { key: 'c', ctrl: true, alt: true } },
+        ],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
@@ -415,7 +423,7 @@ export const routes: RouteChild[] =
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
-        path: 'action-build',
+        path: 'action-run',
         title: 'Run',
         displayModule: true,
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),

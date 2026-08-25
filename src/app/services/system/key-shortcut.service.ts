@@ -2,6 +2,7 @@ import { Injectable, inject, DestroyRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouteChild, routes } from '../../app.routes';
 import { ProjectService } from '../projects/project.service';
+import { ActionRegistryService } from './action-registry.service';
 
 export interface KeyboardShortcut {
   key: string;
@@ -13,15 +14,18 @@ export interface KeyboardShortcut {
 
 interface KeyShortcutEntry {
   shortcut: KeyboardShortcut;
+  actionId: string;
   route: string;
 }
 
 @Injectable({ providedIn: 'root' })
-export class ShortcutService {
+export class KeyShortcutService {
 
   private readonly router = inject(Router);
   private readonly projectService = inject(ProjectService);
   private readonly destroyRef = inject(DestroyRef);
+
+  private readonly actionRegistry = inject(ActionRegistryService);
 
   private listening = false;
 
@@ -58,30 +62,33 @@ export class ShortcutService {
     const match = entries.find(e => this.matchesShortcut(event, e.shortcut));
     if (match) {
       event.preventDefault();
-      this.router.navigateByUrl(match.route);
+      this.actionRegistry.invoke(match.actionId);
     }
   }
 
   private collectShortcuts(): KeyShortcutEntry[] {
     const hasProject = this.projectService.hasProject();
     const result: KeyShortcutEntry[] = [];
-
+  
     const walk = (nodes: RouteChild[], basePath: string) => {
       for (const node of nodes) {
         if (!node.path) continue;
         if (node.displayOnProjectLoad && !hasProject) continue;
-
+  
         const path = `${basePath}/${node.path}`;
-
-        if (node.shortcut) {
-          result.push({ shortcut: node.shortcut, route: path });
+  
+        for (const action of node.actions ?? []) {
+          if (action.shortcut) {
+            result.push({ shortcut: action.shortcut, actionId: action.id, route: path });
+          }
         }
+  
         if (node.children?.length) {
           walk(node.children, path);
         }
       }
     };
-
+  
     walk(routes, '');
     return result;
   }

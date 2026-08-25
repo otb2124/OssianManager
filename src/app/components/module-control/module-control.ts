@@ -6,13 +6,16 @@ import { PopoverModule, Popover } from 'primeng/popover';
 import { routes, RouteChild } from '../../app.routes';
 import { ProjectService } from '../../services/projects/project.service';
 import { ButtonModule } from "primeng/button";
-import { KeyboardShortcut, ShortcutService } from '../../services/system/key-shortcut-service';
+import { KeyboardShortcut, KeyShortcutService } from '../../services/system/key-shortcut.service';
+import { ActionRegistryService } from '../../services/system/action-registry.service';
 
 export interface RouteOption {
+  key: string;
   label: string;
   value: string;
   icon?: string;
   shortcut?: KeyboardShortcut | null;
+  actionId?: string;
 }
 
 export interface NavRoute {
@@ -29,7 +32,8 @@ export class ModuleControl {
   private router = inject(Router);
   private projectService = inject(ProjectService);
 
-  private readonly shortcuts = inject(ShortcutService);
+  private readonly shortcuts = inject(KeyShortcutService);
+  private readonly actionRegistry = inject(ActionRegistryService);
 
   @ViewChildren('pop') pops!: QueryList<Popover>;
 
@@ -57,14 +61,36 @@ export class ModuleControl {
     const children = route.children;
     if (!children?.length) return [];
     const leafChildren = this.resolveLeafChildren(children);
-    return leafChildren
-      .filter(c => c.displayModule && c.path)
-      .map(c => ({
-        label: c.title ?? c.path!,
-        value: `/${route.path}/${c.path}`,
-        icon: c.icon,
-        shortcut: c.shortcut,
-      }));
+  
+    const result: RouteOption[] = [];
+  
+    for (const c of leafChildren) {
+      if (!c.displayModule || !c.path) continue;
+  
+      const value = `/${route.path}/${c.path}`;
+  
+      if (c.actions?.length) {
+        for (const action of c.actions) {
+          result.push({
+            key: `${value}#${action.id}`,
+            label: c.title ?? c.path,
+            value,
+            icon: c.icon,
+            shortcut: action.shortcut,
+            actionId: action.id,
+          });
+        }
+      } else {
+        result.push({
+          key: value,
+          label: c.title ?? c.path,
+          value,
+          icon: c.icon,
+        });
+      }
+    }
+  
+    return result;
   }
 
   private resolveLeafChildren(children: RouteChild[]): RouteChild[] {
@@ -110,7 +136,11 @@ export class ModuleControl {
   }
 
   onRouteSelect(option: RouteOption): void {
-    this.router.navigateByUrl(option.value);
+    if (option.actionId) {
+      this.actionRegistry.invoke(option.actionId);
+    } else {
+      this.router.navigateByUrl(option.value);
+    }
   }
 
   hoverNav(event: Event, index: number): void {

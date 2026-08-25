@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { KeyShortcutService } from './key-shortcut-service';
+import { KeyShortcutService } from './key-shortcut.service';
 
 describe('KeyShortcutService', () => {
   let service: KeyShortcutService;
