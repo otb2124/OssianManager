@@ -5,6 +5,7 @@ export interface RouteChild extends Route {
   icon?: string;
   children?: RouteChild[];
   displayBreadcrumb?: boolean;
+  displayModule?: boolean;
   displaySidebar?: boolean;
   displayOnProjectLoad?: boolean;
 }
@@ -13,26 +14,33 @@ export const routes: RouteChild[] =
 [
   {
     path: '',
-    redirectTo: 'general',
+    redirectTo: 'file',
     pathMatch: 'full',
   },
   {
-    path: 'general',
-    title: 'General',
+    path: 'file',
+    title: 'File',
     displayBreadcrumb: true,
-    loadComponent: () => import('./components/shell/shell.js').then(m => m.Shell),
+    displayModule: true,
     children:
     [
       {
         path: '',
-        redirectTo: 'home',
+        redirectTo: 'projects',
         pathMatch: 'full'
       },
       {
-        path: 'home',
-        title: 'Home',
-        icon: 'pi pi-home',
+        path: 'action-new-project',
+        title: 'New Project',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'projects',
+        title: 'Projects',
+        icon: 'pi pi-folder',
         displayBreadcrumb: true,
+        displayModule: true,
         displaySidebar: true,
         children:
         [
@@ -51,165 +59,131 @@ export const routes: RouteChild[] =
           {
             path: 'my-projects',
             title: 'My Projects',
-            icon: 'pi pi-history',
+            icon: 'pi pi-folder',
             displayBreadcrumb: true,
             loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
           },
         ]
       },
       {
+        path: 'action-import-project',
+        title: 'Import Project...',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-scan-project',
+        title: 'Scan Project...',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-save-project',
+        title: 'Save',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-save-as-project',
+        title: 'Save as',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-exit',
+        title: 'Exit',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      }
+    ]
+  },
+  {
+    path: 'tools',
+    title: 'Tools',
+    displayBreadcrumb: true,
+    displayModule: true,
+    children:
+    [
+      {
+        path: '',
+        redirectTo: 'settings',
+        pathMatch: 'full'
+      },
+      {
         path: 'settings',
         title: 'Settings',
         icon: 'pi pi-cog',
         displayBreadcrumb: true,
+        displayModule: true,
         displaySidebar: true,
-        loadComponent: () => import('./modules/general/settings/settings.js').then(m => m.Settings),
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'app',
+            pathMatch: 'full'
+          },
+          {
+            path: 'app',
+            title: 'App',
+            icon: 'pi pi-cog',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+          },
+          {
+            path: 'engine',
+            title: 'Engine',
+            icon: 'pi pi-microchip',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+          },
+          {
+            path: 'theme',
+            title: 'Theme',
+            icon: 'pi pi-palette',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+          },
+        ]
       },
       {
-        path: 'engine',
-        title: 'Engine',
-        icon: 'pi pi-cog',
+        path: 'libraries',
+        title: 'Libraries',
+        icon: 'pi pi-book',
         displayBreadcrumb: true,
+        displayModule: true,
         displaySidebar: true,
-        loadComponent: () => import('./modules/general/engine-page/engine-page').then(m => m.EnginePage),
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'browse',
+            pathMatch: 'full'
+          },
+          {
+            path: 'browse',
+            title: 'Browse',
+            icon: 'pi pi-search',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+          },
+          {
+            path: 'publish',
+            title: 'Publish',
+            icon: 'pi pi-cloud-upload',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+          },
+        ]
       },
       {
-        path: 'log',
-        title: 'Log',
+        path: 'logs',
+        title: 'Logs',
         icon: 'pi pi-align-justify',
         displayBreadcrumb: true,
-        displaySidebar: true,
-        loadComponent: () => import('./modules/general/notifications-page/notifications-page.js').then(m => m.NotificationsPage),
-      },
-    ]
-  },
-  {
-    path: 'project',
-    title: 'Project',
-    displayBreadcrumb: true,
-    displayOnProjectLoad: true,
-    loadComponent: () => import('./components/shell/shell.js').then(m => m.Shell),
-    children:
-    [
-      {
-        path: '',
-        redirectTo: 'overview',
-        pathMatch: 'full'
-      },
-      {
-        path: 'overview',
-        title: 'Overview',
-        displayBreadcrumb: true,
-        loadComponent: () => import('./modules/project/project-overview/project-overview.js').then(m => m.ProjectOverview),
-      }
-    ]
-  },
-  {
-    path: 'entities',
-    title: 'Entities',
-    displayBreadcrumb: true,
-    displayOnProjectLoad: true,
-    loadComponent: () => import('./components/shell/shell.js').then(m => m.Shell),
-    children:
-    [
-      {
-        path: '',
-        redirectTo: 'entities',
-        pathMatch: 'full'
-      },
-      {
-        path: 'overview',
-        title: 'Overview',
-        icon: 'pi pi-sync',
-        displayBreadcrumb: true,
+        displayModule: true,
         loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
       },
-      {
-        path: 'entities',
-        title: 'Entities',
-        icon: 'pi pi-sync',
-        displayBreadcrumb: true,
-        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
-      },
-      {
-        path: 'environment',
-        title: 'Environment',
-        icon: 'pi pi-cog',
-        displayBreadcrumb: true,
-        loadComponent: () => import('./modules/general/settings/settings.js').then(m => m.Settings),
-      }
-    ]
-  },
-  {
-    path: 'environment',
-    title: 'Environment',
-    displayBreadcrumb: true,
-    displayOnProjectLoad: true,
-    loadComponent: () => import('./components/shell/shell.js').then(m => m.Shell),
-    children:
-    [
-      {
-        path: '',
-        redirectTo: 'entities',
-        pathMatch: 'full'
-      },
-      {
-        path: 'overview',
-        title: 'Overview',
-        icon: 'pi pi-sync',
-        displayBreadcrumb: true,
-        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
-      },
-      {
-        path: 'entities',
-        title: 'Entities',
-        icon: 'pi pi-sync',
-        displayBreadcrumb: true,
-        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
-      },
-      {
-        path: 'environment',
-        title: 'Environment',
-        icon: 'pi pi-cog',
-        displayBreadcrumb: true,
-        loadComponent: () => import('./modules/general/settings/settings.js').then(m => m.Settings),
-      }
-    ]
-  },
-  {
-    path: 'resources',
-    title: 'Resources',
-    displayBreadcrumb: true,
-    displayOnProjectLoad: true,
-    loadComponent: () => import('./components/shell/shell.js').then(m => m.Shell),
-    children:
-    [
-      {
-        path: '',
-        redirectTo: 'entities',
-        pathMatch: 'full'
-      },
-      {
-        path: 'overview',
-        title: 'Overview',
-        icon: 'pi pi-sync',
-        displayBreadcrumb: true,
-        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
-      },
-      {
-        path: 'entities',
-        title: 'Entities',
-        icon: 'pi pi-sync',
-        displayBreadcrumb: true,
-        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
-      },
-      {
-        path: 'environment',
-        title: 'Environment',
-        icon: 'pi pi-cog',
-        displayBreadcrumb: true,
-        loadComponent: () => import('./modules/general/settings/settings.js').then(m => m.Settings),
-      }
     ]
   },
   {

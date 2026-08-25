@@ -1,6 +1,22 @@
 [
   {
     "severity": "info",
+    "title": "new project record saved",
+    "description": "isFavorite: true → false",
+    "life": 3000,
+    "id": "e627814e-1684-4c7b-9df4-4d7a799edcf2",
+    "timestamp": "2026-08-25T15:54:19.973Z"
+  },
+  {
+    "severity": "info",
+    "title": "new project record saved",
+    "description": "isFavorite: false → true",
+    "life": 3000,
+    "id": "d0130108-2e89-4832-98bb-c0b090243c1b",
+    "timestamp": "2026-08-25T15:54:18.486Z"
+  },
+  {
+    "severity": "info",
     "title": "Project closed",
     "description": "new project",
     "life": 3000,

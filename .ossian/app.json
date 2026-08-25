@@ -9,11 +9,14 @@
   },
   "engineProjectPath": "C:\\Users\\orest\\Downloads\\pojects\\OssianEngine",
   "openTabs": [
-    "/general/settings",
-    "/general/engine",
-    "/general/log",
-    "/general/home/my-projects",
-    "/general/home/recents"
+    "/tools/settings/app",
+    "/tools/settings/engine",
+    "/tools/settings/theme",
+    "/tools/libraries/browse",
+    "/tools/libraries/publish",
+    "/tools/logs",
+    "/file/projects/recents",
+    "/file/projects/my-projects"
   ],
-  "activeTab": "/general/home/my-projects"
+  "activeTab": "/tools/settings/app"
 }

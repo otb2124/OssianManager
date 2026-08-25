@@ -45,6 +45,12 @@ export class SidebarNavService {
     }));
   });
 
+  readonly sectionTitle = computed<string>(() => {
+    this.currentUrl();
+    const section = this.routesService.getSidebarSection(this.router.url);
+    return section?.title ?? '';
+  });
+
   toggle(): void {
     this.expanded.update(v => !v);
   }
