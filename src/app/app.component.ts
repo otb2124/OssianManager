@@ -11,6 +11,7 @@ import { ProjectService } from './services/projects/project.service';
 import { EngineService } from './services/engine-config/engine.service';
 import { Bottombar } from "./components/bottombar/bottombar";
 import { SidebarNav } from "./components/sidebar-nav/sidebar-nav";
+import { ShortcutService } from './services/system/key-shortcut-service';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +26,8 @@ export class AppComponent {
   private themeService = inject(ThemeService);
   private engineService = inject(EngineService);
 
+  private readonly shortcuts = inject(ShortcutService);
+
   ngOnInit(): void {
     this.appConfigService.load().pipe(
       switchMap(config => {
@@ -38,5 +41,7 @@ export class AppComponent {
     ).subscribe(result => {
       this.projectRecordService.setProject(result!.project, result!.directoryPath);
     });
+
+    this.shortcuts.listen();
   }
 }

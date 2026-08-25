@@ -6,11 +6,13 @@ import { PopoverModule, Popover } from 'primeng/popover';
 import { routes, RouteChild } from '../../app.routes';
 import { ProjectService } from '../../services/projects/project.service';
 import { ButtonModule } from "primeng/button";
+import { KeyboardShortcut, ShortcutService } from '../../services/system/key-shortcut-service';
 
 export interface RouteOption {
   label: string;
   value: string;
   icon?: string;
+  shortcut?: KeyboardShortcut | null;
 }
 
 export interface NavRoute {
@@ -26,6 +28,8 @@ export interface NavRoute {
 export class ModuleControl {
   private router = inject(Router);
   private projectService = inject(ProjectService);
+
+  private readonly shortcuts = inject(ShortcutService);
 
   @ViewChildren('pop') pops!: QueryList<Popover>;
 
@@ -59,16 +63,13 @@ export class ModuleControl {
         label: c.title ?? c.path!,
         value: `/${route.path}/${c.path}`,
         icon: c.icon,
+        shortcut: c.shortcut,
       }));
   }
 
   private resolveLeafChildren(children: RouteChild[]): RouteChild[] {
     const displayable = children.filter(c => c.displayModule && c.path);
-    const allHaveChildren = displayable.length > 0 && displayable.every(c => c.children?.length);
-    if (allHaveChildren) {
-      return displayable.flatMap(c => this.resolveLeafChildren(c.children!));
-    }
-    return children;
+    return displayable;
   }
 
   getSelectedValue(route: RouteChild, options: RouteOption[]): RouteOption | null {
@@ -132,5 +133,9 @@ export class ModuleControl {
     if (this.switching) return;
     this.isOpen = false;
     this.activeIndex = -1;
+  }
+
+  formatShortcut(shortcut: KeyboardShortcut): string {
+    return this.shortcuts.formatShortcut(shortcut);
   }
 }

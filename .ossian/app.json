@@ -16,7 +16,12 @@
     "/tools/libraries/publish",
     "/tools/logs",
     "/file/projects/recents",
-    "/file/projects/my-projects"
+    "/file/projects/my-projects",
+    "/project/build/details",
+    "/project/build/tree",
+    "/project/build/startup",
+    "/project/display/window",
+    "/project/input/keys"
   ],
-  "activeTab": "/tools/settings/app"
+  "activeTab": "/project/input/keys"
 }
