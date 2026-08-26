@@ -17,3 +17,11 @@
   <i [class]="(entry.isDirectory ? 'pi pi-folder' : 'pi pi-file') + ' text-xs shrink-0'"></i>
   <span class="truncate">{{ entry.name }}</span>
 </div>
+  
+<div class="pl-4" *ngIf="expanded()">
+  <div *ngIf="loading()" class="px-1.5 py-1 text-gray-400 dark:text-gray-500 italic text-xs">Loading…</div>
+  <app-file-tree-node
+    *ngFor="let child of children()"
+    [entry]="child">
+  </app-file-tree-node>
+</div>
