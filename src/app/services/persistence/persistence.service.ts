@@ -6,6 +6,8 @@ export interface FsEntry {
   name: string;
   path: string;
   isDirectory: boolean;
+  size: number;
+  modified: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -42,8 +44,18 @@ export class PersistenceService {
   }
 
   listDirectory(path: string): Observable<FsEntry[]> {
-    return from(invoke<{ name: string; path: string; is_directory: boolean }[]>('list_directory', { path })).pipe(
-      map(entries => entries.map(e => ({ name: e.name, path: e.path, isDirectory: e.is_directory })))
+    return from(invoke<{ name: string; path: string; is_directory: boolean; size: number; modified: string | null }[]>('list_directory', { path })).pipe(
+      map(entries => entries.map(e => ({
+        name: e.name,
+        path: e.path,
+        isDirectory: e.is_directory,
+        size: e.size,
+        modified: e.modified,
+      })))
     );
+  }
+  
+  rename(oldPath: string, newName: string): Observable<string> {
+    return from(invoke<string>('rename_entry', { oldPath, newName }));
   }
 }

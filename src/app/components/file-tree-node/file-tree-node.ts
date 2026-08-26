@@ -13,7 +13,7 @@ import { FileExplorerService } from '../../services/persistence/file-explorer.se
 export class FileTreeNode {
   @Input({ required: true }) entry!: FsEntry;
 
-  private readonly explorerService = inject(FileExplorerService);
+  protected readonly explorerService = inject(FileExplorerService);
 
   protected readonly expanded = signal(false);
   protected readonly loading = signal(false);
@@ -42,5 +42,10 @@ export class FileTreeNode {
         this.loading.set(false);
       },
     });
+  }
+
+  select(event: Event): void {
+    event.stopPropagation();
+    this.explorerService.select(this.entry);
   }
 }

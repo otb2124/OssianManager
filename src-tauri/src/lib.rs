@@ -149,6 +149,8 @@ struct DirEntry {
     name: String,
     path: String,
     is_directory: bool,
+    size: u64,
+    modified: Option<String>,
 }
 
 #[tauri::command]
@@ -170,10 +172,20 @@ fn list_directory(path: String) -> Result<Vec<DirEntry>, String> {
             .ok_or("Invalid path")?
             .to_string();
 
+        let metadata = entry.metadata().map_err(|e| e.to_string())?;
+        let size = metadata.len();
+        let modified = metadata
+            .modified()
+            .ok()
+            .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+            .map(|d| d.as_secs().to_string());
+
         result.push(DirEntry {
             name,
             path: path_str,
             is_directory,
+            size,
+            modified,
         });
     }
 
@@ -184,6 +196,20 @@ fn list_directory(path: String) -> Result<Vec<DirEntry>, String> {
     });
 
     Ok(result)
+}
+
+#[tauri::command]
+fn rename_entry(old_path: String, new_name: String) -> Result<String, String> {
+    let old = std::path::Path::new(&old_path);
+    let parent = old.parent().ok_or("Cannot determine parent directory")?;
+    let new_path = parent.join(&new_name);
+
+    fs::rename(&old, &new_path).map_err(|e| format!("{}: {}", old_path, e))?;
+
+    new_path
+        .to_str()
+        .ok_or_else(|| "Invalid resulting path".to_string())
+        .map(|s| s.to_string())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -202,7 +228,8 @@ pub fn run() {
             scan_for_projects,
             get_latest_commit,
             delete_directory,
-            list_directory
+            list_directory,
+            rename_entry
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

@@ -21,6 +21,8 @@ import {
   TransformNode,
 } from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials';
+import '@babylonjs/materials/grid/grid.fragment';
+import '@babylonjs/materials/grid/grid.vertex';
 import { BabylonSceneService } from '../../services/babylon/babylonscene.service.ts';
 
 @Component({

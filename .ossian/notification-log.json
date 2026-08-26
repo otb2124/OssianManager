@@ -4,6 +4,22 @@
     "title": "Project closed",
     "description": "new project",
     "life": 3000,
+    "id": "d19a2137-06da-4ab8-923d-1bef6925a5d9",
+    "timestamp": "2026-08-26T01:51:43.158Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "4f8adc31-5b81-49ae-ace7-bfd66c990984",
+    "timestamp": "2026-08-26T01:51:38.416Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project closed",
+    "description": "new project",
+    "life": 3000,
     "id": "177d7e06-0b48-4e6f-ab60-8b8d29260329",
     "timestamp": "2026-08-26T00:34:00.928Z"
   },
