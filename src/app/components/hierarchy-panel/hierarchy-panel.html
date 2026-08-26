@@ -1,0 +1,7 @@
+<!-- hierarchy-panel.html -->
+<div class="flex flex-col gap-0.5 p-2 overflow-auto h-full">
+    <app-hierarchy-node
+      *ngFor="let node of rootNodes"
+      [node]="node">
+    </app-hierarchy-node>
+  </div>

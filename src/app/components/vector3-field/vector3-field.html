@@ -1,0 +1,25 @@
+<!-- vector3-field.html -->
+<div class="flex flex-col gap-1">
+    <span class="text-gray-400 dark:text-gray-500">{{ label }}</span>
+    <div class="grid grid-cols-3 gap-1.5">
+  
+      <p-floatlabel variant="on">
+        <input pInputText type="number" [step]="step" [(ngModel)]="x" id="x-{{label}}"
+               class="w-full px-1.5 py-1 rounded bg-[var(--theme-color-muted)] outline-none" />
+        <label for="x-{{label}}">X</label>
+      </p-floatlabel>
+  
+      <p-floatlabel variant="on">
+        <input pInputText type="number" [step]="step" [(ngModel)]="y" id="y-{{label}}"
+               class="w-full px-1.5 py-1 rounded bg-[var(--theme-color-muted)] outline-none" />
+        <label for="y-{{label}}">Y</label>
+      </p-floatlabel>
+  
+      <p-floatlabel variant="on">
+        <input pInputText type="number" [step]="step" [(ngModel)]="z" id="z-{{label}}"
+               class="w-full px-1.5 py-1 rounded bg-[var(--theme-color-muted)] outline-none" />
+        <label for="z-{{label}}">Z</label>
+      </p-floatlabel>
+  
+    </div>
+  </div>

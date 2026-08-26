@@ -109,6 +109,122 @@ export const routes: RouteChild[] =
     ]
   },
   {
+    path: 'edit',
+    title: 'Edit',
+    displayModule: true,
+    children:
+    [
+      {
+        path: 'action-undo',
+        title: 'Undo',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-redo',
+        title: 'Redo',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-cut',
+        title: 'Cut',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-copy',
+        title: 'Copy',
+        displayModule: true,
+        actions: [
+          { id: 'copy_selection', shortcut: { key: 'c', ctrl: true } },
+          { id: 'copy_as_reference', shortcut: { key: 'c', ctrl: true, alt: true } },
+        ],
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-paste',
+        title: 'Paste',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-dublicate',
+        title: 'Dublicate',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-delete',
+        title: 'Delete',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-select-all',
+        title: 'Select All',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-find',
+        title: 'Find',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-replace',
+        title: 'Replace',
+        displayModule: true,
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      }
+    ]
+  },
+  {
+    path: 'view',
+    title: 'View',
+    displayModule: true,
+    children:
+    [
+      {
+        path: 'action-open-file-explorer',
+        title: 'File Explorer',
+        displayModule: true,
+        actions: [
+          { id: 'toggle_file_explorer', shortcut: { key: 'e', ctrl: true, shift: true } },
+        ],
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-open-inspector',
+        title: 'Inspector',
+        displayModule: true,
+        actions: [
+          { id: 'toggle_inspector', shortcut: { key: 'i', ctrl: true, shift: true } },
+        ],
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-open-console',
+        title: 'Console',
+        displayModule: true,
+        actions: [
+          { id: 'toggle_console', shortcut: { key: 'y', ctrl: true, shift: true } },
+        ],
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-open-error-list',
+        title: 'Error List',
+        displayModule: true,
+        actions: [
+          { id: 'toggle_error_list', shortcut: { key: 'm', ctrl: true, shift: true } },
+        ],
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      }
+    ]
+  },
+  {
     path: 'tools',
     title: 'Tools',
     displayBreadcrumb: true,
@@ -198,78 +314,6 @@ export const routes: RouteChild[] =
         navigatesModule: true,
         loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
       },
-    ]
-  },
-  {
-    path: 'edit',
-    title: 'Edit',
-    displayModule: true,
-    children:
-    [
-      {
-        path: 'action-undo',
-        title: 'Undo',
-        displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
-      },
-      {
-        path: 'action-redo',
-        title: 'Redo',
-        displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
-      },
-      {
-        path: 'action-cut',
-        title: 'Cut',
-        displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
-      },
-      {
-        path: 'action-copy',
-        title: 'Copy',
-        displayModule: true,
-        actions: [
-          { id: 'copy_selection', shortcut: { key: 'c', ctrl: true } },
-          { id: 'copy_as_reference', shortcut: { key: 'c', ctrl: true, alt: true } },
-        ],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
-      },
-      {
-        path: 'action-paste',
-        title: 'Paste',
-        displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
-      },
-      {
-        path: 'action-dublicate',
-        title: 'Dublicate',
-        displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
-      },
-      {
-        path: 'action-delete',
-        title: 'Delete',
-        displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
-      },
-      {
-        path: 'action-select-all',
-        title: 'Select All',
-        displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
-      },
-      {
-        path: 'action-find',
-        title: 'Find',
-        displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
-      },
-      {
-        path: 'action-replace',
-        title: 'Replace',
-        displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
-      }
     ]
   },
   {
@@ -449,5 +493,11 @@ export const routes: RouteChild[] =
     title: undefined,
     displayBreadcrumb: false,
     loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+  },
+  {
+    path: 'scene01',
+    title: 'scene01',
+    displayBreadcrumb: true,
+    loadComponent: () => import('./modules/scene/scene-page/scene-page.js').then(m => m.ScenePage),
   },
 ]

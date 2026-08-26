@@ -17,6 +17,8 @@
     "@angular/forms": "^20.1.4",
     "@angular/platform-browser": "^20.1.4",
     "@angular/router": "^20.1.4",
+    "@babylonjs/core": "^9.22.2",
+    "@babylonjs/materials": "^9.22.2",
     "@primeng/themes": "^20.4.0",
     "@tailwindcss/postcss": "^4.2.2",
     "@tauri-apps/api": "^2",

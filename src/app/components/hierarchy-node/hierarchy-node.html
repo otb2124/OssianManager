@@ -1,0 +1,28 @@
+<!-- hierarchy-node.html -->
+<div>
+    <div
+      (click)="select($event)"
+      class="flex items-center gap-1.5 px-1.5 py-1 rounded text-xs cursor-pointer select-none transition-colors
+             hover:bg-[var(--theme-color-muted)]"
+      [class.font-medium]="sceneService.isSelected(node)"
+      [style.color]="sceneService.isSelected(node) ? 'var(--theme-color)' : null">
+  
+      <i
+        *ngIf="hasChildren; else spacer"
+        (click)="toggleExpanded($event)"
+        class="pi pi-chevron-right text-[10px] shrink-0 w-3 transition-transform"
+        [class.rotate-90]="expanded()">
+      </i>
+      <ng-template #spacer><span class="w-3 shrink-0"></span></ng-template>
+  
+      <i class="pi pi-box text-xs shrink-0"></i>
+      <span class="truncate">{{ node.name }}</span>
+    </div>
+  
+    <div class="pl-4" *ngIf="hasChildren && expanded()">
+      <app-hierarchy-node
+        *ngFor="let child of children"
+        [node]="child">
+      </app-hierarchy-node>
+    </div>
+  </div>
