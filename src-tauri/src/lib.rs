@@ -144,6 +144,48 @@ fn scan_dir(dir: &std::path::Path, found: &mut Vec<String>, depth: u32) {
     }
 }
 
+#[derive(serde::Serialize)]
+struct DirEntry {
+    name: String,
+    path: String,
+    is_directory: bool,
+}
+
+#[tauri::command]
+fn list_directory(path: String) -> Result<Vec<DirEntry>, String> {
+    let dir_path = std::path::Path::new(&path);
+    let entries = fs::read_dir(dir_path).map_err(|e| format!("{}: {}", path, e))?;
+
+    let mut result: Vec<DirEntry> = Vec::new();
+    for entry in entries.flatten() {
+        let entry_path = entry.path();
+        let name = entry
+            .file_name()
+            .to_str()
+            .ok_or("Invalid file name")?
+            .to_string();
+        let is_directory = entry_path.is_dir();
+        let path_str = entry_path
+            .to_str()
+            .ok_or("Invalid path")?
+            .to_string();
+
+        result.push(DirEntry {
+            name,
+            path: path_str,
+            is_directory,
+        });
+    }
+
+    result.sort_by(|a, b| {
+        b.is_directory
+            .cmp(&a.is_directory)
+            .then(a.name.to_lowercase().cmp(&b.name.to_lowercase()))
+    });
+
+    Ok(result)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -159,7 +201,8 @@ pub fn run() {
             write_config_absolute,
             scan_for_projects,
             get_latest_commit,
-            delete_directory
+            delete_directory,
+            list_directory
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]
@@ -172,3 +215,6 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+
+
+

@@ -2,6 +2,12 @@ import { Injectable } from '@angular/core';
 import { from, map, Observable } from 'rxjs';
 import { invoke } from '@tauri-apps/api/core';
 
+export interface FsEntry {
+  name: string;
+  path: string;
+  isDirectory: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PersistenceService {
 
@@ -33,5 +39,11 @@ export class PersistenceService {
       path: absolutePath,
       content: JSON.stringify(data, null, 2)
     }));
+  }
+
+  listDirectory(path: string): Observable<FsEntry[]> {
+    return from(invoke<{ name: string; path: string; is_directory: boolean }[]>('list_directory', { path })).pipe(
+      map(entries => entries.map(e => ({ name: e.name, path: e.path, isDirectory: e.is_directory })))
+    );
   }
 }

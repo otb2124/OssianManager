@@ -1,0 +1,10 @@
+<!-- file-explorer-panel.html -->
+<div class="flex flex-col h-full">
+    <div class="flex items-center justify-between px-2 py-1.5 border-b border-[var(--theme-color-border)] shrink-0">
+      <span class="text-xs text-gray-400 dark:text-gray-500 truncate">{{ this.explorerService.rootPath() ?? 'No folder' }}</span>
+      <p-button (click)="browseFolder()" [text]="true" icon="pi pi-folder-open" size="small"></p-button>
+    </div>
+    <div class="flex flex-col gap-0.5 p-2 overflow-auto flex-1 min-h-0">
+      <app-file-tree-node *ngFor="let entry of rootEntries()" [entry]="entry"></app-file-tree-node>
+    </div>
+  </div>
