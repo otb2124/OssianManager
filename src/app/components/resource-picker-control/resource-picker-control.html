@@ -1,0 +1,36 @@
+<!-- resource-picker.html -->
+<div class="flex flex-col gap-1">
+    <span *ngIf="label" class="text-gray-400 dark:text-gray-500">{{ label }}</span>
+  
+    <div class="flex items-center gap-1.5">
+  
+    <input
+        (click)="pop.toggle($event)"
+        pInputText
+        type="text"
+        readonly
+        [value]="itemName ?? ''"
+        id="resource-name-{{label}}"
+        [placeholder]="itemName ? label : 'Browse...'"
+        class="w-full px-1.5 py-1 rounded outline-none" />
+  
+    <button
+        (click)="pop.toggle($event)"
+        class="shrink-0 w-6 h-6 flex items-center justify-center rounded hover:bg-[var(--theme-color-muted)] transition-colors">
+        <i class="pi pi-chevron-down text-[10px]"></i>
+    </button>
+  
+    <p-popover #pop appendTo="body" styleClass="!rounded-none [&::before]:hidden [&::after]:hidden">
+        <div class="flex flex-col min-w-[10rem]">
+            <div
+                *ngFor="let action of actions"
+                (click)="onAction(action); pop.hide()"
+                class="flex items-center gap-2 px-2 py-1.5 text-xs cursor-pointer transition-colors
+                    hover:bg-[var(--theme-color-muted)]">
+                <i *ngIf="action.icon" [class]="action.icon + ' text-xs shrink-0'"></i>
+                <span>{{ action.label }}</span>
+            </div>
+        </div>
+      </p-popover>
+    </div>
+  </div>
