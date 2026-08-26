@@ -6,6 +6,7 @@ import { ProjectRecordOverview } from '../project-record-overview/project-record
 import { ProjectRecordDetails } from '../project-record-details/project-record-details';
 import { ProjectUiService } from '../../services/projects/project-ui/project-ui.service';
 import { ProjectService } from '../../services/projects/project.service';
+import { ContextMenuDirective } from '../../services/system/context-menu.directive';
 
 export interface ProjectEntry {
   project: HydratedProjectRecord;
@@ -14,7 +15,7 @@ export interface ProjectEntry {
 
 @Component({
   selector: 'app-project-record-accordion',
-  imports: [CommonModule, AccordionModule, ProjectRecordOverview, ProjectRecordDetails],
+  imports: [CommonModule, AccordionModule, ProjectRecordOverview, ProjectRecordDetails, ContextMenuDirective],
   templateUrl: './project-record-accordion.html',
 })
 export class ProjectRecordAccordion implements OnInit {

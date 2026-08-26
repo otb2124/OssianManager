@@ -2,7 +2,7 @@
   <p-accordion-panel
     *ngFor="let entry of entries"
     [value]="entry.project.id"
-    [id]="'panel-' + entry.project.id">
+    [id]="'panel-' + entry.project.id" [appContextMenu]="'project-record'" [contextTarget]="entry.project">
 
     <p-accordion-header>
       <app-project-record-overview

@@ -5,10 +5,11 @@ import { TagModule } from 'primeng/tag';
 import { HydratedProjectRecord } from '../../model/project-record.model';
 import { ButtonModule } from "primeng/button";
 import { ProjectService } from '../../services/projects/project.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-project-record-overview',
-  imports: [CommonModule, TagModule, ButtonModule],
+  imports: [CommonModule, TagModule, ButtonModule, FormsModule],
   templateUrl: './project-record-overview.html',
 })
 export class ProjectRecordOverview {

@@ -17,11 +17,9 @@
     "/tools/logs",
     "/file/projects/recents",
     "/file/projects/my-projects",
-    "/project/build/details",
-    "/project/build/tree",
     "/project/build/startup",
     "/project/display/window",
     "/project/input/keys"
   ],
-  "activeTab": "/file/projects/recents"
+  "activeTab": "/project/build/startup"
 }

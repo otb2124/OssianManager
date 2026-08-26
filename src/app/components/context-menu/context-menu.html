@@ -1,0 +1,24 @@
+<!-- context-menu.html — same grid structure as module-control's popover content -->
+<p-popover #ctxPop appendTo="body" styleClass="!rounded-none [&::before]:hidden [&::after]:hidden">
+    <div class="grid gap-x-2" style="grid-template-columns: 1rem 1fr auto;">
+      @for (item of resolvedItems(); track item.actionId) {
+        @if (item.separator) {
+          <div class="col-span-3 border-t border-[var(--theme-color-border)] my-1"></div>
+        } @else {
+          <div
+            (click)="onItemSelect(item); ctxPop.hide()"
+            class="col-span-3 grid grid-cols-subgrid items-center px-1 py-1.5 cursor-pointer transition-colors text-xs
+                  hover:bg-[var(--theme-color-muted)]"
+            [class.opacity-50]="isDisabled(item)"
+            [class.pointer-events-none]="isDisabled(item)">
+            <i *ngIf="item.icon" [class]="item.icon + ' text-xs shrink-0'"></i>
+            <span *ngIf="!item.icon"></span>
+            <span>{{ item.label }}</span>
+            <span *ngIf="item.shortcut" class="text-[10px] text-gray-400 dark:text-gray-500 justify-self-end">
+              {{ formatShortcut(item.shortcut) }}
+            </span>
+          </div>
+        }
+      }
+    </div>
+  </p-popover>
