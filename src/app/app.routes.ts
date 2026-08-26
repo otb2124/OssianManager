@@ -1,5 +1,4 @@
 import { Route } from "@angular/router";
-import { KeyboardShortcut } from "./services/system/key-shortcut.service";
 import { RouteAction } from "./services/system/action-registry.service";
 
 export interface RouteChild extends Route {

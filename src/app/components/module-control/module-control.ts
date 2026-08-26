@@ -102,17 +102,15 @@ export class ModuleControl {
   }
 
   getSelectedValue(route: RouteChild, options: RouteOption[]): RouteOption | null {
-    return options.find(o =>
-      this.router.isActive(o.value, {
-        paths: 'subset',
-        queryParams: 'ignored',
-        fragment: 'ignored',
-        matrixParams: 'ignored',
-      })
-    ) ?? null;
+    const currentUrl = this.router.url;
+    return options.find(o => {
+      // Check Angular router state OR raw URL match for release builds
+      return this.isActiveOption(o) || currentUrl.includes(o.value);
+    }) ?? null;
   }
 
   isActiveOption(option: RouteOption): boolean {
+    // exact: false ensures sub-routes remain active
     return this.router.isActive(option.value, {
       paths: 'subset',
       queryParams: 'ignored',

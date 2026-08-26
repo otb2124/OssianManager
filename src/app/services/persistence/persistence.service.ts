@@ -13,7 +13,7 @@ export interface FsEntry {
 @Injectable({ providedIn: 'root' })
 export class PersistenceService {
 
-  private readonly basePath = '../.ossian';
+  private readonly basePath = '.ossian';
 
   read<T>(fileName: string): Observable<T> {
     const path = `${this.basePath}/${fileName}`;
