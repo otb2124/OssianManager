@@ -16,7 +16,6 @@ export class AppTitleAlt implements OnInit {
   private gitService = inject(GitService);
 
   @ViewChild('infoPopover') infoPopover!: Popover;
-  @ViewChild('commitPopover') commitPopover!: Popover;
 
   readonly commit = signal<GitCommit | null>(null);
 
@@ -30,9 +29,6 @@ export class AppTitleAlt implements OnInit {
   onTriggerEnter(event: Event): void {
     this.triggerHovered = true;
     this.infoPopover.show(event);
-    setTimeout(() => {
-      this.commitPopover.show(event);
-    }, 10);
   }
 
   onTriggerLeave(): void {
@@ -40,7 +36,6 @@ export class AppTitleAlt implements OnInit {
     setTimeout(() => {
       if (!this.popoverHovered) {
         this.infoPopover.hide();
-        this.commitPopover.hide();
       }
     }, 100);
   }
@@ -54,7 +49,6 @@ export class AppTitleAlt implements OnInit {
     setTimeout(() => {
       if (!this.triggerHovered) {
         this.infoPopover.hide();
-        this.commitPopover.hide();
       }
     }, 100);
   }
