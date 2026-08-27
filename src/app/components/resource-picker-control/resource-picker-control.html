@@ -1,6 +1,6 @@
 <!-- resource-picker.html -->
 <div class="flex flex-col gap-1">
-    <div class="flex items-center gap-1.5">
+    <div class="flex items-center">
         <p-floatlabel variant="on">
             <input
                 (click)="pop.toggle($event)"
@@ -9,15 +9,16 @@
                 readonly
                 [value]="itemName ?? ''"
                 id="resource-name-{{label}}"
-                class="w-full px-1.5 py-1 rounded outline-none" />
+                class="w-full px-1.5 py-1 rounded outline-none cursor-pointer" />
             <label for="resource-name-{{label}}">{{ label }}</label>
         </p-floatlabel>
 
-        <button
+        <p-button
             (click)="pop.toggle($event)"
-            class="shrink-0 w-6 h-6 flex items-center justify-center rounded hover:bg-[var(--theme-color-muted)] transition-colors">
-            <i class="pi pi-chevron-down text-[10px]"></i>
-        </button>
+            icon="pi pi-chevron-down"
+            severity="secondary"
+            class="shrink-0 w-6 h-6 flex items-center justify-center rounded">
+        </p-button>
     
         <p-popover #pop appendTo="body" styleClass="!rounded-none [&::before]:hidden [&::after]:hidden">
             <div class="flex flex-col min-w-[10rem]">

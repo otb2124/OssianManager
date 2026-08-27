@@ -1,21 +1,15 @@
 // inspector-panel.ts
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TransformNode, Vector3 } from '@babylonjs/core';
+import { TransformNode } from '@babylonjs/core';
 import { AccordionModule } from 'primeng/accordion';
-import { TransformControl } from '../transform-control/transform-control';
-import { ResourcePickerControl, ResourcePickerAction } from '../resource-picker-control/resource-picker-control';
 import { BabylonSceneService } from '../../services/babylon/babylonscene.service.ts';
-import { SelectControl, SelectControlOption } from "../select-control/select-control";
-import { InputTextControl } from "../input-text-control/input-text-control";
-import { ColorPickerControl } from "../color-picker-control/color-picker-control";
-import { Vector3Field } from "../vector3-field/vector3-field";
-import { BooleanControl } from "../boolean-control/boolean-control";
+import { PropertyPanelConfig, FieldList } from '../property-list/field-list';
 
 @Component({
   selector: 'app-inspector-panel',
   standalone: true,
-  imports: [CommonModule, AccordionModule, TransformControl, ResourcePickerControl, SelectControl, InputTextControl, ColorPickerControl, Vector3Field, BooleanControl],
+  imports: [CommonModule, AccordionModule, FieldList],
   templateUrl: './inspector-panel.html',
 })
 export class InspectorPanel {
@@ -29,19 +23,195 @@ export class InspectorPanel {
 
   protected readonly nodeName = computed(() => this.sceneService.selectedNode()?.name ?? '');
 
-  protected readonly materialActions: ResourcePickerAction[] = [
-    { id: 'load', label: 'Load', icon: 'pi pi-folder-open', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
-    { id: 'quick_load', label: 'Quick Load', icon: 'pi pi-bolt', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
-  ];
-
-  protected readonly physicsWorldOptions: SelectControlOption[] = [
-    { value: 'myworld0', label: 'myworld0', icon: 'pi pi-folder-open' },
-    { value: '3D_object', label: '3D_object', icon: 'pi pi-bolt' },
-  ];
-
-  protected readonly spotEmissionDirectionVector3: Vector3 = new Vector3();
-
-  onMaterialAction($event: { actionId: string; path: string|null; }) {
-    console.log($event.path);
-  }
+  protected readonly visiblePanels = computed(() => {
+    const node = this.transformNode();
+    return node ? panelConfigs.filter(p => p.appliesTo(node)) : [];
+  });
 }
+
+
+const materialActions = [
+  { id: 'load', label: 'Load', icon: 'pi pi-folder-open', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
+  { id: 'quick_load', label: 'Quick Load', icon: 'pi pi-bolt', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
+];
+
+const physicsWorldOptions = [
+  { value: 'myworld0', label: 'myworld0', icon: 'pi pi-folder-open' },
+  { value: '3D_object', label: '3D_object', icon: 'pi pi-bolt' },
+];
+
+
+export const panelConfigs: PropertyPanelConfig[] = [
+  {
+    key: 'Node',
+    icon: 'pi pi-box',
+    label: 'Node',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'text', path: 'name', label: 'Name' },
+      { kind: 'text', path: 'id', label: 'Id' },
+      { kind: 'boolean', path: 'enabled', label: 'Enabled' }, // TODO: confirm actual property names — 'enabled'/'start'/'update'/'render' are guesses, not present in your original template's bindings
+      { kind: 'boolean', path: 'start', label: 'Start' },
+      { kind: 'boolean', path: 'update', label: 'Update' },
+      { kind: 'boolean', path: 'render', label: 'Render' },
+    ],
+  },
+  // NOTE: 'Transform' panel omitted — your original embeds
+  // <app-transform-control [transformNode]="t"> plus 3 selects,
+  // which doesn't fit FieldConfig[]. Needs the customComponent
+  // variant on PropertyPanelConfig discussed earlier — see below.
+  {
+    key: 'Texture Material',
+    icon: 'pi pi-image',
+    label: 'Texture Material',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'resource-picker', path: 'textureFile', label: 'Texture File', actions: materialActions }, // TODO: path is a guess
+      { kind: 'resource-picker', path: 'shaderFile', label: 'Shader File', actions: materialActions },
+    ],
+  },
+  {
+    key: 'Cubemap Material',
+    icon: 'pi pi-image',
+    label: 'Cubemap Material',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'resource-picker', path: 'cubemapFile', label: 'Cubemap File', actions: materialActions },
+      { kind: 'resource-picker', path: 'shaderFile', label: 'Shader File', actions: materialActions },
+    ],
+  },
+  {
+    key: 'Text Material',
+    icon: 'pi pi-image',
+    label: 'Text Material',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'resource-picker', path: 'fontFile', label: 'Font File', actions: materialActions },
+      { kind: 'resource-picker', path: 'shaderFile', label: 'Shader File', actions: materialActions },
+      { kind: 'text', path: 'content', label: 'Content' },
+      { kind: 'text', path: 'size', label: 'Size', inputType: 'number' },
+      { kind: 'color', path: 'color', label: 'Color' },
+    ],
+  },
+  {
+    key: 'Wireframe Material',
+    icon: 'pi pi-image',
+    label: 'Wireframe Material',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'color', path: 'color', label: 'Color' },
+    ],
+  },
+  {
+    key: 'Mesh',
+    icon: 'pi pi-box',
+    label: 'Mesh',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'resource-picker', path: 'meshFile', label: 'Mesh File', actions: materialActions },
+    ],
+  },
+  {
+    key: 'Rigid Physics',
+    icon: 'pi pi-bolt',
+    label: 'Rigid Physics',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'select', path: 'physicsWorld', label: 'Physics World', options: physicsWorldOptions },
+      { kind: 'text', path: 'mass', label: 'Mass', inputType: 'number' },
+      { kind: 'text', path: 'restitution', label: 'Restitution', inputType: 'number' },
+      { kind: 'text', path: 'linearDamping', label: 'Linear Damping', inputType: 'number' },
+      { kind: 'text', path: 'angularDamping', label: 'Angular Damping', inputType: 'number' },
+      { kind: 'text', path: 'friction', label: 'Friction', inputType: 'number' },
+    ],
+  },
+  {
+    key: 'Static Physics',
+    icon: 'pi pi-bolt',
+    label: 'Static Physics',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'select', path: 'physicsWorld', label: 'Physics World', options: physicsWorldOptions },
+    ],
+  },
+  // NOTE: 'Collider' panel omitted — also embeds <app-transform-control>, same as 'Transform'.
+  {
+    key: 'Animation',
+    icon: 'pi pi-play',
+    label: 'Animation',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'resource-picker', path: 'animationFile', label: 'Animation File', actions: materialActions },
+    ],
+  },
+  {
+    key: 'Point Emission',
+    icon: 'pi pi-sun',
+    label: 'Point Emission',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'color', path: 'color', label: 'Color' },
+      { kind: 'text', path: 'intensity', label: 'Intensity', inputType: 'number' },
+      { kind: 'text', path: 'radius', label: 'Radius', inputType: 'number' },
+    ],
+  },
+  // NOTE: 'Spot Emission' and 'Sun Emission' omitted — both embed
+  // <app-vector3-field [value]="spotEmissionDirectionVector3">, i.e. a
+  // hardcoded shared instance, not a per-node bound path. Needs a decision
+  // (see below) before it fits into FieldConfig.
+  {
+    key: 'Camera',
+    icon: 'pi pi-camera',
+    label: 'Camera',
+    appliesTo: (node: TransformNode) => true,
+    fields: [], // empty in your original too
+  },
+  {
+    key: 'Orbital Camera',
+    icon: 'pi pi-camera',
+    label: 'Orbital Camera',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'select', path: 'targetNode', label: 'Target Node', options: physicsWorldOptions },
+      { kind: 'text', path: 'distance', label: 'Distance', inputType: 'number' },
+      { kind: 'text', path: 'minPitch', label: 'Min Pitch', inputType: 'number' },
+      { kind: 'text', path: 'maxPitch', label: 'Max Pitch', inputType: 'number' },
+    ],
+  },
+  {
+    key: 'Group',
+    icon: 'pi pi-folder',
+    label: 'Group',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'select', path: 'group', label: 'Group', options: physicsWorldOptions },
+    ],
+  },
+  {
+    key: 'Sound',
+    icon: 'pi pi-volume-up',
+    label: 'Sound',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'resource-picker', path: 'soundFile', label: 'Sound File', actions: materialActions },
+    ],
+  },
+  {
+    key: 'State Machine',
+    icon: 'pi pi-sitemap',
+    label: 'State Machine',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'resource-picker', path: 'stateMachineFile', label: 'State Machine File', actions: materialActions },
+    ],
+  },
+  {
+    key: 'Script',
+    icon: 'pi pi-code',
+    label: 'Script',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'resource-picker', path: 'scriptFile', label: 'Script File', actions: materialActions },
+    ],
+  },
+];

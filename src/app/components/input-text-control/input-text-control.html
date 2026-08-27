@@ -6,11 +6,10 @@
         [type]="type"
         [readonly]="readonly"
         [maxlength]="maxlength"
-        [placeholder]="placeholder"
         [ngModel]="value"
         (ngModelChange)="onChange($event)"
         id="text-input-{{label}}"
-        class="w-full px-1.5 py-1 rounded bg-[var(--theme-color-muted)] outline-none" />
+        class="w-full px-1.5 py-1 rounded outline-none" />
       <label for="text-input-{{label}}">{{ label }}</label>
     </p-floatlabel>
   </div>

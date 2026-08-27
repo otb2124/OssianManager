@@ -1,10 +1,10 @@
-// resource-picker.ts
 import { Component, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PopoverModule } from 'primeng/popover';
 import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { DialogService } from '../../services/persistence/dialog.service';
+import { ButtonModule } from 'primeng/button';
 
 export interface ResourcePickerAction {
   id: string;
@@ -16,7 +16,7 @@ export interface ResourcePickerAction {
 @Component({
   selector: 'app-resource-picker-control',
   standalone: true,
-  imports: [CommonModule, PopoverModule, InputTextModule, FloatLabelModule],
+  imports: [CommonModule, PopoverModule, InputTextModule, FloatLabelModule, ButtonModule],
   templateUrl: './resource-picker-control.html',
 })
 export class ResourcePickerControl {
