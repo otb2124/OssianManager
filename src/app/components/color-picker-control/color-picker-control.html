@@ -1,0 +1,34 @@
+<!-- color-picker-control.html -->
+<div class="flex flex-col gap-1">
+
+    <div class="flex items-center gap-1.5">
+      <p-floatlabel variant="on">
+        <input
+          pInputText
+          type="text"
+          [ngModel]="value"
+          id="color-picker-value-{{label}}"
+          class="w-full px-1.5 py-1 rounded bg-[var(--theme-color-muted)] outline-none" />
+        <label for="text-input-{{label}}">{{ label }}</label>
+      </p-floatlabel>
+
+      <p-colorPicker
+        [ngModel]="colorPart"
+        (ngModelChange)="onColorChange($event)"
+        format="hex"
+        appendTo="body">
+      </p-colorPicker>
+    </div>
+  
+    <div class="flex items-center gap-2">
+      <span class="text-[10px] text-gray-400 dark:text-gray-500 shrink-0 w-8">Alpha</span>
+      <p-slider
+        [ngModel]="alphaPart"
+        (ngModelChange)="onAlphaChange($event)"
+        [min]="0"
+        [max]="100"
+        styleClass="flex-1">
+      </p-slider>
+      <span class="text-[10px] text-gray-400 dark:text-gray-500 shrink-0 w-8 text-right">{{ alphaPart }}%</span>
+    </div>
+  </div>

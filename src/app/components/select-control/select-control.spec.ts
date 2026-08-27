@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AccordionPanel } from './accordion-panel';
+import { SelectControl } from './select-control';
 
-describe('AccordionPanel', () => {
-  let component: AccordionPanel;
-  let fixture: ComponentFixture<AccordionPanel>;
+describe('SelectControl', () => {
+  let component: SelectControl;
+  let fixture: ComponentFixture<SelectControl>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AccordionPanel]
+      imports: [SelectControl]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(AccordionPanel);
+    fixture = TestBed.createComponent(SelectControl);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

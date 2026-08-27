@@ -9,10 +9,10 @@
   },
   "engineProjectPath": "C:\\Users\\orest\\Downloads\\pojects\\OssianEngine",
   "openTabs": [
-    "/scene01",
     "/file/projects/recents",
     "/tools/libraries/browse",
-    "/project/display/window"
+    "/project/display/window",
+    "/scene01"
   ],
   "activeTab": "/scene01"
 }

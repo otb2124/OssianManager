@@ -1,0 +1,10 @@
+<!-- boolean-control.html -->
+<div class="flex items-center justify-between gap-2">
+    <span *ngIf="label" class="text-gray-400 dark:text-gray-500">{{ label }}</span>
+  
+    <p-toggleswitch
+      [ngModel]="value"
+      (ngModelChange)="onChange($event)"
+      [disabled]="disabled">
+    </p-toggleswitch>
+  </div>
