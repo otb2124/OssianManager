@@ -1,4 +1,3 @@
-// text-input-control.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,8 +12,8 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 })
 export class InputTextControl {
   @Input() label = '';
-  @Input() value = '';
-  @Input() type: 'text' | 'number' | 'email' | 'password' = 'text';
+  @Input() value: string = '';
+  @Input() type: 'text' | 'email' | 'password' = 'text';
   @Input() readonly = false;
   @Input() maxlength: number | null = null;
   @Input() placeholder = '';

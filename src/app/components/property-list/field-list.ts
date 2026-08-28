@@ -4,18 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { SelectControlOption, SelectControl } from '../select-control/select-control';
 import { ResourcePickerAction, ResourcePickerControl } from '../resource-picker-control/resource-picker-control';
 import { InputTextControl } from "../input-text-control/input-text-control";
+import { InputNumberControl } from "../input-number-control/input-number-control";
 import { BooleanControl } from "../boolean-control/boolean-control";
-import { Vector3Field } from "../vector3-field/vector3-field";
+import { VectorControl } from "../vector-control/vector-control";
 import { ColorPickerControl } from "../color-picker-control/color-picker-control";
+import { TagSelectControl } from '../tag-select-control/tag-select-control';
 
-// A "path" into the target's data — how a field reads/writes its value.
-// Kept as a plain string so it's serializable and diffable, not a closure.
-export type PropertyPath = string; // e.g. 'name', 'material.color', 'physics.mass'
+export type PropertyPath = string;
 
-// Anything FieldList can read/write fields on implements this — a
-// TransformNode via dot-path reflection, a flat settings object via direct
-// key lookup, a resource's metadata, etc. FieldList only ever talks to
-// this interface, never to a concrete data shape.
 export interface FieldTarget {
   getField(path: PropertyPath): unknown;
   setField(path: PropertyPath, value: unknown): void;
@@ -24,19 +20,45 @@ export interface FieldTarget {
 interface FieldConfigBase {
   path: PropertyPath;
   label: string;
-  visibleIf?: (target: FieldTarget) => boolean; // field-level, optional — for cases where a panel applies but one field inside it doesn't always
+  visibleIf?: (target: FieldTarget) => boolean;
 }
 
 export type FieldConfig =
-  | (FieldConfigBase & { kind: 'text'; inputType?: 'text' | 'number'; maxlength?: number; })
+  | (FieldConfigBase & { 
+      kind: 'text'; 
+      inputType?: 'text' | 'email' | 'password'; 
+      maxlength?: number;
+    })
+  | (FieldConfigBase & { 
+      kind: 'number'; 
+      step?: number;
+      min?: number;
+      max?: number;
+      minFractionDigits?: number;
+      maxFractionDigits?: number;
+      prefix?: string;
+      suffix?: string;
+    })
   | (FieldConfigBase & { kind: 'select'; options: SelectControlOption[]; })
   | (FieldConfigBase & { kind: 'boolean'; })
   | (FieldConfigBase & { kind: 'color'; })
-  | (FieldConfigBase & { kind: 'vector3'; })
+  | (FieldConfigBase & { 
+    kind: 'vector'; 
+    axisLabels?: string[];
+    step?: number;
+    displayScale?: number;
+    min?: number;
+    max?: number;
+    minFractionDigits?: number;
+    maxFractionDigits?: number;
+    prefix?: string | string[];
+    suffix?: string | string[];
+  })
+  | (FieldConfigBase & { kind: 'tags'; })
   | (FieldConfigBase & { kind: 'resource-picker'; actions: ResourcePickerAction[]; });
 
 export interface PropertyPanelConfig {
-  key: string;                 // matches accordion `value`
+  key: string;
   icon: string;
   label: string;
   fields: FieldConfig[];
@@ -44,7 +66,19 @@ export interface PropertyPanelConfig {
 
 @Component({
   selector: 'app-field-list',
-  imports: [CommonModule, FormsModule, InputTextControl, SelectControl, BooleanControl, ResourcePickerControl, Vector3Field, ColorPickerControl],
+  standalone: true,
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    InputTextControl, 
+    InputNumberControl,
+    SelectControl, 
+    BooleanControl, 
+    ResourcePickerControl, 
+    VectorControl, 
+    ColorPickerControl, 
+    TagSelectControl
+  ],
   templateUrl: './field-list.html',
   styleUrl: './field-list.css',
 })

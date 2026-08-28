@@ -5,13 +5,13 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
     'settings-app':
     [
       { kind: 'text', path: 'versionString', label: 'Version' },
-      { kind: 'text', path: 'versionTags', label: 'Version Tags (TODO:tag-select control)' },
+      { kind: 'tags', path: 'versionTags', label: 'Version Tags' },
     ],
     'settings-engine':
     [
       { kind: 'text', path: 'enginePath', label: 'Engine Path' },
       { kind: 'text', path: 'engineVersionString', label: 'Version' },
-      { kind: 'text', path: 'engineVersionTags', label: 'Version Tags (TODO:tag-select control)' },
+      { kind: 'tags', path: 'engineVersionTags', label: 'Version Tags' },
     ],
     'settings-theme':
     [
@@ -36,12 +36,12 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
           { value: 'otherSystemFonts', label: 'Other System Font...' },
         ],
       },
-      { kind: 'text', path: 'fontSize', label: 'Font Size (TODO: add prefixes like %)', inputType: 'number' },
+      { kind: 'number', path: 'fontSize', label: 'Font Size', suffix: '%' },
     ],
     'build-details':
     [
       { kind: 'text', path: 'versionString', label: 'Version' },
-      { kind: 'text', path: 'versionTags', label: 'Version Tags (TODO:tag-select control)' },
+      { kind: 'tags', path: 'versionTags', label: 'Version Tags' },
     ],
     'build-tree':
     [
@@ -58,11 +58,11 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
           { id: 'quick_load', label: 'Quick Load', icon: 'pi pi-bolt', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
         ]
       },
-      { kind: 'text', path: 'globalsMultiline', label: 'Globals (TODO: multiline-control)' },
+      { kind: 'number', path: 'globalsMultiline', label: 'Globals (TODO: multiline-control)' },
     ],
     'display-window':
     [
-      { kind: 'text', path: 'windowResolutionVector2', label: 'Window Resolution (TODO: add vector2 control with configured labels like w h)' },
+      { kind: 'vector', path: 'windowResolutionVector2', label: 'Window Resolution', axisLabels: ['Width', 'Height'], suffix: 'px' },
       {
         kind: 'select',
         path: 'targetPlatform',
@@ -73,13 +73,13 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
           { value: 'borderless', label: 'Borderless' },
         ],
       },
-      { kind: 'text', path: 'windowSizeVector2', label: 'Window Size (TODO: add vector2 control with configured labels like w h)' },
-      { kind: 'text', path: 'windowPositionVector2', label: 'Window Position (TODO: add vector2 control with configured labels like w h)' },
+      { kind: 'vector', path: 'windowSizeVector2', label: 'Window Size', axisLabels: ['Width', 'Height'], suffix: 'px'},
+      { kind: 'vector', path: 'windowPositionVector2', label: 'Window Position', axisLabels: ['X', 'Y'], suffix: 'px' },
     ],
     'display-accessibility':
     [
-      { kind: 'text', path: 'updatesPerSecond', label: 'Updates Per Second', inputType: 'number' },
-      { kind: 'text', path: 'updatesPerSecond', label: 'Frames Per Second', inputType: 'number' },
+      { kind: 'number', path: 'updatesPerSecond', label: 'Updates Per Second', suffix: ' updates'},
+      { kind: 'number', path: 'updatesPerSecond', label: 'Frames Per Second', suffix: ' frames' },
     ],
     'display-rendering':
     [
@@ -103,10 +103,17 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
           { value: 'none', label: 'None' },
         ],
       },
-      { kind: 'text', path: 'physicsTicksPerSecond', label: 'Ticks Per Second', inputType: "number" },
-      { kind: 'text', path: 'physicsMaxStepsPerFrame', label: 'Max Steps Per Frame', inputType: "number" },
-      { kind: 'text', path: 'gravity', label: 'Gravity', inputType: "number" },
-      { kind: 'text', path: 'gravityVector2', label: 'Gravity Vector (TODO: vector2-control)', inputType: "number" },
+      { kind: 'number', path: 'physicsTicksPerSecond', label: 'Ticks Per Second', suffix: ' ticks' },
+      { kind: 'number', path: 'physicsMaxStepsPerFrame', label: 'Max Steps Per Frame', suffix: ' steps'},
+      {
+        kind: 'number',
+        path: 'gravity',
+        label: 'Gravity',
+        step: 0.1,
+        suffix: ' m/s²',
+        min: 0,
+      },
+      { kind: 'vector', path: 'gravityVector2', label: 'Gravity Vector', axisLabels: ['X', 'Y'] },
     ],
     'input-keys':
     [

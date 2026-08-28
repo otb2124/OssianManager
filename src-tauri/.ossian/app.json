@@ -10,8 +10,17 @@
   "engineProjectPath": "C:\\Users\\orest\\Downloads\\pojects\\OssianEngine",
   "openTabs": [
     "/scene01",
-    "/file/projects/recents"
+    "/tools/settings/app",
+    "/tools/settings/engine",
+    "/file/projects/recents",
+    "/tools/settings/theme",
+    "/project/display/window",
+    "/project/build/startup",
+    "/project/display/accessibility",
+    "/project/display/physics",
+    "/project/display/cursor",
+    "/project/display/rendering"
   ],
-  "activeTab": "/scene01",
+  "activeTab": "/tools/settings/theme",
   "currentProjectId": "12886441-196f-42d8-b6ea-c8a0d07e0e2f"
 }

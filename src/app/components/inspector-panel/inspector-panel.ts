@@ -81,9 +81,9 @@ export const panelConfigs: PropertyPanelConfig[] = [
     icon: 'pi pi-arrows-alt',
     label: 'Transform',
     fields: [
-      { kind: 'vector3', path: 'position', label: 'Position' },
-      { kind: 'vector3', path: 'rotation', label: 'Rotation' },
-      { kind: 'vector3', path: 'scaling', label: 'Scale' },
+      { kind: 'vector', path: 'position', label: 'Position' },
+      { kind: 'vector', path: 'rotation', label: 'Rotation' },
+      { kind: 'vector', path: 'scaling', label: 'Scale' },
       { kind: 'select', path: 'renderSpace', label: 'Render Space', options: physicsWorldOptions },
       { kind: 'select', path: 'anchor3D', label: 'Anchor3D', options: physicsWorldOptions },
       { kind: 'select', path: 'propagationLock', label: 'Propagation Lock', options: physicsWorldOptions },
@@ -115,7 +115,7 @@ export const panelConfigs: PropertyPanelConfig[] = [
       { kind: 'resource-picker', path: 'fontFile', label: 'Font File', actions: materialActions },
       { kind: 'resource-picker', path: 'shaderFile', label: 'Shader File', actions: materialActions },
       { kind: 'text', path: 'content', label: 'Content' },
-      { kind: 'text', path: 'size', label: 'Size', inputType: 'number' },
+      { kind: 'number', path: 'size', label: 'Size' },
       { kind: 'color', path: 'color', label: 'Color' },
     ],
   },
@@ -141,11 +141,11 @@ export const panelConfigs: PropertyPanelConfig[] = [
     label: 'Rigid Physics',
     fields: [
       { kind: 'select', path: 'physicsWorld', label: 'Physics World', options: physicsWorldOptions },
-      { kind: 'text', path: 'mass', label: 'Mass', inputType: 'number' },
-      { kind: 'text', path: 'restitution', label: 'Restitution', inputType: 'number' },
-      { kind: 'text', path: 'linearDamping', label: 'Linear Damping', inputType: 'number' },
-      { kind: 'text', path: 'angularDamping', label: 'Angular Damping', inputType: 'number' },
-      { kind: 'text', path: 'friction', label: 'Friction', inputType: 'number' },
+      { kind: 'number', path: 'mass', label: 'Mass' },
+      { kind: 'number', path: 'restitution', label: 'Restitution' },
+      { kind: 'number', path: 'linearDamping', label: 'Linear Damping' },
+      { kind: 'number', path: 'angularDamping', label: 'Angular Damping' },
+      { kind: 'number', path: 'friction', label: 'Friction' },
     ],
   },
   {
@@ -162,9 +162,9 @@ export const panelConfigs: PropertyPanelConfig[] = [
     label: 'Collider',
     fields: [
       { kind: 'resource-picker', path: 'colliderFile', label: 'Collider File', actions: materialActions },
-      { kind: 'vector3', path: 'position', label: 'Position' },
-      { kind: 'vector3', path: 'rotation', label: 'Rotation' },
-      { kind: 'vector3', path: 'scaling', label: 'Scale' },
+      { kind: 'vector', path: 'position', label: 'Position' },
+      { kind: 'vector', path: 'rotation', label: 'Rotation' },
+      { kind: 'vector', path: 'scaling', label: 'Scale' },
       { kind: 'select', path: 'anchor3D', label: 'Anchor3D', options: physicsWorldOptions },
     ],
   },
@@ -182,8 +182,8 @@ export const panelConfigs: PropertyPanelConfig[] = [
     label: 'Point Emission',
     fields: [
       { kind: 'color', path: 'color', label: 'Color' },
-      { kind: 'text', path: 'intensity', label: 'Intensity', inputType: 'number' },
-      { kind: 'text', path: 'radius', label: 'Radius', inputType: 'number' },
+      { kind: 'number', path: 'intensity', label: 'Intensity' },
+      { kind: 'number', path: 'radius', label: 'Radius' },
     ],
   },
   {
@@ -192,11 +192,11 @@ export const panelConfigs: PropertyPanelConfig[] = [
     label: 'Spot Emission',
     fields: [
       { kind: 'color', path: 'color', label: 'Color' },
-      { kind: 'text', path: 'intensity', label: 'Intensity', inputType: 'number' },
-      { kind: 'text', path: 'radius', label: 'Radius', inputType: 'number' },
-      { kind: 'vector3', path: 'position', label: 'Direction' },
-      { kind: 'text', path: 'innerAngle', label: 'Innder Angle', inputType: 'number' },
-      { kind: 'text', path: 'outerAngle', label: 'Outer Angle', inputType: 'number' },
+      { kind: 'number', path: 'intensity', label: 'Intensity' },
+      { kind: 'number', path: 'radius', label: 'Radius' },
+      { kind: 'vector', path: 'position', label: 'Direction' },
+      { kind: 'number', path: 'innerAngle', label: 'Innder Angle' },
+      { kind: 'number', path: 'outerAngle', label: 'Outer Angle' },
     ],
   },
   {
@@ -205,8 +205,8 @@ export const panelConfigs: PropertyPanelConfig[] = [
     label: 'Sun Emission',
     fields: [
       { kind: 'color', path: 'color', label: 'Color' },
-      { kind: 'text', path: 'intensity', label: 'Intensity', inputType: 'number' },
-      { kind: 'vector3', path: 'position', label: 'Direction' },
+      { kind: 'number', path: 'intensity', label: 'Intensity' },
+      { kind: 'vector', path: 'position', label: 'Direction' },
     ],
   },
   {
@@ -221,9 +221,9 @@ export const panelConfigs: PropertyPanelConfig[] = [
     label: 'Orbital Camera',
     fields: [
       { kind: 'select', path: 'targetNode', label: 'Target Node', options: physicsWorldOptions },
-      { kind: 'text', path: 'distance', label: 'Distance', inputType: 'number' },
-      { kind: 'text', path: 'minPitch', label: 'Min Pitch', inputType: 'number' },
-      { kind: 'text', path: 'maxPitch', label: 'Max Pitch', inputType: 'number' },
+      { kind: 'number', path: 'distance', label: 'Distance' },
+      { kind: 'number', path: 'minPitch', label: 'Min Pitch' },
+      { kind: 'number', path: 'maxPitch', label: 'Max Pitch' },
     ],
   },
   {

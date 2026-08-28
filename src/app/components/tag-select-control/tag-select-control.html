@@ -1,0 +1,122 @@
+<div class="flex flex-col gap-2">
+
+    <span *ngIf="label" class="text-xs font-medium text-gray-500 dark:text-gray-400">
+        {{ label }}
+    </span>
+    <!-- Selected tags -->
+    <div class="flex flex-wrap gap-1.5 min-h-[28px]">
+      <span
+        *ngFor="let tag of selectedTags"
+        class="cursor-pointer"
+        (click)="openTagPopover(tag, $event, tagPopover)">
+        <p-tag
+          [value]="tag.label"
+          [rounded]="true"
+          styleClass="text-xs"
+          [style.background-color]="tag.color ?? '#6b7280'"
+          [style.color]="'white'">
+        </p-tag>
+      </span>
+      <span *ngIf="!selectedTags.length" class="text-xs text-gray-400 dark:text-gray-500 italic">
+        No tags selected
+      </span>
+    </div>
+  
+    <!-- Unselected tags + new -->
+    <div class="flex flex-wrap gap-1.5 items-center">
+  
+      <span
+        *ngFor="let tag of unselectedTags"
+        class="cursor-pointer"
+        (click)="openTagPopover(tag, $event, tagPopover)">
+        <p-tag
+          [value]="tag.label"
+          [rounded]="true"
+          severity="secondary"
+          styleClass="text-xs border"
+          [style.border-color]="tag.color ?? '#6b7280'"
+          [style.color]="tag.color ?? '#6b7280'">
+        </p-tag>
+      </span>
+  
+      <span class="cursor-pointer" (click)="openCreatePopover($event, tagPopover)">
+        <p-tag
+          value="New tag"
+          [rounded]="true"
+          severity="secondary"
+          styleClass="text-xs border border-dashed cursor-pointer"
+          icon="pi pi-plus">
+        </p-tag>
+      </span>
+  
+    </div>
+  
+  </div>
+  
+  <!-- Tag popover -->
+  <p-popover #tagPopover appendTo="body">
+    <div class="flex flex-col gap-3" style="width: 220px;">
+  
+      <div class="flex flex-col gap-2">
+        <span class="text-xs font-medium text-gray-500 dark:text-gray-400">
+          {{ activeTag ? 'Edit tag' : 'New tag' }}
+        </span>
+  
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-gray-400">Label</label>
+          <input
+            pInputText
+            [(ngModel)]="tagLabel"
+            placeholder="Tag name"
+            class="w-full text-sm">
+        </div>
+  
+        <div class="flex flex-col gap-1">
+          <label class="text-xs text-gray-400">Color</label>
+          <div class="flex items-center gap-2">
+            <p-colorpicker [(ngModel)]="tagColor"></p-colorpicker>
+            <span class="text-xs font-mono text-gray-500">{{ tagColor }}</span>
+          </div>
+        </div>
+  
+        <p-button
+          [label]="activeTag ? 'Save changes' : 'Create'"
+          size="small"
+          styleClass="w-full"
+          (click)="saveTag(tagPopover)">
+        </p-button>
+      </div>
+  
+      <ng-container *ngIf="activeTag">
+        <p-divider styleClass="my-0"></p-divider>
+        <div class="flex gap-2">
+          <p-button
+            *ngIf="!isSelected(activeTag)"
+            label="Select"
+            icon="pi pi-check"
+            size="small"
+            severity="secondary"
+            styleClass="flex-1"
+            (click)="selectTag(); tagPopover.hide()">
+          </p-button>
+          <p-button
+            *ngIf="isSelected(activeTag)"
+            label="Deselect"
+            icon="pi pi-times"
+            size="small"
+            severity="secondary"
+            styleClass="flex-1"
+            (click)="deselectActiveTag(); tagPopover.hide()">
+          </p-button>
+          <p-button
+            icon="pi pi-trash"
+            size="small"
+            severity="danger"
+            [text]="true"
+            (click)="deleteTag(tagPopover)">
+          </p-button>
+        </div>
+      </ng-container>
+  
+    </div>
+  </p-popover>

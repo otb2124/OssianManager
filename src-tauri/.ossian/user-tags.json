@@ -5,13 +5,13 @@
     "color": "#ff0a0a"
   },
   {
-    "id": "02c3a5fd-0722-4bab-a8fe-4900fdc2dda2",
-    "label": "new tag",
-    "color": "#fa0707"
-  },
-  {
     "id": "c2ac8980-05d2-4b8b-8fac-d89d664d9fbc",
     "label": "newest tag",
     "color": "#c800ff"
+  },
+  {
+    "id": "59d74d0c-0d37-4d25-afa0-39b56e4b74dc",
+    "label": "new tag",
+    "color": "#0055ff"
   }
 ]

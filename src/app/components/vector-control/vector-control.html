@@ -1,0 +1,21 @@
+<div class="flex flex-col gap-1">
+  @if (label) {
+    <span class="text-xs font-medium text-gray-400 dark:text-gray-500">{{ label }}</span>
+  }
+  <div class="grid gap-1.5" [ngClass]="gridClass">
+    @for (axis of axisLabels; track $index) {
+      <app-input-number-control
+        [label]="axis"
+        [step]="step"
+        [min]="min"
+        [max]="max"
+        [minFractionDigits]="minFractionDigits"
+        [maxFractionDigits]="maxFractionDigits"
+        [prefix]="getPrefix($index)"
+        [suffix]="getSuffix($index)"
+        [value]="getVal($index)"
+        (valueChange)="setVal($index, $event)">
+      </app-input-number-control>
+    }
+  </div>
+</div>

@@ -10,6 +10,20 @@
           (ngModelChange)="setValue(field.path, $event)">
         </app-input-text-control>
       }
+      @case ('number') {
+        <app-input-number-control
+          [label]="field.label"
+          [step]="field.step ?? 1"
+          [min]="field.min ?? null"
+          [max]="field.max ?? null"
+          [minFractionDigits]="field.minFractionDigits ?? 0"
+          [maxFractionDigits]="field.maxFractionDigits ?? 2"
+          [prefix]="field.prefix"
+          [suffix]="field.suffix"
+          [ngModel]="getValue(field.path)"
+          (ngModelChange)="setValue(field.path, $event)">
+        </app-input-number-control>
+      }
       @case ('select') {
         <app-select-control
           [label]="field.label"
@@ -33,11 +47,20 @@
           (actionSelected)="onResourceAction(field.path, $event)">
         </app-resource-picker-control>
       }
-      @case ('vector3') {
-        <app-vector3-field
+      @case ('vector') {
+        <app-vector-control
           [label]="field.label"
-          [value]="getValue(field.path)">
-        </app-vector3-field>
+          [value]="getValue(field.path)"
+          [step]="field.step ?? 0.1"
+          [displayScale]="field.displayScale ?? 1"
+          [axisLabels]="field.axisLabels ?? ['X', 'Y', 'Z']"
+          [min]="field.min ?? null"
+          [max]="field.max ?? null"
+          [minFractionDigits]="field.minFractionDigits ?? 0"
+          [maxFractionDigits]="field.maxFractionDigits ?? 2"
+          [prefix]="field.prefix"
+          [suffix]="field.suffix">
+        </app-vector-control>
       }
       @case ('color') {
         <app-color-picker-control
@@ -45,6 +68,13 @@
           [ngModel]="getValue(field.path)"
           (ngModelChange)="setValue(field.path, $event)">
         </app-color-picker-control>
+      }
+      @case ('tags') {
+        <app-tag-select-control
+          [label]="field.label"
+          [ngModel]="getValue(field.path)"
+          (ngModelChange)="setValue(field.path, $event)">
+        </app-tag-select-control>
       }
     }
   }
