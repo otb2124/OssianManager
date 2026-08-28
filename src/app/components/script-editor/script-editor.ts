@@ -1,4 +1,3 @@
-// script-editor.ts
 import {
   Component,
   ElementRef,
@@ -11,7 +10,7 @@ import {
 import { EditorState, Compartment, Extension } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
-import { bracketMatching, indentOnInput, syntaxHighlighting, defaultHighlightStyle, StreamLanguage } from '@codemirror/language';
+import { bracketMatching, indentOnInput, syntaxHighlighting, defaultHighlightStyle, StreamLanguage, indentUnit } from '@codemirror/language';
 import { autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap, completeFromList, completeAnyWord, CompletionSource } from '@codemirror/autocomplete';
 import { json } from '@codemirror/lang-json';
 import { shader as shaderStreamMode } from '@codemirror/legacy-modes/mode/clike';
@@ -21,6 +20,25 @@ import { FileExplorerService } from '../../services/persistence/file-explorer.se
 import { PersistenceService } from '../../services/persistence/persistence.service';
 import { FsEntry } from '../../services/persistence/persistence.service';
 import { linter, Diagnostic } from '@codemirror/lint';
+import { HighlightStyle, } from '@codemirror/language';
+import { tags as t } from '@lezer/highlight';
+import {
+  highlightSpecialChars,
+  drawSelection,
+  dropCursor,
+  rectangularSelection,
+  crosshairCursor,
+  scrollPastEnd,
+} from '@codemirror/view';
+import {
+  foldGutter,
+  foldKeymap,
+} from '@codemirror/language';
+import {
+  search,
+  searchKeymap,
+  highlightSelectionMatches,
+} from '@codemirror/search';
 
 const AUTOSAVE_DEBOUNCE_MS = 500;
 
@@ -92,6 +110,62 @@ function languageForPath(path: string, csharpDiagnostics: (view: EditorView) => 
       return completionFor();
   }
 }
+
+
+
+const editorTheme = EditorView.theme({
+  '&': {
+    color: '#e0e0e0',
+    backgroundColor: '#1a1a1e',
+    height: '100%',
+  },
+  '.cm-content': {
+    caretColor: 'var(--theme-color)',
+  },
+  '.cm-cursor, .cm-dropCursor': {
+    borderLeftColor: 'var(--theme-color)',
+  },
+  '&.cm-focused .cm-selectionBackground, .cm-selectionBackground': {
+    backgroundColor: 'var(--theme-color-muted)',
+  },
+  '.cm-activeLine': {
+    backgroundColor: 'var(--theme-color-glow)',
+  },
+  '.cm-activeLineGutter': {
+    backgroundColor: 'var(--theme-color-glow)',
+  },
+  '.cm-gutters': {
+    backgroundColor: '#1a1a1e',
+    color: '#5c5c66',
+    borderRight: '1px solid var(--theme-color-border)',
+  },
+  '.cm-lineNumbers .cm-gutterElement': {
+    color: '#5c5c66',
+  },
+  '.cm-scroller': {
+    overflow: 'auto',
+  },
+}, { dark: true });
+
+
+const highlightStyle = HighlightStyle.define([
+  { tag: t.keyword, color: '#c586c0' },
+  { tag: t.controlKeyword, color: '#c586c0' },
+  { tag: [t.string, t.special(t.string)], color: '#ce9178' },
+  { tag: t.number, color: '#b5cea8' },
+  { tag: t.bool, color: '#569cd6' },
+  { tag: t.null, color: '#569cd6' },
+  { tag: t.comment, color: '#6a9955', fontStyle: 'italic' },
+  { tag: [t.className, t.typeName], color: '#4ec9b0' },
+  { tag: t.propertyName, color: '#9cdcfe' },
+  { tag: t.function(t.variableName), color: '#dcdcaa' },
+  { tag: t.definition(t.variableName), color: '#9cdcfe' },
+  { tag: t.variableName, color: '#e0e0e0' },
+  { tag: t.operator, color: '#d4d4d4' },
+  { tag: t.punctuation, color: '#d4d4d4' },
+  { tag: t.bracket, color: '#d4d4d4' },
+  { tag: t.invalid, color: '#f44747' },
+]);
 
 @Component({
   selector: 'app-script-editor',
@@ -173,20 +247,52 @@ export class ScriptEditor implements AfterViewInit, OnDestroy {
     return EditorState.create({
       doc: content,
       extensions: [
+        // --- Line/gutter display ---
         lineNumbers(),
         highlightActiveLine(),
         highlightActiveLineGutter(),
+        foldGutter(), // clickable fold arrows in the gutter
+  
+        // --- Selection/cursor behavior ---
+        drawSelection(),      // CM's own selection rendering (needed for correct multi-cursor visuals)
+        dropCursor(),         // shows insertion point during drag-and-drop text
+        rectangularSelection(), // Alt+drag column selection — verify vs. viewport camera controls
+        crosshairCursor(),      // crosshair cursor while Alt is held, paired with rectangularSelection
+        scrollPastEnd(),         // lets last line scroll above viewport bottom, VS Code-like feel
+  
+        // --- Editing mechanics ---
         history(),
         bracketMatching(),
         closeBrackets(),
         indentOnInput(),
-        syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-        // completionKeymap must come before defaultKeymap so Enter/Tab/Escape
-        // are handled by the completion popup (accept/dismiss) when it's
-        // open, rather than falling through to newline/indent/etc.
-        keymap.of([...closeBracketsKeymap, ...completionKeymap, ...defaultKeymap, ...historyKeymap, indentWithTab]),
+        highlightSpecialChars(), // flags invisible/non-printing Unicode chars
+  
+        // --- Indentation: spaces, width 4 ---
+        EditorState.tabSize.of(4),
+        indentUnit.of('    '), // 4 literal spaces; indentWithTab below inserts this, not a tab char
+  
+        // --- Syntax highlighting ---
+        syntaxHighlighting(highlightStyle, { fallback: false }),
+  
+        // --- Search / find & replace ---
+        search(),
+        highlightSelectionMatches(), // highlights other occurrences of current selection
+  
+        // --- Keymaps ---
+        // Order matters: completion and search keymaps first, so their
+        // Enter/Escape/Ctrl+F etc. take priority over default editing keys.
+        keymap.of([
+          ...closeBracketsKeymap,
+          ...searchKeymap,
+          ...completionKeymap,
+          ...foldKeymap,
+          ...defaultKeymap,
+          ...historyKeymap,
+          indentWithTab,
+        ]),
+  
         this.languageCompartment.of([]),
-        oneDark,
+        editorTheme,
         EditorView.theme({
           '&': { height: '100%' },
           '.cm-scroller': { overflow: 'auto' },

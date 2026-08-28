@@ -13,7 +13,9 @@
     "/tools/libraries/browse",
     "/project/display/window",
     "/scene01",
-    "/project/build/details"
+    "/project/build/details",
+    "/tools/libraries/publish"
   ],
-  "activeTab": "/scene01"
+  "activeTab": "/scene01",
+  "currentProjectId": "12886441-196f-42d8-b6ea-c8a0d07e0e2f"
 }

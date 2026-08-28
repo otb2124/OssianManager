@@ -1,6 +1,30 @@
 [
   {
     "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "3fab1272-d846-4a06-89f6-da96c31cba87",
+    "timestamp": "2026-08-28T04:24:14.417Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "9875f106-47c9-4af4-8ca6-d73945fa987e",
+    "timestamp": "2026-08-28T04:16:36.781Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "9bb72354-130e-4e34-bbca-a444d195a69b",
+    "timestamp": "2026-08-28T02:48:13.295Z"
+  },
+  {
+    "severity": "info",
     "title": "Project closed",
     "description": "new project",
     "life": 3000,
