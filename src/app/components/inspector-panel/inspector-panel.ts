@@ -56,10 +56,20 @@ export const panelConfigs: PropertyPanelConfig[] = [
       { kind: 'boolean', path: 'render', label: 'Render' },
     ],
   },
-  // NOTE: 'Transform' panel omitted — your original embeds
-  // <app-transform-control [transformNode]="t"> plus 3 selects,
-  // which doesn't fit FieldConfig[]. Needs the customComponent
-  // variant on PropertyPanelConfig discussed earlier — see below.
+  {
+    key: 'Transform',
+    icon: 'pi pi-arrows-alt',
+    label: 'Transform',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'vector3', path: 'position', label: 'Position' },
+      { kind: 'vector3', path: 'rotation', label: 'Rotation' },
+      { kind: 'vector3', path: 'scaling', label: 'Scale' },
+      { kind: 'select', path: 'renderSpace', label: 'Render Space', options: physicsWorldOptions },
+      { kind: 'select', path: 'anchor3D', label: 'Anchor3D', options: physicsWorldOptions },
+      { kind: 'select', path: 'propagationLock', label: 'Propagation Lock', options: physicsWorldOptions },
+    ],
+  },
   {
     key: 'Texture Material',
     icon: 'pi pi-image',
@@ -134,7 +144,19 @@ export const panelConfigs: PropertyPanelConfig[] = [
       { kind: 'select', path: 'physicsWorld', label: 'Physics World', options: physicsWorldOptions },
     ],
   },
-  // NOTE: 'Collider' panel omitted — also embeds <app-transform-control>, same as 'Transform'.
+  {
+    key: 'Collider',
+    icon: 'pi pi-globe',
+    label: 'Collider',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'resource-picker', path: 'colliderFile', label: 'Collider File', actions: materialActions },
+      { kind: 'vector3', path: 'position', label: 'Position' },
+      { kind: 'vector3', path: 'rotation', label: 'Rotation' },
+      { kind: 'vector3', path: 'scaling', label: 'Scale' },
+      { kind: 'select', path: 'anchor3D', label: 'Anchor3D', options: physicsWorldOptions },
+    ],
+  },
   {
     key: 'Animation',
     icon: 'pi pi-play',
@@ -155,10 +177,31 @@ export const panelConfigs: PropertyPanelConfig[] = [
       { kind: 'text', path: 'radius', label: 'Radius', inputType: 'number' },
     ],
   },
-  // NOTE: 'Spot Emission' and 'Sun Emission' omitted — both embed
-  // <app-vector3-field [value]="spotEmissionDirectionVector3">, i.e. a
-  // hardcoded shared instance, not a per-node bound path. Needs a decision
-  // (see below) before it fits into FieldConfig.
+  {
+    key: 'Spot Emission',
+    icon: 'pi pi-sun',
+    label: 'Spot Emission',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'color', path: 'color', label: 'Color' },
+      { kind: 'text', path: 'intensity', label: 'Intensity', inputType: 'number' },
+      { kind: 'text', path: 'radius', label: 'Radius', inputType: 'number' },
+      { kind: 'vector3', path: 'position', label: 'Direction' },
+      { kind: 'text', path: 'innerAngle', label: 'Innder Angle', inputType: 'number' },
+      { kind: 'text', path: 'outerAngle', label: 'Outer Angle', inputType: 'number' },
+    ],
+  },
+  {
+    key: 'Sun Emission',
+    icon: 'pi pi-sun',
+    label: 'Sun Emission',
+    appliesTo: (node: TransformNode) => true,
+    fields: [
+      { kind: 'color', path: 'color', label: 'Color' },
+      { kind: 'text', path: 'intensity', label: 'Intensity', inputType: 'number' },
+      { kind: 'vector3', path: 'position', label: 'Direction' },
+    ],
+  },
   {
     key: 'Camera',
     icon: 'pi pi-camera',

@@ -12,7 +12,8 @@
     "/file/projects/recents",
     "/tools/libraries/browse",
     "/project/display/window",
-    "/scene01"
+    "/scene01",
+    "/file/projects/my-projects"
   ],
   "activeTab": "/scene01"
 }
