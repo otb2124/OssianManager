@@ -468,8 +468,97 @@ export const routes: RouteChild[] =
           },
         ]
       },
+      {
+        path: 'events',
+        title: 'Events',
+        displayBreadcrumb: true,
+        displayModule: true,
+        navigatesModule: true,
+        displaySidebar: true,
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'actions',
+            pathMatch: 'full'
+          },
+          {
+            path: 'actions',
+            title: 'Actions',
+            icon: 'pi pi-search',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"events-actions" }
+          },
+          {
+            path: 'state-machines',
+            title: 'State Machines',
+            icon: 'pi pi-cloud-upload',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"events-state-machines" }
+          },
+          {
+            path: 'pronouns',
+            title: 'Pronouns',
+            icon: 'pi pi-cloud-upload',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"events-pronouns" }
+          },
+        ]
+      },
+      {
+        path: 'language',
+        title: 'Language',
+        displayBreadcrumb: true,
+        displayModule: true,
+        navigatesModule: true,
+        displaySidebar: true,
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'translations',
+            pathMatch: 'full'
+          },
+          {
+            path: 'translations',
+            title: 'Translations',
+            icon: 'pi pi-search',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"language-translations" }
+          },
+          {
+            path: 'remap',
+            title: 'Remap',
+            icon: 'pi pi-cloud-upload',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"language-remap" }
+          },
+          {
+            path: 'formats',
+            title: 'Formats',
+            icon: 'pi pi-cloud-upload',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"language-formats" }
+          },
+          {
+            path: 'transnationalization',
+            title: 'Transnationalization',
+            icon: 'pi pi-cloud-upload',
+            displayBreadcrumb: true,
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"language-transnationalization" }
+          },
+        ]
+      },
     ]
   },
+  
   {
     path: 'build',
     title: 'Build',
