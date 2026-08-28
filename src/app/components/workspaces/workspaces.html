@@ -1,0 +1,73 @@
+<div class="flex flex-col h-full w-full min-h-0">
+
+    <div class="flex items-end h-9 shrink-0 border-b border-[var(--theme-color-border)]">
+  
+      <div
+        *ngFor="let tab of tabs()"
+        (click)="activateTab(tab)"
+        class="group relative flex items-center gap-2 px-3 h-full border-r border-[var(--theme-color-border)]
+              cursor-pointer select-none transition-colors shrink-0
+               min-w-0 max-w-[180px]"
+        [ngClass]="tab.path === activeTab()
+          ? 'bg-[var(--theme-color-border)] text-gray-900 dark:text-white'
+          : 'dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'">
+  
+        <span
+          *ngIf="tab.path === activeTab()"
+          class="absolute top-0 left-0 right-0 h-[1px]"
+          [style.background-color]="'var(--theme-color)'">
+        </span>
+  
+        <i *ngIf="tab.icon"
+           [class]="tab.icon + ' text-xs shrink-0'">
+        </i>
+  
+        <span class="text-sm truncate">
+          {{ tab.title }}
+        </span>
+  
+        <button
+          (click)="closeTab(tab, $event)"
+          class="shrink-0 w-4 h-4 flex items-center justify-center rounded
+                 opacity-0 group-hover:opacity-100 transition-opacity ml-1
+                 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
+          [class.opacity-100!]="tab.path === activeTab()">
+          <i class="pi pi-times text-[10px]"></i>
+        </button>
+  
+      </div>
+  
+    </div>
+  
+    <div class="flex-1 min-h-0 min-w-0 relative">
+      <!--
+        One shared Engine + Scene + canvas, owned here and initialized in
+        Workspaces.ngAfterViewInit via BabylonSceneService.init(). Viewport3D
+        and Viewport2D no longer own any canvas/engine themselves — each is a
+        camera-only component that builds its ArcRotateCamera against the
+        shared scene and asks BabylonSceneService to make it the active
+        (rendered + input-receiving) camera whenever [active] is true. Exactly
+        one camera is ever active at a time, matching which tab is selected.
+        Both components stay permanently mounted so the shared scene/camera
+        state survives tab switches instead of being torn down and rebuilt.
+      -->
+      <canvas
+        #canvas
+        class="absolute inset-0 w-full h-full block outline-none"
+        [hidden]="activeTab() !== '3d-viewport' && activeTab() !== '2d-viewport'">
+      </canvas>
+      <app-viewport3d [active]="activeTab() === '3d-viewport'"></app-viewport3d>
+      <app-viewport2d [active]="activeTab() === '2d-viewport'"></app-viewport2d>
+  
+      @switch (activeTab()) {
+        @case ('script') {
+          
+          <app-script-editor></app-script-editor>
+        }
+        @case ('render') {
+          <div class="absolute inset-0"></div>
+        }
+      }
+    </div>
+  
+  </div>

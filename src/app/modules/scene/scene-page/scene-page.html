@@ -1,16 +1,16 @@
 <!-- scene-page.html -->
 <div class="flex h-full w-full min-h-0">
 
-    <div class="flex flex-col w-1/4 min-w-0 h-full border-r border-[var(--theme-color-border)]">
-      <app-hierarchy-panel class="flex-1 min-h-0 border-b border-[var(--theme-color-border)]"></app-hierarchy-panel>
-      <app-file-tree-panel class="flex-1 min-h-0"></app-file-tree-panel>
-    </div>
-  
-    <app-viewport class="flex-1 min-h-0 h-full"></app-viewport>
-  
-    <div class="flex flex-col w-1/4 min-w-0 h-full border-l border-[var(--theme-color-border)]">
-      <app-inspector-panel class="flex-1 min-h-0 border-b border-[var(--theme-color-border)]"></app-inspector-panel>
-      <app-file-inspector-panel class="flex-1 min-h-0"></app-file-inspector-panel>
-    </div>
-  
+  <div class="flex flex-col w-1/4 min-w-0 h-full border-r border-[var(--theme-color-border)]">
+    <app-hierarchy-panel class="flex-1 min-h-0 border-b border-[var(--theme-color-border)]"></app-hierarchy-panel>
+    <app-file-tree-panel class="flex-1 min-h-0"></app-file-tree-panel>
   </div>
+
+  <app-workspaces class="flex-1 min-w-0 min-h-0 h-full"></app-workspaces>
+
+  <div class="flex flex-col w-1/4 min-w-0 h-full border-l border-[var(--theme-color-border)]">
+    <app-inspector-panel class="flex-1 min-h-0 border-b border-[var(--theme-color-border)]"></app-inspector-panel>
+    <app-file-inspector-panel class="flex-1 min-h-0"></app-file-inspector-panel>
+  </div>
+
+</div>

@@ -43,6 +43,27 @@ export class PersistenceService {
     }));
   }
 
+  /**
+   * Plain-text read for arbitrary files (.cs, .glsl/.hlsl, .md, etc.) — no
+   * JSON parsing. Calls the same read_config_absolute Rust command as
+   * readAbsolute<T>, which does a raw fs::read_to_string with no JSON
+   * involvement on the Rust side; only this TS wrapper differs.
+   */
+  readTextAbsolute(absolutePath: string): Observable<string> {
+    return from(invoke<string>('read_config_absolute', { path: absolutePath }));
+  }
+
+  /**
+   * Plain-text write counterpart to readTextAbsolute — no JSON.stringify,
+   * content is written to disk exactly as given.
+   */
+  writeTextAbsolute(absolutePath: string, content: string): Observable<void> {
+    return from(invoke<void>('write_config_absolute', {
+      path: absolutePath,
+      content,
+    }));
+  }
+
   listDirectory(path: string): Observable<FsEntry[]> {
     return from(invoke<{ name: string; path: string; is_directory: boolean; size: number; modified: string | null }[]>('list_directory', { path })).pipe(
       map(entries => entries.map(e => ({
@@ -54,7 +75,7 @@ export class PersistenceService {
       })))
     );
   }
-  
+
   rename(oldPath: string, newName: string): Observable<string> {
     return from(invoke<string>('rename_entry', { oldPath, newName }));
   }

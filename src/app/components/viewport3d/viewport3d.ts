@@ -1,16 +1,6 @@
-// viewport.ts
+// viewport3d.ts
+import { Component, OnDestroy, Input, effect, inject } from '@angular/core';
 import {
-  Component,
-  ElementRef,
-  AfterViewInit,
-  OnDestroy,
-  ViewChild,
-  NgZone,
-  inject,
-} from '@angular/core';
-import {
-  Engine,
-  Scene,
   ArcRotateCamera,
   HemisphericLight,
   Vector3,
@@ -19,6 +9,7 @@ import {
   Axis,
   LinesMesh,
   TransformNode,
+  Scene,
 } from '@babylonjs/core';
 import { GridMaterial } from '@babylonjs/materials';
 import '@babylonjs/materials/grid/grid.fragment';
@@ -26,95 +17,90 @@ import '@babylonjs/materials/grid/grid.vertex';
 import { BabylonSceneService } from '../../services/babylon/babylonscene.service.ts';
 
 @Component({
-  selector: 'app-viewport',
+  selector: 'app-viewport3d',
   standalone: true,
   imports: [],
-  templateUrl: './viewport3d.html',
+  template: '', // no canvas of its own — renders through the shared canvas owned by Workspaces
 })
-export class Viewport3d implements AfterViewInit, OnDestroy {
-  @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
+export class Viewport3D implements OnDestroy {
+  /** Whether this viewport's tab is the one currently shown. */
+  @Input() set active(value: boolean) {
+    this._active = value;
+    this.syncActive();
+  }
 
   private readonly babylonSceneService = inject(BabylonSceneService);
 
-  private engine!: Engine;
-  private scene!: Scene;
-  private resizeObserver!: ResizeObserver;
+  private _active = false;
+  private camera: ArcRotateCamera | null = null;
 
-  constructor(private ngZone: NgZone) {}
+  private sceneWatcher = effect(() => {
+    const scene = this.babylonSceneService.scene();
+    if (scene && !this.camera) {
+      this.buildScene(scene);
+    }
+  });
 
-  ngAfterViewInit(): void {
-    this.ngZone.runOutsideAngular(() => {
-      this.initEngine();
-      this.initScene();
-      this.initGrid();
-      this.initAxes();
-      this.initResize();
-      this.babylonSceneService.registerScene(this.scene);
-      this.engine.runRenderLoop(() => this.scene.render());
-    });
-  }
-
-  private initEngine(): void {
-    this.engine = new Engine(this.canvasRef.nativeElement, true, {
-      preserveDrawingBuffer: true,
-      stencil: true,
-      antialias: true,
-    });
-  }
-
-  private initScene(): void {
-    this.scene = new Scene(this.engine);
-  
-    const camera = new ArcRotateCamera(
+  private buildScene(scene: Scene): void {
+    this.camera = new ArcRotateCamera(
       'camera',
       -Math.PI / 2,
       Math.PI / 2.5,
       10,
       Vector3.Zero(),
-      this.scene,
+      scene,
     );
-    camera.attachControl(this.canvasRef.nativeElement, true);
-    camera.lowerRadiusLimit = 1;
-    camera.wheelPrecision = 50;
-  
-    const light = new HemisphericLight('light', new Vector3(0, 1, 0), this.scene);
+    this.camera.lowerRadiusLimit = 1;
+    this.camera.wheelPrecision = 50;
+    this.babylonSceneService.registerCamera(this.camera);
+    this.syncActive();
+
+    const light = new HemisphericLight('light', new Vector3(0, 1, 0), scene);
     light.intensity = 0.8;
-  
-    this.buildPlaceholderHierarchy();
+
+    this.buildPlaceholderHierarchy(scene);
+    this.buildGrid(scene);
+    this.buildAxes(scene);
   }
 
-  private buildPlaceholderHierarchy(): void {
-    const root = new TransformNode('Group', this.scene);
-  
-    const parentBox = MeshBuilder.CreateBox('ParentCube', { size: 1 }, this.scene);
+  private syncActive(): void {
+    if (this._active && this.camera) {
+      this.babylonSceneService.setActiveCamera(this.camera);
+    }
+  }
+
+  private buildPlaceholderHierarchy(scene: Scene): void {
+    const root = new TransformNode('Group', scene);
+
+    const parentBox = MeshBuilder.CreateBox('ParentCube', { size: 1 }, scene);
     parentBox.position = new Vector3(0, 0.5, 0);
     parentBox.parent = root;
-  
-    const childSphere = MeshBuilder.CreateSphere('ChildSphere', { diameter: 0.5 }, this.scene);
+
+    const childSphere = MeshBuilder.CreateSphere('ChildSphere', { diameter: 0.5 }, scene);
     childSphere.position = new Vector3(1.5, 0, 0); // relative to parentBox, since it's parented below
     childSphere.parent = parentBox;
-  
+
     const grandchildCone = MeshBuilder.CreateCylinder(
       'GrandchildCone',
       { diameterTop: 0, diameterBottom: 0.4, height: 0.6 },
-      this.scene,
+      scene,
     );
     grandchildCone.position = new Vector3(0, 0.6, 0); // relative to childSphere
     grandchildCone.parent = childSphere;
-  
+
     const siblingCylinder = MeshBuilder.CreateCylinder(
       'SiblingCylinder',
       { diameter: 0.4, height: 1 },
-      this.scene,
+      scene,
     );
     siblingCylinder.position = new Vector3(-1.5, 0.5, 0);
     siblingCylinder.parent = root;
   }
 
-  private initGrid(): void {
-    const ground = MeshBuilder.CreateGround('grid', { width: 100, height: 100 }, this.scene);
+  private buildGrid(scene: Scene): void {
+    const ground = MeshBuilder.CreateGround('grid', { width: 100, height: 100 }, scene);
 
-    const gridMaterial = new GridMaterial('gridMaterial', this.scene);
+    const gridMaterial = new GridMaterial('gridMaterial', scene);
     gridMaterial.majorUnitFrequency = 10;
     gridMaterial.minorUnitVisibility = 0.35;
     gridMaterial.gridRatio = 1;
@@ -127,14 +113,14 @@ export class Viewport3d implements AfterViewInit, OnDestroy {
     ground.isPickable = false; // so it doesn't intercept selection clicks meant for real scene objects later
   }
 
-  private initAxes(): void {
+  private buildAxes(scene: Scene): void {
     const axisLength = 5;
 
     const makeAxis = (name: string, direction: Vector3, color: Color3): LinesMesh => {
       const axis = MeshBuilder.CreateLines(
         name,
         { points: [Vector3.Zero(), direction.scale(axisLength)] },
-        this.scene,
+        scene,
       );
       axis.color = color;
       axis.isPickable = false;
@@ -146,15 +132,11 @@ export class Viewport3d implements AfterViewInit, OnDestroy {
     makeAxis('axisZ', Axis.Z, new Color3(0.3, 0.3, 1));
   }
 
-  private initResize(): void {
-    this.resizeObserver = new ResizeObserver(() => this.engine.resize());
-    this.resizeObserver.observe(this.canvasRef.nativeElement);
-  }
-
   ngOnDestroy(): void {
-    this.babylonSceneService.unregisterScene();
-    this.resizeObserver?.disconnect();
-    this.scene?.dispose();
-    this.engine?.dispose();
+    this.sceneWatcher.destroy();
+    if (this.camera) {
+      this.babylonSceneService.unregisterCamera(this.camera);
+      this.camera.dispose();
+    }
   }
 }
