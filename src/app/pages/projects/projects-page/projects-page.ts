@@ -3,11 +3,11 @@ import { ProjectRecordAccordion } from "../../../components/project-record-accor
 import { ProjectManagementPanel } from "../../../components/project-management-panel/project-management-panel";
 
 @Component({
-  selector: 'app-recents',
+  selector: 'app-projects-page',
   imports: [ProjectRecordAccordion, ProjectManagementPanel],
-  templateUrl: './recents.html',
-  styleUrl: './recents.css',
+  templateUrl: './projects-page.html',
+  styleUrl: './projects-page.css',
 })
-export class Recents {
+export class ProjectsPage {
 
 }

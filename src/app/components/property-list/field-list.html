@@ -1,51 +1,51 @@
 <div class="flex flex-col gap-3">
-    @for (field of visibleFields(); track field.path) {
-      @switch (field.kind) {
-        @case ('text') {
-          <app-input-text-control
-            [label]="field.label"
-            [type]="field.inputType ?? 'text'"
-            [maxlength]="field.maxlength ?? null"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
-          </app-input-text-control>
-        }
-        @case ('select') {
-          <app-select-control
-            [label]="field.label"
-            [options]="field.options"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
-          </app-select-control>
-        }
-        @case ('boolean') {
-          <app-boolean-control
-            [label]="field.label"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
-          </app-boolean-control>
-        }
-        @case ('resource-picker') {
-          <app-resource-picker-control
-            [label]="field.label"
-            [itemName]="getValue(field.path)"
-            [actions]="field.actions"
-            (actionSelected)="onResourceAction(field.path, $event)">
-          </app-resource-picker-control>
-        }
-        @case ('vector3') {
-          <app-vector3-field
-            [label]="field.label"
-            [value]="getValue(field.path)">
-          </app-vector3-field>
-        }
-        @case ('color') {
-          <app-color-picker-control
-            [label]="field.label"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
-          </app-color-picker-control>
-        }
+  @for (field of visibleFields(); track field.path) {
+    @switch (field.kind) {
+      @case ('text') {
+        <app-input-text-control
+          [label]="field.label"
+          [type]="field.inputType ?? 'text'"
+          [maxlength]="field.maxlength ?? null"
+          [ngModel]="getValue(field.path)"
+          (ngModelChange)="setValue(field.path, $event)">
+        </app-input-text-control>
+      }
+      @case ('select') {
+        <app-select-control
+          [label]="field.label"
+          [options]="field.options"
+          [ngModel]="getValue(field.path)"
+          (ngModelChange)="setValue(field.path, $event)">
+        </app-select-control>
+      }
+      @case ('boolean') {
+        <app-boolean-control
+          [label]="field.label"
+          [ngModel]="getValue(field.path)"
+          (ngModelChange)="setValue(field.path, $event)">
+        </app-boolean-control>
+      }
+      @case ('resource-picker') {
+        <app-resource-picker-control
+          [label]="field.label"
+          [itemName]="getValue(field.path)"
+          [actions]="field.actions"
+          (actionSelected)="onResourceAction(field.path, $event)">
+        </app-resource-picker-control>
+      }
+      @case ('vector3') {
+        <app-vector3-field
+          [label]="field.label"
+          [value]="getValue(field.path)">
+        </app-vector3-field>
+      }
+      @case ('color') {
+        <app-color-picker-control
+          [label]="field.label"
+          [ngModel]="getValue(field.path)"
+          (ngModelChange)="setValue(field.path, $event)">
+        </app-color-picker-control>
       }
     }
-  </div>
+  }
+</div>

@@ -13,7 +13,7 @@
     </div>
 
     <p-accordion [multiple]="true">
-      @for (panel of visiblePanels(); track panel.key) {
+      @for (panel of panelConfigs; track panel.key) {
         <p-accordion-panel [value]="panel.key">
           <p-accordion-header>
             <div class="flex items-center gap-2">
@@ -22,7 +22,7 @@
             </div>
           </p-accordion-header>
           <p-accordion-content>
-            <app-field-list [fields]="panel.fields" [node]="transformNode()!"></app-field-list>
+            <app-field-list [fields]="panel.fields" [target]="fieldTarget()!"></app-field-list>
           </p-accordion-content>
         </p-accordion-panel>
       }

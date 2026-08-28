@@ -11,6 +11,7 @@ export interface RouteChild extends Route {
   displayOnProjectLoad?: boolean;
   actions?: RouteAction[];
   navigatesModule?: boolean;
+  data?: { id:string };
 }
 
 export const routes: RouteChild[] =
@@ -58,14 +59,16 @@ export const routes: RouteChild[] =
             title: 'Recents',
             icon: 'pi pi-clock',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/projects/projects-page/projects-page.js').then(m => m.ProjectsPage),
+            data: { id:"projects-recents" }
           },
           {
             path: 'my-projects',
             title: 'My Projects',
             icon: 'pi pi-folder',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/projects/projects-page/projects-page.js').then(m => m.ProjectsPage),
+            data: { id:"projects-my-projects" }
           },
         ]
       },
@@ -255,21 +258,24 @@ export const routes: RouteChild[] =
             title: 'App',
             icon: 'pi pi-cog',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"settings-app" }
           },
           {
             path: 'engine',
             title: 'Engine',
             icon: 'pi pi-microchip',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"settings-engine" }
           },
           {
             path: 'theme',
             title: 'Theme',
             icon: 'pi pi-palette',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"settings-theme" }
           },
         ]
       },
@@ -293,14 +299,14 @@ export const routes: RouteChild[] =
             title: 'Browse',
             icon: 'pi pi-search',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/libraries/libraries-page/libraries-page.js').then(m => m.LibrariesPage),
           },
           {
             path: 'publish',
             title: 'Publish',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/libraries/libraries-page/libraries-page.js').then(m => m.LibrariesPage),
           },
         ]
       },
@@ -311,7 +317,7 @@ export const routes: RouteChild[] =
         displayBreadcrumb: true,
         displayModule: true,
         navigatesModule: true,
-        loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+        loadComponent: () => import('./pages/logs/logs-page/logs-page.js').then(m => m.LogsPage),
       },
     ]
   },
@@ -346,21 +352,24 @@ export const routes: RouteChild[] =
             title: 'Details',
             icon: 'pi pi-cog',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"build-details" }
           },
           {
             path: 'tree',
             title: 'Tree',
             icon: 'pi pi-microchip',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"build-tree" }
           },
           {
             path: 'startup',
             title: 'Startup',
             icon: 'pi pi-palette',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"build-startup" }
           },
         ]
       },
@@ -383,35 +392,39 @@ export const routes: RouteChild[] =
             title: 'Window',
             icon: 'pi pi-search',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"display-window" }
           },
           {
             path: 'accessibility',
             title: 'Accessibility',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
-          },
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"display-accessibility" }          },
           {
             path: 'rendering',
             title: 'Rendering',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"display-rendering" }
           },
           {
             path: 'cursor',
             title: 'Cursor',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"display-cursor" }
           },
           {
             path: 'physics',
             title: 'Physics',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"display-physics" }
           },
         ]
       },
@@ -434,21 +447,24 @@ export const routes: RouteChild[] =
             title: 'Keys',
             icon: 'pi pi-search',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"input-keys" }
           },
           {
             path: 'axis',
             title: 'Axis',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"input-axis" }
           },
           {
             path: 'controllers',
             title: 'Controllers',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
-            loadComponent: () => import('./modules/general/home/recents.js').then(m => m.Recents),
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"input-controllers" }
           },
         ]
       },
@@ -497,6 +513,6 @@ export const routes: RouteChild[] =
     path: 'scene01',
     title: 'scene01',
     displayBreadcrumb: true,
-    loadComponent: () => import('./modules/scene/scene-page/scene-page.js').then(m => m.ScenePage),
+    loadComponent: () => import('./pages/scene/scene-page/scene-page.js').then(m => m.ScenePage),
   },
 ]

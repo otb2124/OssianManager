@@ -1,30 +1,30 @@
 import { Component, computed, Input } from '@angular/core';
-import { TransformNode } from '@babylonjs/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { SelectControlOption, SelectControl } from '../select-control/select-control';
 import { ResourcePickerAction, ResourcePickerControl } from '../resource-picker-control/resource-picker-control';
 import { InputTextControl } from "../input-text-control/input-text-control";
 import { BooleanControl } from "../boolean-control/boolean-control";
 import { Vector3Field } from "../vector3-field/vector3-field";
 import { ColorPickerControl } from "../color-picker-control/color-picker-control";
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
-
-export type NodeKind =
-  | 'Node' | 'Transform' | 'TextureMaterial' | 'CubemapMaterial'
-  | 'TextMaterial' | 'WireframeMaterial' | 'Mesh' | 'RigidPhysics'
-  | 'StaticPhysics' | 'Collider' | 'Animation' | 'PointEmission'
-  | 'SpotEmission' | 'SunEmission' | 'Camera' | 'OrbitalCamera'
-  | 'Group' | 'Sound' | 'StateMachine' | 'Script';
-
-// A "path" into the selected node's data — how a field reads/writes its value.
+// A "path" into the target's data — how a field reads/writes its value.
 // Kept as a plain string so it's serializable and diffable, not a closure.
-type PropertyPath = string; // e.g. 'name', 'material.color', 'physics.mass'
+export type PropertyPath = string; // e.g. 'name', 'material.color', 'physics.mass'
+
+// Anything FieldList can read/write fields on implements this — a
+// TransformNode via dot-path reflection, a flat settings object via direct
+// key lookup, a resource's metadata, etc. FieldList only ever talks to
+// this interface, never to a concrete data shape.
+export interface FieldTarget {
+  getField(path: PropertyPath): unknown;
+  setField(path: PropertyPath, value: unknown): void;
+}
 
 interface FieldConfigBase {
   path: PropertyPath;
   label: string;
-  visibleIf?: (node: TransformNode) => boolean; // field-level, optional — for cases where a panel applies but one field inside it doesn't always
+  visibleIf?: (target: FieldTarget) => boolean; // field-level, optional — for cases where a panel applies but one field inside it doesn't always
 }
 
 export type FieldConfig =
@@ -39,10 +39,8 @@ export interface PropertyPanelConfig {
   key: string;                 // matches accordion `value`
   icon: string;
   label: string;
-  appliesTo: (node: TransformNode) => boolean;
   fields: FieldConfig[];
 }
-
 
 @Component({
   selector: 'app-field-list',
@@ -52,29 +50,21 @@ export interface PropertyPanelConfig {
 })
 export class FieldList {
   @Input({ required: true }) fields!: FieldConfig[];
-  @Input({ required: true }) node!: TransformNode;
+  @Input({ required: true }) target!: FieldTarget;
 
   protected visibleFields = computed(() =>
-    this.fields.filter(f => !f.visibleIf || f.visibleIf(this.node))
+    this.fields.filter(f => !f.visibleIf || f.visibleIf(this.target))
   );
 
   protected getValue<T>(path: PropertyPath): T {
-    return this.getProperty(this.node, path) as T;
-  }
-  
-  protected setValue(path: PropertyPath, value: unknown) { this.setProperty(this.node, path, value); }
-  protected onResourceAction(path: PropertyPath, event: { actionId: string; path: string | null }) {
-    // route through setValue or a dedicated resource-load handler
+    return this.target.getField(path) as T;
   }
 
-  getProperty(node: TransformNode, path: PropertyPath): unknown {
-    return path.split('.').reduce((obj: any, key) => obj?.[key], node);
+  protected setValue(path: PropertyPath, value: unknown) {
+    this.target.setField(path, value);
   }
-  
-  setProperty(node: TransformNode, path: PropertyPath, value: unknown): void {
-    const keys = path.split('.');
-    const last = keys.pop()!;
-    const target = keys.reduce((obj: any, key) => obj?.[key], node);
-    if (target) target[last] = value;
+
+  protected onResourceAction(path: PropertyPath, event: { actionId: string; path: string | null }) {
+    // route through setValue or a dedicated resource-load handler
   }
 }

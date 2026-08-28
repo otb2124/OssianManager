@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Recents } from './recents';
+import { SettingsPage } from './settings-page';
 
-describe('Recents', () => {
-  let component: Recents;
-  let fixture: ComponentFixture<Recents>;
+describe('SettingsPage', () => {
+  let component: SettingsPage;
+  let fixture: ComponentFixture<SettingsPage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Recents]
+      imports: [SettingsPage]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Recents);
+    fixture = TestBed.createComponent(SettingsPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
