@@ -10,25 +10,8 @@
   "engineProjectPath": "C:\\Users\\orest\\Downloads\\pojects\\OssianEngine",
   "openTabs": [
     "/scene01",
-    "/project/build/details",
-    "/project/build/startup",
-    "/project/build/tree",
-    "/tools/settings/app",
-    "/tools/settings/engine",
-    "/tools/settings/theme",
-    "/project/display/window",
-    "/project/display/accessibility",
-    "/project/display/rendering",
-    "/project/display/cursor",
-    "/project/display/physics",
-    "/project/input/keys",
-    "/project/input/axis",
-    "/project/input/controllers",
-    "/project/language/translations",
-    "/project/language/remap",
-    "/project/language/formats",
-    "/project/language/transnationalization"
+    "/file/projects/recents"
   ],
-  "activeTab": "/project/language/transnationalization",
+  "activeTab": "/scene01",
   "currentProjectId": "12886441-196f-42d8-b6ea-c8a0d07e0e2f"
 }

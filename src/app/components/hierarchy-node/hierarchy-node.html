@@ -10,7 +10,7 @@
       <i
         *ngIf="hasChildren; else spacer"
         (click)="toggleExpanded($event)"
-        class="pi pi-chevron-right text-[10px] shrink-0 w-3 transition-transform"
+        class="pi pi-chevron-right !text-[10px] shrink-0 w-3 transition-transform"
         [class.rotate-90]="expanded()">
       </i>
       <ng-template #spacer><span class="w-3 shrink-0"></span></ng-template>

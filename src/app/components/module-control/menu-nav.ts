@@ -1,11 +1,11 @@
-import { Component, computed, inject, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { PopoverModule, Popover } from 'primeng/popover';
+import { MenubarModule } from 'primeng/menubar';
+import { MenuItem } from 'primeng/api';
 import { routes, RouteChild } from '../../app.routes';
 import { ProjectService } from '../../services/projects/project.service';
-import { ButtonModule } from "primeng/button";
 import { KeyboardShortcut, KeyShortcutService } from '../../services/system/key-shortcut.service';
 import { ActionRegistryService } from '../../services/system/action-registry.service';
 
@@ -17,6 +17,7 @@ export interface RouteOption {
   shortcut?: KeyboardShortcut | null;
   actionId?: string;
   navigates?: boolean;
+  children?: RouteOption[]; // populated when this option's own children have displayModule routes
 }
 
 export interface NavRoute {
@@ -24,25 +25,25 @@ export interface NavRoute {
   options: RouteOption[];
 }
 
+// isActive isn't a native MenuItem field, so it's still tracked via an
+// extended interface rather than assigning it directly. Currently unread
+// since the item template that displayed it was dropped in favor of
+// PrimeNG's default rendering.
+interface RouteMenuItem extends MenuItem {
+  isActive?: boolean;
+}
+
 @Component({
-  selector: 'app-module-control',
-  imports: [CommonModule, FormsModule, PopoverModule, ButtonModule],
-  templateUrl: './module-control.html',
+  selector: 'app-menu-nav',
+  imports: [CommonModule, FormsModule, MenubarModule],
+  templateUrl: './menu-nav.html',
 })
-export class ModuleControl {
+export class MenuNav {
   private router = inject(Router);
   private projectService = inject(ProjectService);
 
   private readonly shortcuts = inject(KeyShortcutService);
   private readonly actionRegistry = inject(ActionRegistryService);
-
-  @ViewChildren('pop') pops!: QueryList<Popover>;
-
-  activeNavOptions: RouteOption[] = [];
-  activeNavRoute: NavRoute | null = null;
-  private isOpen = false;
-  private switching = false;
-  private activeIndex = -1;
 
   readonly navRoutes = computed(() => {
     const hasProject = this.projectService.hasProject();
@@ -58,18 +59,43 @@ export class ModuleControl {
       }));
   });
 
+  readonly menuItems = computed<RouteMenuItem[]>(() =>
+    this.navRoutes().map(nav => this.toMenuItem(nav))
+  );
+
+  private toMenuItem(nav: NavRoute): RouteMenuItem {
+    return {
+      label: nav.route.title,
+      items: nav.options.length ? nav.options.map(o => this.optionToMenuItem(o)) : undefined,
+    };
+  }
+
+  private optionToMenuItem(option: RouteOption): RouteMenuItem {
+    return {
+      label: option.label,
+      icon: option.icon,
+      isActive: this.isActiveOption(option),
+      items: option.children?.length
+        ? option.children.map(c => this.optionToMenuItem(c))
+        : undefined,
+      command: option.children?.length ? undefined : () => this.onRouteSelect(option),
+      ...(option.shortcut ? { shortcut: this.formatShortcut(option.shortcut) } : {}),
+    };
+  }
+
   private resolveOptions(route: RouteChild): RouteOption[] {
     const children = route.children;
     if (!children?.length) return [];
     const leafChildren = this.resolveLeafChildren(children);
-  
+
     const result: RouteOption[] = [];
-  
+
     for (const c of leafChildren) {
       if (!c.displayModule || !c.path) continue;
-  
+
       const value = `/${route.path}/${c.path}`;
-  
+      const childOptions = this.resolveChildOptions(route.path!, c);
+
       if (c.actions?.length) {
         for (const action of c.actions) {
           result.push({
@@ -79,7 +105,8 @@ export class ModuleControl {
             icon: c.icon,
             shortcut: action.shortcut,
             actionId: action.id,
-            navigates: c.navigatesModule
+            navigates: c.navigatesModule,
+            children: childOptions.length ? childOptions : undefined,
           });
         }
       } else {
@@ -88,52 +115,60 @@ export class ModuleControl {
           label: c.title ?? c.path,
           value,
           icon: c.icon,
-          navigates: c.navigatesModule
+          navigates: c.navigatesModule,
+          children: childOptions.length ? childOptions : undefined,
         });
       }
     }
-  
+
+    return result;
+  }
+
+  // Builds the one-level-deeper RouteOption[] for a nav item that itself has
+  // displayModule children (e.g. 'projects' -> 'recents'/'my-projects').
+  // Mirrors resolveOptions' shape but is keyed off the parent option's own
+  // path segment rather than the top-level module route.
+  private resolveChildOptions(parentSegment: string, route: RouteChild): RouteOption[] {
+    const children = route.children;
+    if (!children?.length) return [];
+    const leafChildren = this.resolveLeafChildren(children);
+
+    const result: RouteOption[] = [];
+
+    for (const c of leafChildren) {
+      if (!c.displayModule || !c.path) continue;
+      const value = `/${parentSegment}/${route.path}/${c.path}`;
+
+      result.push({
+        key: value,
+        label: c.title ?? c.path,
+        value,
+        icon: c.icon,
+        navigates: true, // leaf options in a submenu are always click-to-navigate
+      });
+    }
+
     return result;
   }
 
   private resolveLeafChildren(children: RouteChild[]): RouteChild[] {
-    const displayable = children.filter(c => c.displayModule && c.path);
-    return displayable;
+    return children.filter(c => c.displayModule && c.path);
   }
 
   getSelectedValue(route: RouteChild, options: RouteOption[]): RouteOption | null {
     const currentUrl = this.router.url;
     return options.find(o => {
-      // Check Angular router state OR raw URL match for release builds
       return this.isActiveOption(o) || currentUrl.includes(o.value);
     }) ?? null;
   }
 
   isActiveOption(option: RouteOption): boolean {
-    // exact: false ensures sub-routes remain active
     return this.router.isActive(option.value, {
       paths: 'subset',
       queryParams: 'ignored',
       fragment: 'ignored',
       matrixParams: 'ignored',
     });
-  }
-
-  openNav(event: Event, index: number): void {
-    event.stopPropagation();
-    const popsArray = this.pops.toArray();
-  
-    if (this.isOpen && this.activeIndex === index) {
-      popsArray[index]?.hide();
-      this.isOpen = false;
-      this.activeIndex = -1;
-      return;
-    }
-  
-    popsArray.forEach((p, i) => { if (i !== index) p.hide(); });
-    popsArray[index]?.show(event);
-    this.isOpen = true;
-    this.activeIndex = index;
   }
 
   onRouteSelect(option: RouteOption): void {
@@ -143,28 +178,6 @@ export class ModuleControl {
     if (option.navigates) {
       this.router.navigateByUrl(option.value);
     }
-  }
-
-  hoverNav(event: Event, index: number): void {
-    if (!this.isOpen || this.activeIndex === index) return;
-    event.stopPropagation();
-    this.switching = true;
-    const popsArray = this.pops.toArray();
-    popsArray.forEach((p, i) => { if (i !== index) p.hide(); });
-    popsArray[index]?.show(event);
-    this.activeIndex = index;
-    setTimeout(() => this.switching = false, 100);
-  }
-
-  closeAll(): void {
-    this.isOpen = false;
-    this.pops.toArray().forEach(p => p.hide());
-  }
-
-  onPopoverHide(): void {
-    if (this.switching) return;
-    this.isOpen = false;
-    this.activeIndex = -1;
   }
 
   formatShortcut(shortcut: KeyboardShortcut): string {

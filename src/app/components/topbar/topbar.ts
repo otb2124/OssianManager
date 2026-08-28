@@ -2,13 +2,13 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TabsControl } from '../tabs-control/tabs-control';
-import { ModuleControl } from "../module-control/module-control"; 
 import { ProjectUiService } from '../../services/projects/project-ui/project-ui.service';
 import { ProjectService } from '../../services/projects/project.service';
+import { MenuNav } from '../module-control/menu-nav';
 
 @Component({
   selector: 'app-topbar',
-  imports: [CommonModule, TabsControl, ModuleControl],
+  imports: [CommonModule, TabsControl, MenuNav],
   templateUrl: './topbar.html',
 })
 export class Topbar {

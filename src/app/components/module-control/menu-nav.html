@@ -1,0 +1,15 @@
+<p-menubar [model]="menuItems()" styleClass="!rounded-none !border-0 !border-b !bg-transparent">
+    <ng-template #item let-item let-root="root">
+      <a class="flex items-center gap-2 px-2 py-1 text-xs cursor-pointer transition-colors
+                hover:bg-[var(--theme-color-muted)] select-none"
+         [style.color]="item.isActive ? 'var(--theme-color)' : null">
+        <i *ngIf="item.icon" [class]="item.icon + ' text-xs shrink-0'"></i>
+        <span>{{ item.label }}</span>
+        <span *ngIf="item.shortcut"
+              class="text-[10px] text-gray-400 dark:text-gray-500 ml-auto">
+          {{ item.shortcut }}
+        </span>
+        <i *ngIf="item.items && !root" class="pi pi-chevron-right !text-[8px] ml-auto"></i>
+      </a>
+    </ng-template>
+  </p-menubar>

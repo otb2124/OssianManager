@@ -59,6 +59,7 @@ export const routes: RouteChild[] =
             title: 'Recents',
             icon: 'pi pi-clock',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/projects/projects-page/projects-page.js').then(m => m.ProjectsPage),
             data: { id:"projects-recents" }
           },
@@ -67,6 +68,7 @@ export const routes: RouteChild[] =
             title: 'My Projects',
             icon: 'pi pi-folder',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/projects/projects-page/projects-page.js').then(m => m.ProjectsPage),
             data: { id:"projects-my-projects" }
           },
@@ -258,6 +260,7 @@ export const routes: RouteChild[] =
             title: 'App',
             icon: 'pi pi-cog',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"settings-app" }
           },
@@ -266,6 +269,7 @@ export const routes: RouteChild[] =
             title: 'Engine',
             icon: 'pi pi-microchip',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"settings-engine" }
           },
@@ -274,6 +278,7 @@ export const routes: RouteChild[] =
             title: 'Theme',
             icon: 'pi pi-palette',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"settings-theme" }
           },
@@ -299,6 +304,7 @@ export const routes: RouteChild[] =
             title: 'Browse',
             icon: 'pi pi-search',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/libraries/libraries-page/libraries-page.js').then(m => m.LibrariesPage),
           },
           {
@@ -306,6 +312,7 @@ export const routes: RouteChild[] =
             title: 'Publish',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/libraries/libraries-page/libraries-page.js').then(m => m.LibrariesPage),
           },
         ]
@@ -352,6 +359,7 @@ export const routes: RouteChild[] =
             title: 'Details',
             icon: 'pi pi-cog',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"build-details" }
           },
@@ -360,6 +368,7 @@ export const routes: RouteChild[] =
             title: 'Tree',
             icon: 'pi pi-microchip',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"build-tree" }
           },
@@ -368,6 +377,7 @@ export const routes: RouteChild[] =
             title: 'Startup',
             icon: 'pi pi-palette',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"build-startup" }
           },
@@ -392,6 +402,7 @@ export const routes: RouteChild[] =
             title: 'Window',
             icon: 'pi pi-search',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"display-window" }
           },
@@ -400,6 +411,7 @@ export const routes: RouteChild[] =
             title: 'Accessibility',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"display-accessibility" }          },
           {
@@ -407,6 +419,7 @@ export const routes: RouteChild[] =
             title: 'Rendering',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"display-rendering" }
           },
@@ -415,6 +428,7 @@ export const routes: RouteChild[] =
             title: 'Cursor',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"display-cursor" }
           },
@@ -423,6 +437,7 @@ export const routes: RouteChild[] =
             title: 'Physics',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"display-physics" }
           },
@@ -447,6 +462,7 @@ export const routes: RouteChild[] =
             title: 'Keys',
             icon: 'pi pi-search',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"input-keys" }
           },
@@ -455,6 +471,7 @@ export const routes: RouteChild[] =
             title: 'Axis',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"input-axis" }
           },
@@ -463,6 +480,7 @@ export const routes: RouteChild[] =
             title: 'Controllers',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"input-controllers" }
           },
@@ -487,6 +505,7 @@ export const routes: RouteChild[] =
             title: 'Actions',
             icon: 'pi pi-search',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"events-actions" }
           },
@@ -495,6 +514,7 @@ export const routes: RouteChild[] =
             title: 'State Machines',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"events-state-machines" }
           },
@@ -503,6 +523,7 @@ export const routes: RouteChild[] =
             title: 'Pronouns',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"events-pronouns" }
           },
@@ -527,6 +548,7 @@ export const routes: RouteChild[] =
             title: 'Translations',
             icon: 'pi pi-search',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"language-translations" }
           },
@@ -535,6 +557,7 @@ export const routes: RouteChild[] =
             title: 'Remap',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"language-remap" }
           },
@@ -543,6 +566,7 @@ export const routes: RouteChild[] =
             title: 'Formats',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"language-formats" }
           },
@@ -551,6 +575,7 @@ export const routes: RouteChild[] =
             title: 'Transnationalization',
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
+            displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"language-transnationalization" }
           },
