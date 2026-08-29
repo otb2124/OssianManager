@@ -21,8 +21,23 @@
     "/project/display/cursor",
     "/project/display/rendering",
     "/project/events/actions",
-    "/project/events/state-machines"
+    "/project/events/state-machines",
+    "/project/events/pronouns",
+    "/project/events/conditions",
+    "/project/build/details",
+    "/project/build/tree",
+    "/project/input/keys",
+    "/project/input/axis",
+    "/project/input/controllers",
+    "/file/projects/my-projects",
+    "/tools/libraries/browse",
+    "/tools/libraries/publish",
+    "/tools/logs",
+    "/project/language/translations",
+    "/project/language/remap",
+    "/project/language/formats",
+    "/project/language/transnationalization"
   ],
-  "activeTab": "/project/events/actions",
+  "activeTab": "/scene01",
   "currentProjectId": "12886441-196f-42d8-b6ea-c8a0d07e0e2f"
 }

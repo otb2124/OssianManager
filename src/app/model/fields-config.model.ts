@@ -62,7 +62,35 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
           { id: 'quick_load', label: 'Quick Load', icon: 'pi pi-bolt', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
         ]
       },
-      { kind: 'number', path: 'globalsMultiline', label: 'Globals (TODO: multiline-control)' },
+      {
+        kind: 'editable-table',
+        path: 'transitionsTable',
+        label: 'Transitions',
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,
+        columns: [
+          {
+            kind: 'list',
+            path: 'globalsListStringPath',
+            label: 'Globals',
+            itemConfig: {
+              kind: 'resource-picker',
+              path: '',
+              label: '',
+              actions: [
+                { id: 'load', label: 'Load', icon: 'pi pi-folder-open', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
+                { id: 'quick_load', label: 'Quick Load', icon: 'pi pi-bolt', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
+              ]
+            }
+          },
+          {
+            kind: 'boolean',
+            path: 'globalsEnabled',
+            label: 'Enable',
+          }
+        ],
+      }
     ],
     'display-window':
     [
@@ -93,7 +121,37 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
     [
       { kind: 'boolean', path: 'cursorVisible', label: 'Visible' },
       { kind: 'boolean', path: 'cursorDisabled', label: 'Disabled' },
-      { kind: 'text', path: 'cursorImageMultiline', label: 'Cursor Image (TODO: multiline-control)' },
+      {
+        kind: 'editable-table',
+        path: 'cursorTable',
+        label: 'Pronouns',
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,
+        columns: [
+          {
+            kind: 'select',
+            path: 'cursorType',
+            label: 'Type',
+            options: [
+              { value: 'default', label: 'default' },
+              { value: 'context', label: 'context' },
+              { value: 'crosshair', label: 'Crosshair' },
+            ],
+          },
+          {
+            kind: 'resource-picker',
+            path: 'cursorImagePath',
+            label: 'Image',
+            actions:
+            [
+              { id: 'load', label: 'Load', icon: 'pi pi-folder-open', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
+              { id: 'quick_load', label: 'Quick Load', icon: 'pi pi-bolt', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
+            ]
+          },
+          { kind: 'number', path: 'cursorSize', label: 'Size', suffix: ' px' },
+        ],
+      }
     ],
     'display-physics':
     [
@@ -121,11 +179,97 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
     ],
     'input-keys':
     [
-      { kind: 'text', path: 'inputKeysMultiline', label: 'Input Keys (TODO: multiline-control)' },
+      {
+        kind: 'editable-table',
+        path: 'inputKeysTable',
+        label: 'Input Keys',
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,
+        columns: [
+          {
+            kind: 'text',
+            path: 'inputKeyId',
+            label: 'Id',
+          },
+          {
+            kind: 'select',
+            path: 'inputKeyType',
+            label: 'Type',
+            options: [
+              { label: 'Down', value: 'down' },
+              { label: 'Release', value: 'release' },
+              { label: 'Click', value: 'click' },
+            ],
+          },
+          {
+            kind: 'list',
+            path: 'inputKeysListString',
+            label: 'Keys',
+            itemConfig: {
+              kind: 'select',
+              path: '',
+              label: '',
+              options: [
+                { label: 'Keys.W', value: 'down' },
+                { label: 'Keys.Arrow', value: 'release' },
+                { label: 'Keys.Enter', value: 'click' },
+              ],
+            }
+          },
+          {
+            kind: 'boolean',
+            path: 'globalsEnabled',
+            label: 'Enable',
+          }
+        ],
+      }
     ],
     'input-axis':
     [
-      { kind: 'text', path: 'inputAxisMultiline', label: 'Input Axis (TODO: multiline-control)' },
+      {
+        kind: 'editable-table',
+        path: 'inputAxisTable',
+        label: 'Input Axis',
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,
+        columns: [
+          {
+            kind: 'text',
+            path: 'inputAxisId',
+            label: 'Id',
+          },
+          {
+            kind: 'select',
+            path: 'inputAxisType',
+            label: 'Source',
+            options: [
+              { label: 'Mouse Delta X', value: 'down' },
+              { label: 'Mouse Delta Y', value: 'release' },
+              { label: 'Mouse Delta Scroll', value: 'click' },
+            ],
+          },
+          {
+            kind: 'number',
+            path: 'sensitivity',
+            label: 'Sensitivity',
+            step: 0.01,
+            min: 0,
+            max: 1,
+          },
+          {
+            kind: 'boolean',
+            path: 'axisInverted',
+            label: 'Invert',
+          },
+          {
+            kind: 'boolean',
+            path: 'globalsEnabled',
+            label: 'Enable',
+          }
+        ],
+      }
     ],
     //
     'events-actions':
@@ -133,7 +277,65 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
       {
         kind: 'editable-table',
         path: 'actionsTable',
-        label: 'Actions List',
+        label: 'Actions',
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,
+        columns: [
+          {
+            kind: 'text',
+            path: 'name',
+            label: 'Action Name',
+            maxlength: 30,
+          },
+          {
+            kind: 'number',
+            path: 'priority',
+            label: 'Priority',
+            step: 1,
+            min: 0,
+            max: 10,
+          },
+          {
+            kind: 'select',
+            path: 'triggerType',
+            label: 'Trigger',
+            options: [
+              { label: 'On Click', value: 'click' },
+              { label: 'On Hover', value: 'hover' },
+              { label: 'On Load', value: 'load' },
+            ],
+          },
+          {
+            kind: 'list',
+            path: 'argsListString',
+            label: 'Args',
+            itemConfig: {
+              kind: 'text',
+              path: '',
+              label: '',
+            }
+          },
+          {
+            kind: 'color',
+            path: 'highlightColor',
+            label: 'Highlight',
+            allowAlpha: false,
+          },
+          {
+            kind: 'boolean',
+            path: 'enabled',
+            label: 'Active',
+          },
+        ],
+      }
+    ],
+    'events-conditions':
+    [
+      {
+        kind: 'editable-table',
+        path: 'actionsTable',
+        label: 'Conditions',
         allowAdd: true,
         allowDelete: true,
         allowReorder: true,
@@ -188,10 +390,155 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
     ],
     'events-state-machines':
     [
-      { kind: 'text', path: 'statemachinesStateMachines', label: 'State Machines (TODO: statemachines-control)' },
+      {
+        kind: 'editable-table',
+        path: 'statesTable',
+        label: 'States',
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,
+        columns: [
+          {
+            kind: 'text',
+            path: 'stateId',
+            label: 'Id',
+          },
+          {
+            kind: 'list',
+            path: 'onEnterActions',
+            label: 'OnEnter',
+            itemConfig: {
+              kind: 'select',
+              path: '',
+              label: '',
+              options: [
+                { label: 'action.dosmth', value: 'click' },
+                { label: 'action.anim1', value: 'hover' },
+                { label: 'action.exit', value: 'load' },
+              ],
+            }
+          },
+          {
+            kind: 'list',
+            path: 'onUpdateActions',
+            label: 'OnUpdate',
+            itemConfig: {
+              kind: 'select',
+              path: '',
+              label: '',
+              options: [
+                { label: 'action.dosmth', value: 'click' },
+                { label: 'action.anim1', value: 'hover' },
+                { label: 'action.exit', value: 'load' },
+              ],
+            }
+          },
+          {
+            kind: 'list',
+            path: 'onExitActions',
+            label: 'OnExit',
+            itemConfig: {
+              kind: 'select',
+              path: '',
+              label: '',
+              options: [
+                { label: 'action.dosmth', value: 'click' },
+                { label: 'action.anim1', value: 'hover' },
+                { label: 'action.exit', value: 'load' },
+              ],
+            }
+          },
+        ],
+      },
+      {
+        kind: 'select',
+        path: 'initialState',
+        label: 'Initial State',
+        options: [
+          { label: 'Idle', value: 'click' },
+          { label: 'Running', value: 'hover' },
+          { label: 'Walking', value: 'load' },
+        ],
+      },
+      {
+        kind: 'editable-table',
+        path: 'transitionsTable',
+        label: 'Transitions',
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,
+        columns: [
+          {
+            kind: 'select',
+            path: 'stateFrom',
+            label: 'From',
+            options: [
+              { label: 'Idle', value: 'click' },
+              { label: 'Running', value: 'hover' },
+              { label: 'Walking', value: 'load' },
+            ],
+          },
+          {
+            kind: 'select',
+            path: 'stateTo',
+            label: 'To',
+            options: [
+              { label: 'Idle', value: 'click' },
+              { label: 'Running', value: 'hover' },
+              { label: 'Walking', value: 'load' },
+            ],
+          },
+          {
+            kind: 'list',
+            path: 'conditions',
+            label: 'Conditions',
+            itemConfig: {
+              kind: 'select',
+              path: '',
+              label: '',
+              options: [
+                { label: 'condition.grounded', value: 'click' },
+                { label: 'condition.iq100', value: 'hover' },
+                { label: 'condition.noInput', value: 'load' },
+              ],
+            }
+          },
+        ],
+      }
     ],
     'events-pronouns':
     [
-      { kind: 'text', path: 'pronounsMultiline', label: 'Pronouns (TODO: multiline-control)' },
+      {
+        kind: 'editable-table',
+        path: 'pronounsTable',
+        label: 'Pronouns',
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,
+        columns: [
+          {
+            kind: 'text',
+            path: 'pronounId',
+            label: 'Id',
+            maxlength: 30,
+          },
+          {
+            kind: 'text',
+            path: 'pronounTarget',
+            label: 'Target',
+            maxlength: 30,
+          },
+          {
+            kind: 'list',
+            path: 'pronounsList',
+            label: 'Pronouns',
+            itemConfig: {
+              kind: 'text',
+              path: '',
+              label: '',
+            }
+          },
+        ],
+      }
     ],
 };

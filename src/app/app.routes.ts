@@ -510,6 +510,15 @@ export const routes: RouteChild[] =
             data: { id:"events-actions" }
           },
           {
+            path: 'conditions',
+            title: 'Conditions',
+            icon: 'pi pi-search',
+            displayBreadcrumb: true,
+            displayModule: true,
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"events-conditions" }
+          },
+          {
             path: 'state-machines',
             title: 'State Machines',
             icon: 'pi pi-cloud-upload',
