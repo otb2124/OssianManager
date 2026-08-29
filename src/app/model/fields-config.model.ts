@@ -163,6 +163,16 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
             ],
           },
           {
+            kind: 'list',
+            path: 'argsListString',
+            label: 'Args',
+            itemConfig: {
+              kind: 'text',
+              path: '',
+              label: '',
+            }
+          },
+          {
             kind: 'color',
             path: 'highlightColor',
             label: 'Highlight',

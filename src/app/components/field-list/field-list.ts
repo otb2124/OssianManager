@@ -11,6 +11,7 @@ import { ColorPickerControl } from "../color-picker-control/color-picker-control
 import { TagSelectControl } from '../tag-select-control/tag-select-control';
 import { ImageSelectControl, ImageSelectOption, ImageSelectSize } from '../image-select-control/image-select-control';
 import { EditableTableControl } from '../editable-table-control/editable-table-control';
+import { ListControl } from '../list-control/list-control';
 
 export type PropertyPath = string;
 
@@ -46,6 +47,7 @@ export type FieldConfig =
   | (FieldConfigBase & { kind: 'tags'; })
   | (FieldConfigBase & { kind: 'resource-picker'; actions: ResourcePickerAction[]; })
   | (FieldConfigBase & { kind: 'image-select'; options: ImageSelectOption[]; size?: ImageSelectSize; showItemLabels?: boolean; })
+  | (FieldConfigBase & { kind: 'list'; path: string; label: string; itemConfig: FieldConfig })
   | (FieldConfigBase & { kind: 'editable-table'; columns: FieldConfig[]; allowAdd?: boolean; allowDelete?: boolean; allowReorder?: boolean; });
 
 export interface PropertyPanelConfig {
@@ -70,7 +72,8 @@ export interface PropertyPanelConfig {
     ColorPickerControl,
     TagSelectControl,
     ImageSelectControl,
-    EditableTableControl
+    EditableTableControl,
+    ListControl
   ],
   templateUrl: './field-list.html',
   styleUrl: './field-list.css',

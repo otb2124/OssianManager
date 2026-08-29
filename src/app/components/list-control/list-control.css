@@ -1,0 +1,11 @@
+/* Keep list items aligned smoothly when controls expand */
+.group {
+    position: relative;
+  }
+  
+  /* Smooth transition for the hover cross icon */
+  .group button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }

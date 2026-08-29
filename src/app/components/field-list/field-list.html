@@ -93,6 +93,14 @@
             (ngModelChange)="setValue(field.path, $event)">
           </app-image-select-control>
         }
+        @case ('list') {
+          <app-list-control
+            [label]="hideLabels ? '' : field.label"
+            [itemConfig]="field.itemConfig"
+            [ngModel]="getValue(field.path)"
+            (ngModelChange)="setValue(field.path, $event)">
+          </app-list-control>
+        }
         @case ('editable-table') {
           <app-editable-table-control
             [label]="hideLabels ? '' : field.label"
