@@ -26,6 +26,7 @@ export class EditableTableControl {
   @Input() allowDelete = true;
   @Input() allowReorder = false;
   @Input() readonly = false;
+  @Input() align?: 'left' | 'center' | 'right' = 'left';
 
   @Output() valueChange = new EventEmitter<TableRowData[]>();
 

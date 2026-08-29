@@ -1,9 +1,11 @@
 <div [class]="direction === 'horizontal' ? 'flex flex-row flex-wrap items-center gap-2 w-full' : 'flex flex-col gap-3 w-full'">
   @for (field of visibleFields(); track field.path) {
+    @let isFullWidth = fullWidthControls || ['editable-table', 'accordion', 'list'].includes(field.kind);
+
     <div [class]="
       direction === 'horizontal' 
-        ? (field.kind === 'editable-table' || 'accordion' ? 'w-full' : 'flex-1 min-w-[120px]') 
-        : (field.kind === 'editable-table' || 'accordion' ? 'w-full' : 'w-full max-w-md')
+        ? (isFullWidth ? 'w-full' : 'flex-1 min-w-[120px] max-w-md') 
+        : (isFullWidth ? 'w-full' : 'w-full max-w-md')
     ">
       @switch (field.kind) {
         @case ('text') {

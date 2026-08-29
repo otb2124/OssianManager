@@ -4,23 +4,23 @@
     <span class="text-xs font-medium text-gray-400 dark:text-gray-500">{{ label }}</span>
   }
 
-  <div class="flex flex-wrap items-center gap-1 w-full">
+  <!-- Horizontal wrapping container -->
+  <div class="flex flex-row flex-wrap items-center gap-2 w-full">
     <!-- Existing Items -->
     @for (item of value; track $index; let i = $index) {
-      <div class="group relative flex items-center gap-1 min-w-[120px] max-w-xs">
+      <div class="inline-flex items-center gap-1">
         
         <!-- Rendered Control -->
-        <div class="flex-1 min-w-0">
-          <app-field-list
-            [fields]="getItemFieldConfig(i)"
-            [model]="getItemModel(i)"
-            [hideLabels]="true"
-            direction="horizontal"
-            (modelChange)="onModelChange(i, $event)">
-          </app-field-list>
-        </div>
+        <app-field-list
+          [fields]="getItemFieldConfig(i)"
+          [model]="getItemModel(i)"
+          [hideLabels]="true"
+          direction="horizontal"
+          (modelChange)="onModelChange(i, $event)"
+          [fullWidthControls]="false">
+        </app-field-list>
 
-        <!-- Inline Hover Remove Icon -->
+        <!-- Remove Icon -->
         @if (!readonly) {
           <p-button
             class="text-xs text-gray-400 cursor-pointer shrink-0"

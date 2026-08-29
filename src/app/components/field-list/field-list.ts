@@ -105,6 +105,7 @@ export class FieldList implements OnChanges {
   @Input() fields: FieldConfig[] = [];
   @Input() direction: 'vertical' | 'horizontal' = 'vertical';
   @Input() hideLabels = false;
+  @Input() fullWidthControls = false;
 
   @Output() modelChange = new EventEmitter<Record<string, any>>();
 
