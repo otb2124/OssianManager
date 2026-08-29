@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, forwardRef, ChangeDetectorRef }
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { FieldList, FieldConfig } from '../field-list/field-list';
+import { FieldList, FieldConfig } from '../../field-list/field-list';
 
 export type TableRowData = Record<string, any>;
 

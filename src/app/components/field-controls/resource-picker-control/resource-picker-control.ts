@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PopoverModule } from 'primeng/popover';
 import { InputTextModule } from 'primeng/inputtext';
 import { FloatLabelModule } from 'primeng/floatlabel';
-import { DialogService } from '../../services/persistence/dialog.service';
+import { DialogService } from '../../../services/persistence/dialog.service';
 import { ButtonModule } from 'primeng/button';
 
 export interface ResourcePickerAction {

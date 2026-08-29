@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-import { FieldConfig, FieldList } from '../field-list/field-list';
+import { FieldConfig, FieldList } from '../../field-list/field-list';
 
 @Component({
   selector: 'app-list-control',

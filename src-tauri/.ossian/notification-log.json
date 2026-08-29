@@ -4,6 +4,14 @@
     "title": "Project opened",
     "description": "new project",
     "life": 3000,
+    "id": "3694a8aa-b8d3-4d74-b4b8-50a7529b9404",
+    "timestamp": "2026-08-29T17:44:23.436Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
     "id": "e39b4be3-f263-4355-b94e-9abc6c77554f",
     "timestamp": "2026-08-29T17:37:36.270Z"
   },

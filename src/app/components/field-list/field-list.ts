@@ -1,20 +1,20 @@
 import { Component, computed, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SelectControlOption, SelectControl } from '../select-control/select-control';
-import { ResourcePickerAction, ResourcePickerControl } from '../resource-picker-control/resource-picker-control';
-import { InputTextControl } from "../input-text-control/input-text-control";
-import { InputNumberControl } from "../input-number-control/input-number-control";
-import { BooleanControl } from "../boolean-control/boolean-control";
-import { VectorControl } from "../vector-control/vector-control";
-import { ColorPickerControl } from "../color-picker-control/color-picker-control";
-import { TagSelectControl } from '../tag-select-control/tag-select-control';
-import { ImageSelectControl, ImageSelectOption, ImageSelectSize } from '../image-select-control/image-select-control';
-import { EditableTableControl } from '../editable-table-control/editable-table-control';
-import { ListControl } from '../list-control/list-control';
-import { AccordionControl, AccordionControlConfig } from '../accordion-control/accordion-control';
+import { SelectControlOption, SelectControl } from '../fields/select-control/select-control';
+import { ResourcePickerAction, ResourcePickerControl } from '../fields/resource-picker-control/resource-picker-control';
+import { InputTextControl } from "../fields/input-text-control/input-text-control";
+import { InputNumberControl } from "../fields/input-number-control/input-number-control";
+import { BooleanControl } from "../fields/boolean-control/boolean-control";
+import { VectorControl } from "../fields/vector-control/vector-control";
+import { ColorPickerControl } from "../fields/color-picker-control/color-picker-control";
+import { TagSelectControl } from '../fields/tag-select-control/tag-select-control';
+import { ImageSelectControl, ImageSelectOption, ImageSelectSize } from '../fields/image-select-control/image-select-control';
+import { EditableTableControl } from '../fields/editable-table-control/editable-table-control';
+import { ListControl } from '../fields/list-control/list-control';
+import { AccordionControl, AccordionControlConfig } from '../fields/accordion-control/accordion-control';
 import { TreeNode } from 'primeng/api';
-import { TreeSelectControl } from '../tree-select-control/tree-select-control';
+import { TreeSelectControl } from '../fields/tree-select-control/tree-select-control';
 
 export type PropertyPath = string;
 
