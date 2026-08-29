@@ -1,18 +1,26 @@
-import { Component, Input, Output, EventEmitter, forwardRef, inject } from '@angular/core';
+import { Component, Input, forwardRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
+import { TreeNode } from 'primeng/api';
 import { FieldConfig, FieldList } from '../field-list/field-list';
 import { DialogFormConfig, DialogFormService } from '../../services/dialog-form/dialog-form.service';
 
-export type AccordionPanelConfig = {
+export interface PanelTypeDefinition {
+  type?: string;
   header: string;
   icon?: string;
   fields: FieldConfig[];
-  /** Optional dialog configuration for creating new panels */
-  addDialogConfig?: Omit<DialogFormConfig, 'model'>;
-};
+  addDialogConfig?: Partial<DialogFormConfig>;
+}
+
+export interface AccordionControlConfig {
+  templateTreeOptions?: TreeNode[];
+  templates: Record<string, PanelTypeDefinition>;
+  addDialogConfig?: Partial<DialogFormConfig>;
+}
 
 @Component({
   selector: 'app-accordion-control',
@@ -22,6 +30,7 @@ export type AccordionPanelConfig = {
     FormsModule,
     AccordionModule,
     ButtonModule,
+    TooltipModule,
     forwardRef(() => FieldList)
   ],
   providers: [
@@ -35,7 +44,7 @@ export type AccordionPanelConfig = {
 })
 export class AccordionControl implements ControlValueAccessor {
   @Input() label = '';
-  @Input() panelTemplate: AccordionPanelConfig = { header: 'New Panel', fields: [] };
+  @Input() config!: AccordionControlConfig;
   @Input() allowAdd = true;
   @Input() allowDelete = true;
   @Input() readonly = false;
@@ -60,22 +69,59 @@ export class AccordionControl implements ControlValueAccessor {
   }
 
   async addPanel(): Promise<void> {
-    if (this.readonly) return;
+    if (this.readonly || !this.config?.templates) return;
 
-    let newPanelModel: Record<string, any> | null = {};
+    const templateKeys = Object.keys(this.config.templates);
+    if (templateKeys.length === 0) return;
 
-    // 1. If addDialogConfig is provided, open the modal dialog first
-    if (this.panelTemplate.addDialogConfig) {
-      newPanelModel = await this.dialogService.open({
-        ...this.panelTemplate.addDialogConfig,
-        model: {} // Start empty or pass default values
+    let selectedType = templateKeys[0];
+    let initialData: Record<string, any> = {};
+
+    const currentTemplate = this.config.templates[selectedType];
+    const hasMultipleTemplates = templateKeys.length > 1;
+    const dialogConfig = currentTemplate?.addDialogConfig || this.config.addDialogConfig;
+
+    // Open dialog ONLY if there are multiple templates to choose from OR an explicit addDialogConfig is set
+    if (hasMultipleTemplates || dialogConfig) {
+      const modalFields: FieldConfig[] = dialogConfig?.fields ?? [
+        {
+          kind: 'tree-select',
+          path: 'selectedTypeNode',
+          label: 'Select Type',
+          selectionMode: 'single',
+          options: this.config.templateTreeOptions ?? []
+        }
+      ];
+
+      const dialogResult = await this.dialogService.open({
+        title: dialogConfig?.title ?? 'Add Item',
+        width: dialogConfig?.width ?? '450px',
+        submitLabel: dialogConfig?.submitLabel ?? 'Add',
+        fields: modalFields
       });
 
-      // If user canceled the dialog, don't add a panel
-      if (!newPanelModel) return;
-    } else {
-      // 2. Fallback: Initialize empty properties from panelTemplate fields
-      for (const field of this.panelTemplate.fields) {
+      if (!dialogResult) return;
+
+      if (dialogResult['selectedTypeNode']) {
+        selectedType = typeof dialogResult['selectedTypeNode'] === 'object'
+          ? dialogResult['selectedTypeNode'].key
+          : dialogResult['selectedTypeNode'];
+      }
+
+      initialData = { ...dialogResult };
+      delete initialData['selectedTypeNode'];
+    }
+
+    const templateDef = this.config.templates[selectedType];
+    if (!templateDef) return;
+
+    const newPanelModel: Record<string, any> = {
+      type: templateDef.type || selectedType,
+      ...initialData
+    };
+
+    for (const field of templateDef.fields) {
+      if (!(field.path in newPanelModel)) {
         newPanelModel[field.path] = null;
       }
     }
@@ -98,9 +144,17 @@ export class AccordionControl implements ControlValueAccessor {
     this.notifyChange();
   }
 
-  getPanelHeader(index: number): string {
-    const item = this.value[index];
-    return item?.['headerTitle'] || item?.['name'] || `${this.panelTemplate.header} ${index + 1}`;
+  getPanelHeader(panelItem: Record<string, any>, index: number): string {
+    const templateDef = this.config.templates[panelItem['type']];
+    return panelItem['name'] || templateDef?.header || `Panel ${index + 1}`;
+  }
+
+  getPanelIcon(panelItem: Record<string, any>): string {
+    return this.config.templates[panelItem['type']]?.icon || 'pi pi-box';
+  }
+
+  getPanelFields(panelItem: Record<string, any>): FieldConfig[] {
+    return this.config.templates[panelItem['type']]?.fields || [];
   }
 
   private notifyChange(): void {

@@ -125,7 +125,7 @@
         @case ('accordion') {
           <app-accordion-control
             [label]="hideLabels ? '' : field.label"
-            [panelTemplate]="field.panelTemplate"
+            [config]="field.config"
             [allowAdd]="field.allowAdd ?? true"
             [allowDelete]="field.allowDelete ?? true"
             [ngModel]="getValue(field.path)"

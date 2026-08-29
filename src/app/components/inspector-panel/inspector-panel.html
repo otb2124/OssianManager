@@ -1,33 +1,23 @@
-<!-- inspector-panel.html -->
 <div class="flex flex-col gap-3 p-3 h-full overflow-auto text-xs">
 
-  <div *ngIf="!sceneService.selectedNode()" class="text-gray-400 dark:text-gray-500 italic">
-    No object selected
-  </div>
+  @if (!sceneService.selectedNode()) {
+    <div class="text-gray-400 dark:text-gray-500 italic">
+      No object selected
+    </div>
+  }
 
-  <ng-container *ngIf="sceneService.selectedNode() as node">
-
+  @if (sceneService.selectedNode(); as node) {
+    <!-- Selected Object Header -->
     <div class="flex items-center gap-2 pb-2 border-b border-[var(--theme-color-border)]">
       <i class="pi pi-box shrink-0"></i>
       <span class="font-medium truncate">{{ nodeName() }}</span>
     </div>
 
-    <p-accordion [multiple]="true">
-      @for (panel of panelConfigs; track panel.key) {
-        <p-accordion-panel [value]="panel.key">
-          <p-accordion-header>
-            <div class="flex items-center gap-2">
-              <i [class]="panel.icon + ' text-xs shrink-0'"></i>
-              <span class="text-xs font-medium">{{ panel.label }}</span>
-            </div>
-          </p-accordion-header>
-          <p-accordion-content>
-            <app-field-list [fields]="panel.fields" [target]="fieldTarget()!"></app-field-list>
-          </p-accordion-content>
-        </p-accordion-panel>
-      }
-    </p-accordion>
-
-  </ng-container>
+    <!-- Dynamic Accordion Component Host -->
+    <app-field-list 
+      [fields]="inspectorFields" 
+      [target]="fieldTarget()!">
+    </app-field-list>
+  }
 
 </div>

@@ -7,7 +7,7 @@
       @if (allowAdd && !readonly) {
         <p-button
           icon="pi pi-plus"
-          label="Add Panel"
+          label="Add"
           [text]="true"
           size="small"
           (onClick)="addPanel()">
@@ -22,12 +22,10 @@
           <p-accordion-header>
             <div class="flex items-center justify-between w-full pr-2">
               
-              <!-- Header Icon & Title -->
+              <!-- Dynamic Header Icon & Title based on panel type -->
               <div class="flex items-center gap-2">
-                @if (panelTemplate.icon) {
-                  <i [class]="panelTemplate.icon + ' text-sm'"></i>
-                }
-                <span class="font-semibold text-sm">{{ getPanelHeader(i) }}</span>
+                <i [class]="getPanelIcon(panelModel) + ' text-xs'"></i>
+                <span class="font-semibold text-sm">{{ getPanelHeader(panelModel, i) }}</span>
               </div>
   
               <!-- Remove Button -->
@@ -35,18 +33,18 @@
                 <i
                   class="pi pi-trash text-xs text-gray-400 hover:text-red-500 p-1.5 rounded-full hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
                   (click)="removePanel(i, $event)"
-                  pTooltip="Delete panel"
+                  pTooltip="Delete"
                   tooltipPosition="left">
                 </i>
               }
             </div>
           </p-accordion-header>
   
-          <!-- Panel Body with Field List -->
+          <!-- Panel Body with Resolved Type Fields -->
           <p-accordion-content>
             <div class="pt-2">
               <app-field-list
-                [fields]="panelTemplate.fields"
+                [fields]="getPanelFields(panelModel)"
                 [model]="panelModel"
                 direction="vertical"
                 (modelChange)="onPanelModelChange(i, $event)">
@@ -56,7 +54,7 @@
         </p-accordion-panel>
       } @empty {
         <div class="text-center py-4 border border-dashed border-surface-300 dark:border-surface-700 rounded text-xs text-gray-400 italic">
-          No accordion panels added yet.
+          No items added yet.
         </div>
       }
     </p-accordion>

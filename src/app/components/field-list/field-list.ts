@@ -12,7 +12,7 @@ import { TagSelectControl } from '../tag-select-control/tag-select-control';
 import { ImageSelectControl, ImageSelectOption, ImageSelectSize } from '../image-select-control/image-select-control';
 import { EditableTableControl } from '../editable-table-control/editable-table-control';
 import { ListControl } from '../list-control/list-control';
-import { AccordionControl, AccordionPanelConfig } from '../accordion-control/accordion-control';
+import { AccordionControl, AccordionControlConfig } from '../accordion-control/accordion-control';
 import { TreeNode } from 'primeng/api';
 import { TreeSelectControl } from '../tree-select-control/tree-select-control';
 
@@ -60,13 +60,13 @@ export type FieldConfig =
   | (FieldConfigBase & { kind: 'image-select'; options: ImageSelectOption[]; size?: ImageSelectSize; showItemLabels?: boolean; })
   | (FieldConfigBase & { kind: 'list'; path: string; label: string; itemConfig: FieldConfig })
   | (FieldConfigBase & { kind: 'editable-table'; columns: FieldConfig[]; allowAdd?: boolean; allowDelete?: boolean; allowReorder?: boolean; })
-  | (FieldConfigBase & { 
-    kind: 'accordion'; 
-    path: string; 
-    label: string; 
-    panelTemplate: AccordionPanelConfig; 
-    allowAdd?: boolean; 
-    allowDelete?: boolean; 
+  | (FieldConfigBase & {
+    kind: 'accordion';
+    path: string;
+    label: string;
+    config: AccordionControlConfig;
+    allowAdd?: boolean;
+    allowDelete?: boolean;
   });
 
 export interface PropertyPanelConfig {

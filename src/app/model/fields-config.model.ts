@@ -388,198 +388,145 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
         ],
       }
     ],
-    'events-state-machines': 
-    [
-      {
-        kind: 'accordion',
-        path: 'stateMachines',
-        label: 'State Machines',
-        allowAdd: true,
-        allowDelete: true,
-        panelTemplate: {
-          header: 'State Machine',
-          icon: 'pi pi-sitemap',
-          addDialogConfig: {
-            title: 'Create New State Machine',
-            width: '450px',
-            submitLabel: 'Create Machine',
+    'events-state-machines': [
+    {
+      kind: 'accordion',
+      path: 'stateMachines',
+      label: 'State Machines',
+      allowAdd: true,
+      allowDelete: true,
+      config: {
+        templates: {
+          stateMachine: {
+            header: 'State Machine',
+            icon: 'pi pi-sitemap',
             fields: [
               {
                 kind: 'text',
                 path: 'name',
-                label: 'Machine Name'
-              },
-              {
-                kind: 'tree-select',
-                path: 'targetNode',
-                label: 'Target Scene Node',
-                selectionMode: 'single',
-                options: [
-                  {
-                    key: '0',
-                    label: 'Root Scene',
-                    data: 'root',
-                    icon: 'pi pi-fw pi-folder',
-                    selectable: false,
-                    children: [
-                      {
-                        key: '0-0',
-                        label: 'Environment',
-                        data: 'env',
-                        icon: 'pi pi-fw pi-globe',
-                        selectable: false,
-                        children: [
-                          { key: '0-0-1', label: 'Terrain', data: 'terrain', icon: 'pi pi-fw pi-image' },
-                          { key: '0-0-2', label: 'Lighting', data: 'lights', icon: 'pi pi-fw pi-sun' }
-                        ]
-                      },
-                      {
-                        key: '0-1',
-                        label: 'Player Controller',
-                        data: 'player',
-                        icon: 'pi pi-fw pi-user'
-                      }
-                    ]
-                  }
-                ]
+                label: 'Machine Name',
               },
               {
                 kind: 'select',
                 path: 'initialState',
-                label: 'Default Initial State',
+                label: 'Initial State',
                 options: [
                   { label: 'Idle', value: 'idle' },
                   { label: 'Running', value: 'running' },
-                  { label: 'Walking', value: 'walking' }
-                ]
-              }
-            ]
+                  { label: 'Walking', value: 'walking' },
+                ],
+              },
+              {
+                kind: 'editable-table',
+                path: 'statesTable',
+                label: 'States',
+                allowAdd: true,
+                allowDelete: true,
+                allowReorder: true,
+                columns: [
+                  {
+                    kind: 'text',
+                    path: 'stateId',
+                    label: 'Id',
+                  },
+                  {
+                    kind: 'list',
+                    path: 'onEnterActions',
+                    label: 'OnEnter',
+                    itemConfig: {
+                      kind: 'select',
+                      path: '',
+                      label: '',
+                      options: [
+                        { label: 'action.dosmth', value: 'click' },
+                        { label: 'action.anim1', value: 'hover' },
+                        { label: 'action.exit', value: 'load' },
+                      ],
+                    },
+                  },
+                  {
+                    kind: 'list',
+                    path: 'onUpdateActions',
+                    label: 'OnUpdate',
+                    itemConfig: {
+                      kind: 'select',
+                      path: '',
+                      label: '',
+                      options: [
+                        { label: 'action.dosmth', value: 'click' },
+                        { label: 'action.anim1', value: 'hover' },
+                        { label: 'action.exit', value: 'load' },
+                      ],
+                    },
+                  },
+                  {
+                    kind: 'list',
+                    path: 'onExitActions',
+                    label: 'OnExit',
+                    itemConfig: {
+                      kind: 'select',
+                      path: '',
+                      label: '',
+                      options: [
+                        { label: 'action.dosmth', value: 'click' },
+                        { label: 'action.anim1', value: 'hover' },
+                        { label: 'action.exit', value: 'load' },
+                      ],
+                    },
+                  },
+                ],
+              },
+              {
+                kind: 'editable-table',
+                path: 'transitionsTable',
+                label: 'Transitions',
+                allowAdd: true,
+                allowDelete: true,
+                allowReorder: true,
+                columns: [
+                  {
+                    kind: 'select',
+                    path: 'stateFrom',
+                    label: 'From',
+                    options: [
+                      { label: 'Idle', value: 'idle' },
+                      { label: 'Running', value: 'running' },
+                      { label: 'Walking', value: 'walking' },
+                    ],
+                  },
+                  {
+                    kind: 'select',
+                    path: 'stateTo',
+                    label: 'To',
+                    options: [
+                      { label: 'Idle', value: 'idle' },
+                      { label: 'Running', value: 'running' },
+                      { label: 'Walking', value: 'walking' },
+                    ],
+                  },
+                  {
+                    kind: 'list',
+                    path: 'conditions',
+                    label: 'Conditions',
+                    itemConfig: {
+                      kind: 'select',
+                      path: '',
+                      label: '',
+                      options: [
+                        { label: 'condition.grounded', value: 'click' },
+                        { label: 'condition.iq100', value: 'hover' },
+                        { label: 'condition.noInput', value: 'load' },
+                      ],
+                    },
+                  },
+                ],
+              },
+            ],
           },
-          fields: [
-            {
-              kind: 'text',
-              path: 'name',
-              label: 'Machine Name',
-            },
-            {
-              kind: 'select',
-              path: 'initialState',
-              label: 'Initial State',
-              options: [
-                { label: 'Idle', value: 'click' },
-                { label: 'Running', value: 'hover' },
-                { label: 'Walking', value: 'load' },
-              ],
-            },
-            {
-              kind: 'editable-table',
-              path: 'statesTable',
-              label: 'States',
-              allowAdd: true,
-              allowDelete: true,
-              allowReorder: true,
-              columns: [
-                {
-                  kind: 'text',
-                  path: 'stateId',
-                  label: 'Id',
-                },
-                {
-                  kind: 'list',
-                  path: 'onEnterActions',
-                  label: 'OnEnter',
-                  itemConfig: {
-                    kind: 'select',
-                    path: '',
-                    label: '',
-                    options: [
-                      { label: 'action.dosmth', value: 'click' },
-                      { label: 'action.anim1', value: 'hover' },
-                      { label: 'action.exit', value: 'load' },
-                    ],
-                  },
-                },
-                {
-                  kind: 'list',
-                  path: 'onUpdateActions',
-                  label: 'OnUpdate',
-                  itemConfig: {
-                    kind: 'select',
-                    path: '',
-                    label: '',
-                    options: [
-                      { label: 'action.dosmth', value: 'click' },
-                      { label: 'action.anim1', value: 'hover' },
-                      { label: 'action.exit', value: 'load' },
-                    ],
-                  },
-                },
-                {
-                  kind: 'list',
-                  path: 'onExitActions',
-                  label: 'OnExit',
-                  itemConfig: {
-                    kind: 'select',
-                    path: '',
-                    label: '',
-                    options: [
-                      { label: 'action.dosmth', value: 'click' },
-                      { label: 'action.anim1', value: 'hover' },
-                      { label: 'action.exit', value: 'load' },
-                    ],
-                  },
-                },
-              ],
-            },
-            {
-              kind: 'editable-table',
-              path: 'transitionsTable',
-              label: 'Transitions',
-              allowAdd: true,
-              allowDelete: true,
-              allowReorder: true,
-              columns: [
-                {
-                  kind: 'select',
-                  path: 'stateFrom',
-                  label: 'From',
-                  options: [
-                    { label: 'Idle', value: 'click' },
-                    { label: 'Running', value: 'hover' },
-                    { label: 'Walking', value: 'load' },
-                  ],
-                },
-                {
-                  kind: 'select',
-                  path: 'stateTo',
-                  label: 'To',
-                  options: [
-                    { label: 'Idle', value: 'click' },
-                    { label: 'Running', value: 'hover' },
-                    { label: 'Walking', value: 'load' },
-                  ],
-                },
-                {
-                  kind: 'list',
-                  path: 'conditions',
-                  label: 'Conditions',
-                  itemConfig: {
-                    kind: 'select',
-                    path: '',
-                    label: '',
-                    options: [
-                      { label: 'condition.grounded', value: 'click' },
-                      { label: 'condition.iq100', value: 'hover' },
-                      { label: 'condition.noInput', value: 'load' },
-                    ],
-                  },
-                },
-              ],
-            },
-          ],
         },
       },
-    ],
+    },
+  ],
     'events-pronouns':
     [
       {
