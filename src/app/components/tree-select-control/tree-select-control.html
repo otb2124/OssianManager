@@ -1,0 +1,20 @@
+<div class="flex flex-col gap-1 w-full">
+    <p-floatlabel variant="on">
+      <p-treeSelect
+        [options]="options"
+        [selectionMode]="selectionMode"
+        [ngModel]="value"
+        (ngModelChange)="onSelectionChange($event)"
+        [id]="'treeselect-' + label"
+        [placeholder]="placeholder"
+        [disabled]="readonly"
+        [appendTo]="'body'"
+        styleClass="w-full text-xs"
+        class="w-full"
+        panelStyleClass="text-xs">
+      </p-treeSelect>
+      @if (label) {
+        <label [for]="'treeselect-' + label">{{ label }}</label>
+      }
+    </p-floatlabel>
+  </div>

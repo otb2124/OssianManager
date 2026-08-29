@@ -410,6 +410,40 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
                 label: 'Machine Name'
               },
               {
+                kind: 'tree-select',
+                path: 'targetNode',
+                label: 'Target Scene Node',
+                selectionMode: 'single',
+                options: [
+                  {
+                    key: '0',
+                    label: 'Root Scene',
+                    data: 'root',
+                    icon: 'pi pi-fw pi-folder',
+                    selectable: false,
+                    children: [
+                      {
+                        key: '0-0',
+                        label: 'Environment',
+                        data: 'env',
+                        icon: 'pi pi-fw pi-globe',
+                        selectable: false,
+                        children: [
+                          { key: '0-0-1', label: 'Terrain', data: 'terrain', icon: 'pi pi-fw pi-image' },
+                          { key: '0-0-2', label: 'Lighting', data: 'lights', icon: 'pi pi-fw pi-sun' }
+                        ]
+                      },
+                      {
+                        key: '0-1',
+                        label: 'Player Controller',
+                        data: 'player',
+                        icon: 'pi pi-fw pi-user'
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
                 kind: 'select',
                 path: 'initialState',
                 label: 'Default Initial State',

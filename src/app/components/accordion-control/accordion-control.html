@@ -16,7 +16,7 @@
     </div>
   
     <!-- Accordion List -->
-    <p-accordion class="w-full">
+    <p-accordion class="w-full" [multiple]="true">
       @for (panelModel of value; track $index; let i = $index) {
         <p-accordion-panel [value]="i">
           <p-accordion-header>

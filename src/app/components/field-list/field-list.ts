@@ -13,6 +13,8 @@ import { ImageSelectControl, ImageSelectOption, ImageSelectSize } from '../image
 import { EditableTableControl } from '../editable-table-control/editable-table-control';
 import { ListControl } from '../list-control/list-control';
 import { AccordionControl, AccordionPanelConfig } from '../accordion-control/accordion-control';
+import { TreeNode } from 'primeng/api';
+import { TreeSelectControl } from '../tree-select-control/tree-select-control';
 
 export type PropertyPath = string;
 
@@ -42,6 +44,14 @@ export type FieldConfig =
   | (FieldConfigBase & { kind: 'text'; inputType?: 'text' | 'email' | 'password'; maxlength?: number; })
   | (FieldConfigBase & { kind: 'number'; step?: number; min?: number; max?: number; minFractionDigits?: number; maxFractionDigits?: number; prefix?: string; suffix?: string; })
   | (FieldConfigBase & { kind: 'select'; options: SelectControlOption[]; })
+  | (FieldConfigBase & {
+    kind: 'tree-select';
+    path: string;
+    label: string;
+    options: TreeNode[];
+    selectionMode?: 'single' | 'multiple' | 'checkbox';
+    placeholder?: string;
+  })
   | (FieldConfigBase & { kind: 'boolean'; })
   | (FieldConfigBase & { kind: 'color'; allowAlpha?: boolean; })
   | (FieldConfigBase & { kind: 'vector'; axisLabels?: string[]; step?: number; displayScale?: number; min?: number; max?: number; minFractionDigits?: number; maxFractionDigits?: number; prefix?: string | string[]; suffix?: string | string[]; })
@@ -75,6 +85,7 @@ export interface PropertyPanelConfig {
     InputTextControl,
     InputNumberControl,
     SelectControl,
+    TreeSelectControl,
     BooleanControl,
     ResourcePickerControl,
     VectorControl,

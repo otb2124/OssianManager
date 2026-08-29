@@ -37,6 +37,16 @@
             (ngModelChange)="setValue(field.path, $event)">
           </app-select-control>
         }
+        @case ('tree-select') {
+          <app-tree-select-control
+            [label]="hideLabels ? '' : field.label"
+            [options]="field.options"
+            [selectionMode]="field.selectionMode ?? 'single'"
+            [placeholder]="field.placeholder ?? ''"
+            [ngModel]="getValue(field.path)"
+            (ngModelChange)="setValue(field.path, $event)">
+          </app-tree-select-control>
+        }
         @case ('boolean') {
           <app-boolean-control
             [label]="hideLabels ? '' : field.label"
