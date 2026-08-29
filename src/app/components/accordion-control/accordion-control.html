@@ -1,0 +1,63 @@
+<div class="flex flex-col gap-1.5 w-full">
+    <!-- Top Label & Add Panel Action -->
+    <div class="flex items-center justify-between">
+      @if (label) {
+        <span class="text-xs font-medium text-gray-400 dark:text-gray-500">{{ label }}</span>
+      }
+      @if (allowAdd && !readonly) {
+        <p-button
+          icon="pi pi-plus"
+          label="Add Panel"
+          [text]="true"
+          size="small"
+          (onClick)="addPanel()">
+        </p-button>
+      }
+    </div>
+  
+    <!-- Accordion List -->
+    <p-accordion class="w-full">
+      @for (panelModel of value; track $index; let i = $index) {
+        <p-accordion-panel [value]="i">
+          <p-accordion-header>
+            <div class="flex items-center justify-between w-full pr-2">
+              
+              <!-- Header Icon & Title -->
+              <div class="flex items-center gap-2">
+                @if (panelTemplate.icon) {
+                  <i [class]="panelTemplate.icon + ' text-sm'"></i>
+                }
+                <span class="font-semibold text-sm">{{ getPanelHeader(i) }}</span>
+              </div>
+  
+              <!-- Remove Button -->
+              @if (allowDelete && !readonly) {
+                <i
+                  class="pi pi-trash text-xs text-gray-400 hover:text-red-500 p-1.5 rounded-full hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
+                  (click)="removePanel(i, $event)"
+                  pTooltip="Delete panel"
+                  tooltipPosition="left">
+                </i>
+              }
+            </div>
+          </p-accordion-header>
+  
+          <!-- Panel Body with Field List -->
+          <p-accordion-content>
+            <div class="pt-2">
+              <app-field-list
+                [fields]="panelTemplate.fields"
+                [model]="panelModel"
+                direction="vertical"
+                (modelChange)="onPanelModelChange(i, $event)">
+              </app-field-list>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+      } @empty {
+        <div class="text-center py-4 border border-dashed border-surface-300 dark:border-surface-700 rounded text-xs text-gray-400 italic">
+          No accordion panels added yet.
+        </div>
+      }
+    </p-accordion>
+  </div>

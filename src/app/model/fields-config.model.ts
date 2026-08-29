@@ -388,123 +388,163 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
         ],
       }
     ],
-    'events-state-machines':
+    'events-state-machines': 
     [
       {
-        kind: 'editable-table',
-        path: 'statesTable',
-        label: 'States',
+        kind: 'accordion',
+        path: 'stateMachines',
+        label: 'State Machines',
         allowAdd: true,
         allowDelete: true,
-        allowReorder: true,
-        columns: [
-          {
-            kind: 'text',
-            path: 'stateId',
-            label: 'Id',
+        panelTemplate: {
+          header: 'State Machine',
+          icon: 'pi pi-sitemap',
+          addDialogConfig: {
+            title: 'Create New State Machine',
+            width: '450px',
+            submitLabel: 'Create Machine',
+            fields: [
+              {
+                kind: 'text',
+                path: 'name',
+                label: 'Machine Name'
+              },
+              {
+                kind: 'select',
+                path: 'initialState',
+                label: 'Default Initial State',
+                options: [
+                  { label: 'Idle', value: 'idle' },
+                  { label: 'Running', value: 'running' },
+                  { label: 'Walking', value: 'walking' }
+                ]
+              }
+            ]
           },
-          {
-            kind: 'list',
-            path: 'onEnterActions',
-            label: 'OnEnter',
-            itemConfig: {
+          fields: [
+            {
+              kind: 'text',
+              path: 'name',
+              label: 'Machine Name',
+            },
+            {
               kind: 'select',
-              path: '',
-              label: '',
+              path: 'initialState',
+              label: 'Initial State',
               options: [
-                { label: 'action.dosmth', value: 'click' },
-                { label: 'action.anim1', value: 'hover' },
-                { label: 'action.exit', value: 'load' },
+                { label: 'Idle', value: 'click' },
+                { label: 'Running', value: 'hover' },
+                { label: 'Walking', value: 'load' },
               ],
-            }
-          },
-          {
-            kind: 'list',
-            path: 'onUpdateActions',
-            label: 'OnUpdate',
-            itemConfig: {
-              kind: 'select',
-              path: '',
-              label: '',
-              options: [
-                { label: 'action.dosmth', value: 'click' },
-                { label: 'action.anim1', value: 'hover' },
-                { label: 'action.exit', value: 'load' },
+            },
+            {
+              kind: 'editable-table',
+              path: 'statesTable',
+              label: 'States',
+              allowAdd: true,
+              allowDelete: true,
+              allowReorder: true,
+              columns: [
+                {
+                  kind: 'text',
+                  path: 'stateId',
+                  label: 'Id',
+                },
+                {
+                  kind: 'list',
+                  path: 'onEnterActions',
+                  label: 'OnEnter',
+                  itemConfig: {
+                    kind: 'select',
+                    path: '',
+                    label: '',
+                    options: [
+                      { label: 'action.dosmth', value: 'click' },
+                      { label: 'action.anim1', value: 'hover' },
+                      { label: 'action.exit', value: 'load' },
+                    ],
+                  },
+                },
+                {
+                  kind: 'list',
+                  path: 'onUpdateActions',
+                  label: 'OnUpdate',
+                  itemConfig: {
+                    kind: 'select',
+                    path: '',
+                    label: '',
+                    options: [
+                      { label: 'action.dosmth', value: 'click' },
+                      { label: 'action.anim1', value: 'hover' },
+                      { label: 'action.exit', value: 'load' },
+                    ],
+                  },
+                },
+                {
+                  kind: 'list',
+                  path: 'onExitActions',
+                  label: 'OnExit',
+                  itemConfig: {
+                    kind: 'select',
+                    path: '',
+                    label: '',
+                    options: [
+                      { label: 'action.dosmth', value: 'click' },
+                      { label: 'action.anim1', value: 'hover' },
+                      { label: 'action.exit', value: 'load' },
+                    ],
+                  },
+                },
               ],
-            }
-          },
-          {
-            kind: 'list',
-            path: 'onExitActions',
-            label: 'OnExit',
-            itemConfig: {
-              kind: 'select',
-              path: '',
-              label: '',
-              options: [
-                { label: 'action.dosmth', value: 'click' },
-                { label: 'action.anim1', value: 'hover' },
-                { label: 'action.exit', value: 'load' },
+            },
+            {
+              kind: 'editable-table',
+              path: 'transitionsTable',
+              label: 'Transitions',
+              allowAdd: true,
+              allowDelete: true,
+              allowReorder: true,
+              columns: [
+                {
+                  kind: 'select',
+                  path: 'stateFrom',
+                  label: 'From',
+                  options: [
+                    { label: 'Idle', value: 'click' },
+                    { label: 'Running', value: 'hover' },
+                    { label: 'Walking', value: 'load' },
+                  ],
+                },
+                {
+                  kind: 'select',
+                  path: 'stateTo',
+                  label: 'To',
+                  options: [
+                    { label: 'Idle', value: 'click' },
+                    { label: 'Running', value: 'hover' },
+                    { label: 'Walking', value: 'load' },
+                  ],
+                },
+                {
+                  kind: 'list',
+                  path: 'conditions',
+                  label: 'Conditions',
+                  itemConfig: {
+                    kind: 'select',
+                    path: '',
+                    label: '',
+                    options: [
+                      { label: 'condition.grounded', value: 'click' },
+                      { label: 'condition.iq100', value: 'hover' },
+                      { label: 'condition.noInput', value: 'load' },
+                    ],
+                  },
+                },
               ],
-            }
-          },
-        ],
+            },
+          ],
+        },
       },
-      {
-        kind: 'select',
-        path: 'initialState',
-        label: 'Initial State',
-        options: [
-          { label: 'Idle', value: 'click' },
-          { label: 'Running', value: 'hover' },
-          { label: 'Walking', value: 'load' },
-        ],
-      },
-      {
-        kind: 'editable-table',
-        path: 'transitionsTable',
-        label: 'Transitions',
-        allowAdd: true,
-        allowDelete: true,
-        allowReorder: true,
-        columns: [
-          {
-            kind: 'select',
-            path: 'stateFrom',
-            label: 'From',
-            options: [
-              { label: 'Idle', value: 'click' },
-              { label: 'Running', value: 'hover' },
-              { label: 'Walking', value: 'load' },
-            ],
-          },
-          {
-            kind: 'select',
-            path: 'stateTo',
-            label: 'To',
-            options: [
-              { label: 'Idle', value: 'click' },
-              { label: 'Running', value: 'hover' },
-              { label: 'Walking', value: 'load' },
-            ],
-          },
-          {
-            kind: 'list',
-            path: 'conditions',
-            label: 'Conditions',
-            itemConfig: {
-              kind: 'select',
-              path: '',
-              label: '',
-              options: [
-                { label: 'condition.grounded', value: 'click' },
-                { label: 'condition.iq100', value: 'hover' },
-                { label: 'condition.noInput', value: 'load' },
-              ],
-            }
-          },
-        ],
-      }
     ],
     'events-pronouns':
     [

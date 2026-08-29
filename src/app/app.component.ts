@@ -16,10 +16,11 @@ import { ContextMenu } from "./components/context-menu/context-menu";
 import { ContextMenuService } from './services/system/context-menu.service';
 import { HydratedProjectRecord } from './model/project-record.model';
 import { RouteChild } from './app.routes';
+import { DialogFormHostComponent } from "./components/dialog-form/dialog-form";
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, CommonModule, RouterOutlet, Topbar, ToastModule, Bottombar, SidebarNav, ContextMenu],
+  imports: [FormsModule, CommonModule, RouterOutlet, Topbar, ToastModule, Bottombar, SidebarNav, ContextMenu, DialogFormHostComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

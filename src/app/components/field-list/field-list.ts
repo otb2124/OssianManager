@@ -12,6 +12,7 @@ import { TagSelectControl } from '../tag-select-control/tag-select-control';
 import { ImageSelectControl, ImageSelectOption, ImageSelectSize } from '../image-select-control/image-select-control';
 import { EditableTableControl } from '../editable-table-control/editable-table-control';
 import { ListControl } from '../list-control/list-control';
+import { AccordionControl, AccordionPanelConfig } from '../accordion-control/accordion-control';
 
 export type PropertyPath = string;
 
@@ -48,7 +49,15 @@ export type FieldConfig =
   | (FieldConfigBase & { kind: 'resource-picker'; actions: ResourcePickerAction[]; })
   | (FieldConfigBase & { kind: 'image-select'; options: ImageSelectOption[]; size?: ImageSelectSize; showItemLabels?: boolean; })
   | (FieldConfigBase & { kind: 'list'; path: string; label: string; itemConfig: FieldConfig })
-  | (FieldConfigBase & { kind: 'editable-table'; columns: FieldConfig[]; allowAdd?: boolean; allowDelete?: boolean; allowReorder?: boolean; });
+  | (FieldConfigBase & { kind: 'editable-table'; columns: FieldConfig[]; allowAdd?: boolean; allowDelete?: boolean; allowReorder?: boolean; })
+  | (FieldConfigBase & { 
+    kind: 'accordion'; 
+    path: string; 
+    label: string; 
+    panelTemplate: AccordionPanelConfig; 
+    allowAdd?: boolean; 
+    allowDelete?: boolean; 
+  });
 
 export interface PropertyPanelConfig {
   key: string;
@@ -73,7 +82,8 @@ export interface PropertyPanelConfig {
     TagSelectControl,
     ImageSelectControl,
     EditableTableControl,
-    ListControl
+    ListControl,
+    AccordionControl
   ],
   templateUrl: './field-list.html',
   styleUrl: './field-list.css',

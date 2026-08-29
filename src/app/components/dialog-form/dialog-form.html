@@ -1,0 +1,40 @@
+@if (dialogService.config(); as cfg) {
+    <p-dialog
+      [header]="cfg.title"
+      [visible]="dialogService.isOpen()"
+      (visibleChange)="onVisibleChange($event)"
+      [modal]="true"
+      [style]="{ width: cfg.width || '500px' }"
+      [appendTo]="'body'"
+      [dismissableMask]="true"
+      [blockScroll]="true"
+      [focusOnShow]="false">
+  
+      <div class="py-2">
+        <app-field-list
+          [fields]="cfg.fields"
+          [model]="dialogService.currentModel()"
+          direction="vertical"
+          (modelChange)="onModelUpdate($event)">
+        </app-field-list>
+      </div>
+  
+      <ng-template pTemplate="footer">
+        <div class="flex justify-end gap-2">
+          <p-button
+            class="text-xs font-medium text-gray-400 transition-colors"
+            (click)="dialogService.cancel()"
+            severity="secondary">
+            {{ cfg.cancelLabel || 'Cancel' }}
+          </p-button>
+  
+          <p-button
+            class="text-xs font-medium text-white rounded transition-colors"
+            (click)="onSubmit()"
+            severity="primary">
+            {{ cfg.submitLabel || 'Save' }}
+          </p-button>
+        </div>
+      </ng-template>
+    </p-dialog>
+  }

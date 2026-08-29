@@ -2,8 +2,8 @@
   @for (field of visibleFields(); track field.path) {
     <div [class]="
       direction === 'horizontal' 
-        ? (field.kind === 'editable-table' ? 'w-full' : 'flex-1 min-w-[120px]') 
-        : (field.kind === 'editable-table' ? 'w-full' : 'w-full max-w-md')
+        ? (field.kind === 'editable-table' || 'accordion' ? 'w-full' : 'flex-1 min-w-[120px]') 
+        : (field.kind === 'editable-table' || 'accordion' ? 'w-full' : 'w-full max-w-md')
     ">
       @switch (field.kind) {
         @case ('text') {
@@ -111,6 +111,16 @@
             [ngModel]="getValue(field.path)"
             (ngModelChange)="setValue(field.path, $event)">
           </app-editable-table-control>
+        }
+        @case ('accordion') {
+          <app-accordion-control
+            [label]="hideLabels ? '' : field.label"
+            [panelTemplate]="field.panelTemplate"
+            [allowAdd]="field.allowAdd ?? true"
+            [allowDelete]="field.allowDelete ?? true"
+            [ngModel]="getValue(field.path)"
+            (ngModelChange)="setValue(field.path, $event)">
+          </app-accordion-control>
         }
       }
     </div>
