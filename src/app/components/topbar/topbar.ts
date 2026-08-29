@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { TabsControl } from '../tabs-control/tabs-control';
 import { ProjectUiService } from '../../services/projects/project-ui/project-ui.service';
 import { ProjectService } from '../../services/projects/project.service';
-import { MenuNav } from '../module-control/menu-nav';
+import { MenuNav } from '../menu-nav/menu-nav';
 
 @Component({
   selector: 'app-topbar',

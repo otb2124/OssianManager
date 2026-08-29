@@ -2,7 +2,8 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TransformNode } from '@babylonjs/core';
-import { VectorControl } from '../fields/vector-control/vector-control';
+import { VectorControl } from '../field-controls/vector-control/vector-control';
+
 
 @Component({
   selector: 'app-transform-control',

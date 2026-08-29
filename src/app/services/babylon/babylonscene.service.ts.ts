@@ -6,25 +6,20 @@ import { Engine, Scene, Node, TransformNode, Camera } from '@babylonjs/core';
 export class BabylonSceneService {
   private readonly _scene = signal<Scene | null>(null);
   private readonly _selectedNode = signal<Node | null>(null);
+  
+  // Signal triggered whenever nodes are added/removed in Babylon
+  private readonly _nodeVersion = signal<number>(0);
 
   readonly scene = this._scene.asReadonly();
   readonly selectedNode = this._selectedNode.asReadonly();
+  readonly nodeVersion = this._nodeVersion.asReadonly();
 
   private engine: Engine | null = null;
   private activeCamera: Camera | null = null;
   private activeControlCanvas: HTMLCanvasElement | null = null;
 
-  /**
-   * Creates the single shared Engine + Scene against the given canvas and
-   * starts the render loop. Must be called exactly once, by whichever
-   * component owns the canvas element (currently Workspaces). Safe to call
-   * only when no engine exists yet — callers should guard against
-   * re-initialization (e.g. across HMR) themselves if that becomes relevant.
-   */
   init(canvas: HTMLCanvasElement): void {
-    if (this.engine) {
-      return; // already initialized — avoid creating a second Engine/Scene
-    }
+    if (this.engine) return;
 
     this.engine = new Engine(canvas, true, {
       preserveDrawingBuffer: true,
@@ -33,8 +28,20 @@ export class BabylonSceneService {
     });
 
     const scene = new Scene(this.engine);
-    this._scene.set(scene);
+    
+    // Listen to scene observables to notify Angular Signals on node changes
+    const notifyChange = () => this._nodeVersion.update(v => v + 1);
+    
+    scene.onNewMeshAddedObservable.add(notifyChange);
+    scene.onMeshRemovedObservable.add(notifyChange);
+    scene.onNewTransformNodeAddedObservable?.add(notifyChange);
+    scene.onTransformNodeRemovedObservable?.add(notifyChange);
+    scene.onNewCameraAddedObservable.add(notifyChange);
+    scene.onCameraRemovedObservable.add(notifyChange);
+    scene.onNewLightAddedObservable.add(notifyChange);
+    scene.onLightRemovedObservable.add(notifyChange);
 
+    this._scene.set(scene);
     this.engine.runRenderLoop(() => scene.render());
   }
 

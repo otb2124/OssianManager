@@ -1,0 +1,45 @@
+<div class="w-full h-full flex flex-col select-none text-xs">
+  
+    <!-- Single-Row Toolbar -->
+    <div class="mb-2 flex items-center gap-2 shrink-0">
+      <input 
+        pInputText 
+        type="text" 
+        (input)="onFilter($event)" 
+        placeholder="Filter..." 
+        class="flex-1 min-w-0 px-2 py-1 text-xs rounded focus:outline-none focus:ring-1 focus:ring-[var(--theme-color)]" />
+  
+      <p-button 
+        icon="pi pi-plus" 
+        (onClick)="expandAll()" 
+        severity="secondary"
+        size="small"
+        [text]="true"
+        styleClass="!p-1" />
+  
+      <p-button 
+        icon="pi pi-minus" 
+        (onClick)="collapseAll()" 
+        severity="secondary"
+        size="small"
+        [text]="true"
+        styleClass="!p-1" />
+    </div>
+  
+    <!-- PrimeNG Tree -->
+    <div class="flex-1 min-h-0 overflow-auto">
+      <p-tree 
+        #pTree
+        [value]="nodes" 
+        [selectionMode]="config.selectionMode || 'single'"
+        filterMode="lenient"
+        (onNodeSelect)="onNodeSelect($event)"
+        (onNodeUnselect)="onNodeUnselect($event)"
+        (onNodeExpand)="onNodeExpand($event)"
+        (onNodeCollapse)="onNodeCollapse($event)"
+        class="w-full"
+        styleClass="w-full border-none p-0 bg-transparent text-xs">
+      </p-tree>
+    </div>
+  
+  </div>

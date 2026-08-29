@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FileTreeNode } from './file-tree-node';
+import { TreeControl } from './tree-control';
 
-describe('FileTreeNode', () => {
-  let component: FileTreeNode;
-  let fixture: ComponentFixture<FileTreeNode>;
+describe('TreeControl', () => {
+  let component: TreeControl;
+  let fixture: ComponentFixture<TreeControl>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FileTreeNode]
+      imports: [TreeControl]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(FileTreeNode);
+    fixture = TestBed.createComponent(TreeControl);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
