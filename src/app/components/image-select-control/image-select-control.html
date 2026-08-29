@@ -1,0 +1,35 @@
+<div class="flex flex-col gap-1 w-full">
+  @if (label) {
+    <span class="text-xs font-medium text-gray-400 dark:text-gray-500">{{ label }}</span>
+  }
+  
+  <div class="w-full overflow-x-auto pb-1 scrollbar-thin">
+    <p-selectButton 
+      [options]="options" 
+      [disabled]="readonly"
+      [ngModel]="value" 
+      (ngModelChange)="onChange($event)"
+      optionValue="value"
+      styleClass="flex flex-nowrap min-w-max gap-1.5">
+      
+      <ng-template let-item #item>
+        <div class="flex flex-col items-center gap-1 p-1">
+          <img 
+            [src]="item.imageUrl" 
+            [alt]="item.label ?? 'Option image'" 
+            [ngClass]="imageSizeClass"
+            class="object-cover rounded border border-surface-200 dark:border-surface-700 pointer-events-none shrink-0" />
+          
+          @if (showItemLabels && item.label) {
+            <span 
+              [ngClass]="labelMaxWidthClass"
+              class="text-xs select-none font-normal text-center leading-tight truncate">
+              {{ item.label }}
+            </span>
+          }
+        </div>
+      </ng-template>
+
+    </p-selectButton>
+  </div>
+</div>

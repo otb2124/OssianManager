@@ -1,0 +1,15 @@
+/* Maintain table display when CDK extracts the row into a floating preview */
+tr.cdk-drag-preview {
+    display: table !important;
+    table-layout: fixed;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    background-color: var(--surface-card, #18181b);
+  }
+  
+  tr.cdk-drag-placeholder {
+    opacity: 0.25;
+  }
+  
+  .cdk-drag-animating {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+  }

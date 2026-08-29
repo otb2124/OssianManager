@@ -13,5 +13,20 @@
     "id": "59d74d0c-0d37-4d25-afa0-39b56e4b74dc",
     "label": "new tag",
     "color": "#0055ff"
+  },
+  {
+    "id": "4dd4b4ec-a966-47bc-ac4a-c3e60718b529",
+    "label": "dev",
+    "color": "#d7e3fc"
+  },
+  {
+    "id": "b8a070de-3bec-4433-b7d1-8297bdb4e5f6",
+    "label": "prod-v0.1",
+    "color": "#00ff4d"
+  },
+  {
+    "id": "dceef6a9-4b45-4d5a-a227-34d89fcb3d75",
+    "label": "prototype",
+    "color": "#00fff7"
   }
 ]

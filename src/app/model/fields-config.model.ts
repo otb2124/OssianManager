@@ -1,4 +1,4 @@
-import { FieldConfig } from "../components/property-list/field-list";
+import { FieldConfig } from "../components/field-list/field-list";
 
 
 export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
@@ -15,17 +15,21 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
     ],
     'settings-theme':
     [
-      {
-        kind: 'select',
-        path: 'themeTemplateId',
-        label: 'Template (TODO:image-select control)',
-        options: [
-          { value: 'dark', label: 'Dark' },
-          { value: 'light', label: 'Light' },
-          { value: 'blue', label: 'Blue' },
-        ],
+      { kind: 'image-select', 
+        path: 'themeTemplateId', 
+        label: 'Template',
+        size: 'xl',
+        options: 
+        [ 
+          { value: 'black', label: 'Black', imageUrl: 'https://www.color-hex.com/palettes/1405.png' },
+          { value: 'soft-black', label: 'Soft Black', imageUrl: 'https://www.color-hex.com/palettes/46586.png' },
+          { value: 'bleeding-black', label: 'Bleeding Black', imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEVKBBVtIxJ17uCUY1jxvIAqij6t6LYemQcYVN0N06KwcTyRWW7xhlRTU&s=10' },
+          { value: 'makara', label: 'Makara', imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBwSbLrt5roCZ3BjkDZnILjpReHMqlhyIhxK6mehRwdQ&s=10' },
+          { value: 'coffee-black', label: 'Coffee Black', imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWYGurD-1J-rffnx0GVpLnMsTt8XlK8pNXbPEkyzueCw&s=10' },
+          { value: 'pink-black', label: 'Pink Black', imageUrl: 'https://images.media.io/colors/midnight-velvet-black-color-palette.jpg' },
+        ] 
       },
-      { kind: 'color', path: 'themeColor', label: 'Theme Color' },
+      { kind: 'color', path: 'themeColor', label: 'Theme Color', allowAlpha: false },
       {
         kind: 'select',
         path: 'themeFont',
@@ -126,7 +130,51 @@ export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
     //
     'events-actions':
     [
-      { kind: 'text', path: 'actionsMultiline', label: 'Actions (TODO: multiline-control)' },
+      {
+        kind: 'editable-table',
+        path: 'actionsTable',
+        label: 'Actions List',
+        allowAdd: true,
+        allowDelete: true,
+        allowReorder: true,
+        columns: [
+          {
+            kind: 'text',
+            path: 'name',
+            label: 'Action Name',
+            maxlength: 30,
+          },
+          {
+            kind: 'number',
+            path: 'priority',
+            label: 'Priority',
+            step: 1,
+            min: 0,
+            max: 10,
+          },
+          {
+            kind: 'select',
+            path: 'triggerType',
+            label: 'Trigger',
+            options: [
+              { label: 'On Click', value: 'click' },
+              { label: 'On Hover', value: 'hover' },
+              { label: 'On Load', value: 'load' },
+            ],
+          },
+          {
+            kind: 'color',
+            path: 'highlightColor',
+            label: 'Highlight',
+            allowAlpha: false,
+          },
+          {
+            kind: 'boolean',
+            path: 'enabled',
+            label: 'Active',
+          },
+        ],
+      }
     ],
     'events-state-machines':
     [

@@ -19,8 +19,9 @@
     "/project/display/accessibility",
     "/project/display/physics",
     "/project/display/cursor",
-    "/project/display/rendering"
+    "/project/display/rendering",
+    "/project/events/actions"
   ],
-  "activeTab": "/tools/settings/theme",
+  "activeTab": "/project/events/actions",
   "currentProjectId": "12886441-196f-42d8-b6ea-c8a0d07e0e2f"
 }

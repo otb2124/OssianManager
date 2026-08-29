@@ -4,6 +4,594 @@
     "title": "Project opened",
     "description": "new project",
     "life": 3000,
+    "id": "496c0f51-2803-417b-9d31-d88cf9956d29",
+    "timestamp": "2026-08-29T07:31:52.008Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "cd1cedea-6c12-4600-b7d9-cd9eb2aa16ce",
+    "timestamp": "2026-08-29T07:29:06.852Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "e3845bff-c526-4ab2-ab02-f7eb41e54960",
+    "timestamp": "2026-08-29T07:28:10.064Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "bc6dfc1b-c5e6-4f18-a3b4-89c84527241c",
+    "timestamp": "2026-08-29T07:27:53.202Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "4c73f19d-5de1-4f3f-a2b2-1f0edfadcc02",
+    "timestamp": "2026-08-29T07:27:33.829Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "efbbe686-2bae-481c-9cd2-21dc9575b9db",
+    "timestamp": "2026-08-29T07:27:04.070Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "d097a9b8-62fa-4399-b46c-9a2d6cd785d2",
+    "timestamp": "2026-08-29T07:26:38.197Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "ca2fa9d7-44ef-4b70-ac97-5f7f6dcf1283",
+    "timestamp": "2026-08-29T07:25:49.113Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "35739456-57c4-4a59-bf14-b8ed98336d09",
+    "timestamp": "2026-08-29T07:25:23.861Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "1a1c1d0f-140b-46c5-9e3d-f6bbe34f88f0",
+    "timestamp": "2026-08-29T07:24:23.271Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "5cbc2976-3b12-45d8-b18e-03a9403a4d56",
+    "timestamp": "2026-08-29T07:24:15.692Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "62ca07ea-5beb-453f-897f-9a3fa6dfea96",
+    "timestamp": "2026-08-29T07:22:45.468Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "07aa2255-444b-4907-a150-be207883bd8a",
+    "timestamp": "2026-08-29T07:22:38.089Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "099b233e-cdda-432f-ad41-b6db26d4d102",
+    "timestamp": "2026-08-29T07:21:32.898Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "403ae318-7079-4c93-9080-71cfd41556ac",
+    "timestamp": "2026-08-29T07:21:16.796Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "5a54c753-4290-4d90-8116-c3777dae6a87",
+    "timestamp": "2026-08-29T07:19:09.507Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "6e021f19-161a-4bc4-bd83-d0a2372357bb",
+    "timestamp": "2026-08-29T07:18:27.945Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "a217cd35-8d5b-4e26-9da7-ea3f10795efd",
+    "timestamp": "2026-08-29T07:18:18.071Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "eb19e057-0fd2-4899-910e-0c0a333e44b5",
+    "timestamp": "2026-08-29T07:16:35.242Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "9a39d220-aa86-4691-9655-904f4e3377a4",
+    "timestamp": "2026-08-29T07:14:01.872Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "b2aa9011-9894-4ddd-b481-75bc64677528",
+    "timestamp": "2026-08-29T07:13:42.404Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "a62aab3b-baaf-4a0f-8759-9a7ecf2c2e7f",
+    "timestamp": "2026-08-29T07:12:32.952Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "92dc09af-ff20-4dba-9d80-b5633e45e58c",
+    "timestamp": "2026-08-29T07:11:46.623Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "bdf55a0c-3d16-4668-bb44-1e7c42307952",
+    "timestamp": "2026-08-29T07:11:00.542Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "007b742d-7174-4b5f-b02e-5feb9a681345",
+    "timestamp": "2026-08-29T07:05:51.210Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "df67c866-5703-4d37-9e10-2f31faf19170",
+    "timestamp": "2026-08-29T07:05:37.313Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "484c1098-bc6e-479e-aeaa-c1a2026e90cc",
+    "timestamp": "2026-08-29T07:05:34.516Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "5918b345-ea3b-47f6-ac2e-eb49d6b5be37",
+    "timestamp": "2026-08-29T07:05:29.105Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "2bc7151b-6b15-4239-b1c9-b6fcd88876d0",
+    "timestamp": "2026-08-29T07:04:41.774Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "1b25091b-04a8-4fdb-8d49-f7689c082509",
+    "timestamp": "2026-08-29T07:04:11.111Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "530662db-9563-4ff8-8d74-569fd780b5f0",
+    "timestamp": "2026-08-29T06:58:32.507Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "37518cb7-5a30-4f3b-8bd2-4e8228745b6b",
+    "timestamp": "2026-08-29T06:54:10.868Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "33f57a34-1007-4848-9576-7c7d27f5f98e",
+    "timestamp": "2026-08-29T06:53:59.788Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "30218420-2ef8-4dbc-ad95-baae04ea4e3c",
+    "timestamp": "2026-08-29T06:53:52.031Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "8ece3c01-56b4-4107-86da-e4f8bbd4f30a",
+    "timestamp": "2026-08-29T06:53:43.453Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "94f329d2-0022-448f-bef0-2308d7799e63",
+    "timestamp": "2026-08-29T06:53:09.343Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "fa7ead4e-72da-4ec8-b0e1-9a18cb8e2906",
+    "timestamp": "2026-08-29T06:39:50.845Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "c58e4a57-b3bf-4089-a882-60c150797e01",
+    "timestamp": "2026-08-29T06:39:36.279Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "0228eaba-2979-4b7f-86ec-a239b38b2c23",
+    "timestamp": "2026-08-29T06:39:14.344Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "207c0ff2-7acc-4374-a547-05fb4d0642e7",
+    "timestamp": "2026-08-29T06:39:05.435Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "afe40a51-4181-4e5d-8654-dbb2af0768cb",
+    "timestamp": "2026-08-29T06:38:53.682Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "ac5bdbe9-f2d3-4a0c-904d-7199e15ef4ba",
+    "timestamp": "2026-08-29T06:38:37.741Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "9af0a20b-2806-482e-9111-a817b5cfad7c",
+    "timestamp": "2026-08-29T06:38:08.710Z"
+  },
+  {
+    "severity": "success",
+    "title": "Tag created",
+    "life": 3000,
+    "id": "17a711d3-2062-4a16-84a2-d57e10a79cdc",
+    "timestamp": "2026-08-29T06:33:27.212Z"
+  },
+  {
+    "severity": "success",
+    "title": "Tag created",
+    "life": 3000,
+    "id": "eee65e00-d015-4330-a29f-012c516ec350",
+    "timestamp": "2026-08-29T06:33:10.630Z"
+  },
+  {
+    "severity": "success",
+    "title": "Tag created",
+    "life": 3000,
+    "id": "91762ccb-59e4-4047-b145-3f41234e52f7",
+    "timestamp": "2026-08-29T06:32:55.186Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "b15d32ee-168b-4486-b955-327d589695b1",
+    "timestamp": "2026-08-29T06:30:27.870Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "7c6a1ede-b3ea-4487-82c5-ef6ac42ad299",
+    "timestamp": "2026-08-29T06:26:22.821Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "b950d0eb-d721-452a-b9e5-4905c9905c2a",
+    "timestamp": "2026-08-29T06:25:30.471Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "88d1ad66-c15b-41a0-9560-bc9220c0f0d6",
+    "timestamp": "2026-08-29T06:25:06.032Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "90a81501-0266-4ab8-9065-1aba5915afe6",
+    "timestamp": "2026-08-29T06:25:01.629Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "7becccdc-7509-4c6e-b35f-f95d84f0c890",
+    "timestamp": "2026-08-29T06:24:56.570Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "3e8970f5-c5ee-4a5e-9b4c-a412c94374a5",
+    "timestamp": "2026-08-29T06:24:46.594Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "90f63fb5-829f-4f78-a2c5-edea519303a9",
+    "timestamp": "2026-08-29T06:23:46.427Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "63750942-bff0-4448-97ba-07bb71fcb146",
+    "timestamp": "2026-08-29T06:23:19.985Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "6ef338db-521e-4a9b-90dd-799173d13820",
+    "timestamp": "2026-08-29T06:22:02.158Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "aabfab55-b63a-4d3c-bdfa-7c11e073c28c",
+    "timestamp": "2026-08-29T06:21:57.325Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "43f9d36a-0362-4fab-8405-f4b482c5a1a4",
+    "timestamp": "2026-08-29T06:21:38.575Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "aa50454c-8013-4e0b-aeb3-01f4e35aed0a",
+    "timestamp": "2026-08-29T06:20:56.690Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "83428a48-b325-4dba-be53-f3bde1e79364",
+    "timestamp": "2026-08-29T06:19:02.445Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "fa0346bd-b5a4-4e75-aae8-f642b76c950b",
+    "timestamp": "2026-08-29T06:18:49.677Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "10902a95-05af-4e89-b418-8624f045829c",
+    "timestamp": "2026-08-29T06:18:31.255Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "a0cec150-ae30-4190-974e-db574de26744",
+    "timestamp": "2026-08-29T06:18:18.050Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "d6d46e53-3872-43f0-b2c1-141ec95bb663",
+    "timestamp": "2026-08-29T06:16:59.378Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "3984b0ab-86da-49cb-8151-5b3c3746b1c2",
+    "timestamp": "2026-08-29T06:16:11.051Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "17b5662f-c8fe-4edd-b89e-b0f5b2dd3749",
+    "timestamp": "2026-08-29T06:15:50.584Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "cba182b6-7ef4-4d02-99c1-f1a7f23f74c5",
+    "timestamp": "2026-08-29T06:15:04.118Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "4333d82d-44c0-4e7b-9833-d66b2cd1694b",
+    "timestamp": "2026-08-29T06:12:19.163Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "6cab66a5-bca8-4f2d-956a-7ccb1d8eaa62",
+    "timestamp": "2026-08-29T06:11:59.950Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "caa3e43c-6433-40ba-89e0-69f422a5a81f",
+    "timestamp": "2026-08-29T06:11:53.391Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "f38e6196-c827-46b0-8b2e-060b712636ba",
+    "timestamp": "2026-08-29T06:11:03.864Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "91ea3f6d-4b70-47d2-b5d2-e142bb3084b9",
+    "timestamp": "2026-08-29T06:10:50.203Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
+    "id": "f8683561-4316-40de-8857-64b2f2d99bf1",
+    "timestamp": "2026-08-29T06:04:58.035Z"
+  },
+  {
+    "severity": "success",
+    "title": "Tag updated",
+    "life": 3000,
+    "id": "f1d79327-89ef-41f2-bcc5-74efa8c27936",
+    "timestamp": "2026-08-28T14:37:53.781Z"
+  },
+  {
+    "severity": "info",
+    "title": "Project opened",
+    "description": "new project",
+    "life": 3000,
     "id": "ba78fa4e-3c05-442e-8a27-7203efbb6cc6",
     "timestamp": "2026-08-28T14:36:09.806Z"
   },

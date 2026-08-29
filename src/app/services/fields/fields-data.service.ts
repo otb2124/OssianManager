@@ -3,7 +3,7 @@ import { Injectable, inject, signal, computed } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { RoutesService } from '../routes/routes.service';
-import { FieldConfig } from '../../components/property-list/field-list';
+import { FieldConfig } from '../../components/field-list/field-list';
 import { SETTINGS_PAGE_CONFIGS as FIELD_CONFIGS } from '../../model/fields-config.model';
 
 @Injectable({ providedIn: 'root' })

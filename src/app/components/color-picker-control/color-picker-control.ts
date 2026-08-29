@@ -1,4 +1,3 @@
-// color-picker-control.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +14,8 @@ import { FloatLabelModule } from "primeng/floatlabel";
 })
 export class ColorPickerControl {
   @Input() label = '';
-  @Input() value = '#000000ff'; // 8-digit hex: #rrggbbaa
+  @Input() value = '#000000ff';
+  @Input() allowAlpha = true;
 
   @Output() valueChange = new EventEmitter<string>();
 
@@ -24,6 +24,7 @@ export class ColorPickerControl {
   }
 
   get alphaPart(): number {
+    if (!this.allowAlpha) return 100;
     const hexAlpha = this.value.slice(7, 9);
     if (hexAlpha.length !== 2) return 100;
     return Math.round((parseInt(hexAlpha, 16) / 255) * 100);
@@ -38,6 +39,12 @@ export class ColorPickerControl {
   }
 
   private emitCombined(color: string, alphaPercent: number): void {
+    if (!this.allowAlpha) {
+      this.value = color;
+      this.valueChange.emit(color);
+      return;
+    }
+
     const alphaHex = Math.round((alphaPercent / 100) * 255)
       .toString(16)
       .padStart(2, '0');

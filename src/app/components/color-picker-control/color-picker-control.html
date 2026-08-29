@@ -1,26 +1,27 @@
-<!-- color-picker-control.html -->
-<div class="flex flex-col gap-1">
+<div class="flex flex-col gap-1 w-full">
 
-    <div class="flex items-center gap-1.5">
-      <p-floatlabel variant="on">
-        <input
-          pInputText
-          type="text"
-          [ngModel]="value"
-          id="color-picker-value-{{label}}"
-          class="w-full px-1.5 py-1 rounded bg-[var(--theme-color-muted)] outline-none" />
-        <label for="text-input-{{label}}">{{ label }}</label>
-      </p-floatlabel>
+  <div class="flex items-center gap-1.5 w-full">
+    <p-floatlabel variant="on" class="w-full flex-1">
+      <input
+        pInputText
+        type="text"
+        [ngModel]="value"
+        id="color-picker-value-{{label}}"
+        class="w-full px-1.5 py-1 rounded outline-none" />
+      <label for="color-picker-value-{{label}}">{{ label }}</label>
+    </p-floatlabel>
 
-      <p-colorPicker
-        [ngModel]="colorPart"
-        (ngModelChange)="onColorChange($event)"
-        format="hex"
-        appendTo="body">
-      </p-colorPicker>
-    </div>
-  
-    <div class="flex items-center gap-2">
+    <p-colorPicker
+      [ngModel]="colorPart"
+      (ngModelChange)="onColorChange($event)"
+      format="hex"
+      appendTo="body"
+      styleClass="shrink-0 flex items-center justify-center [&_button]:h-full [&_button]:w-full [&_.p-colorpicker-preview]:!h-8 [&_.p-colorpicker-preview]:!w-8 [&_.p-colorpicker-preview]:!rounded [&_.p-colorpicker-preview]:!border [&_.p-colorpicker-preview]:!border-solid [&_.p-colorpicker-preview]:!border-surface-300 [&_.p-colorpicker-preview]:dark:!border-surface-700 [&_.p-colorpicker-button]:!h-8 [&_.p-colorpicker-button]:!w-8 [&_.p-colorpicker-button]:!rounded [&_.p-colorpicker-button]:!border [&_.p-colorpicker-button]:!border-solid [&_.p-colorpicker-button]:!border-surface-300 [&_.p-colorpicker-button]:dark:!border-surface-700">
+    </p-colorPicker>
+  </div>
+
+  @if (allowAlpha) {
+    <div class="flex items-center gap-2 w-full">
       <span class="text-[10px] text-gray-400 dark:text-gray-500 shrink-0 w-8">Alpha</span>
       <p-slider
         [ngModel]="alphaPart"
@@ -31,4 +32,5 @@
       </p-slider>
       <span class="text-[10px] text-gray-400 dark:text-gray-500 shrink-0 w-8 text-right">{{ alphaPart }}%</span>
     </div>
-  </div>
+  }
+</div>

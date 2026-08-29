@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { TransformNode } from '@babylonjs/core';
 import { AccordionModule } from 'primeng/accordion';
 import { BabylonSceneService } from '../../services/babylon/babylonscene.service.ts';
-import { PropertyPanelConfig, FieldList, FieldTarget, PropertyPath } from '../property-list/field-list';
+import { PropertyPanelConfig, FieldList, FieldTarget, PropertyPath } from '../field-list/field-list.js';
 
 
 export class TransformNodeFieldTarget implements FieldTarget {
