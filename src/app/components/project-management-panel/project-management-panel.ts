@@ -6,7 +6,7 @@ import { DialogService } from '../../services/persistence/dialog.service';
 import { DialogWrapper } from '../dialog-wrapper/dialog-wrapper';
 import { ProjectRecordForm } from '../project-record-form/project-record-form';
 import { HydratedProjectRecord } from '../../model/project-record.model';
-import { ProjectService } from '../../services/projects/project.service';
+import { ProjectService } from '../../services/data/projects/project.service';
 import { NotificationService } from '../../services/notifications/notification.service';
 
 @Component({

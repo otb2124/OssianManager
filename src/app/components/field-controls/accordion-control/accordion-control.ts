@@ -6,7 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { TreeNode } from 'primeng/api';
 import { FieldConfig, FieldList } from '../../field-list/field-list';
-import { DialogFormConfig, DialogFormService } from '../../../services/dialog-form/dialog-form.service';
+import { DialogFormConfig, DialogFormService } from '../../../services/ui/dialog-form/dialog-form.service';
 
 export interface PanelTypeDefinition {
   type?: string;

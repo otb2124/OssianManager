@@ -1,7 +1,7 @@
 // file-explorer.service.ts
 import { Injectable, inject, signal, effect } from '@angular/core';
 import { PersistenceService, FsEntry } from '../persistence/persistence.service';
-import { ProjectService } from '../projects/project.service';
+import { ProjectService } from '../data/projects/project.service';
 
 @Injectable({ providedIn: 'root' })
 export class FileExplorerService {

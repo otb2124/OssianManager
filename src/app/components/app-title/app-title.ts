@@ -1,9 +1,9 @@
 import { Component, inject, ViewChild } from '@angular/core';
 import { TagModule } from "primeng/tag";
 import { Popover, PopoverModule } from 'primeng/popover';
-import { AppConfigService } from '../../services/app-config/app-config.service';
 import { CommonModule } from '@angular/common';
-import { EngineService } from '../../services/engine-config/engine.service';
+import { AppConfigService } from '../../services/data/app-config/app-config.service';
+import { EngineService } from '../../services/data/engine-config/engine.service';
 
 @Component({
   selector: 'app-title',

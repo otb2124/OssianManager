@@ -1,7 +1,7 @@
 import { Injectable, inject, DestroyRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouteChild, routes } from '../../app.routes';
-import { ProjectService } from '../projects/project.service';
+import { ProjectService } from '../data/projects/project.service';
 import { ActionRegistryService } from './action-registry.service';
 
 export interface KeyboardShortcut {

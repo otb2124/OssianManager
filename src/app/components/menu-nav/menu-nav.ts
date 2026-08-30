@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { MenubarModule } from 'primeng/menubar';
 import { MenuItem } from 'primeng/api';
 import { routes, RouteChild } from '../../app.routes';
-import { ProjectService } from '../../services/projects/project.service';
+import { ProjectService } from '../../services/data/projects/project.service';
 import { KeyboardShortcut, KeyShortcutService } from '../../services/system/key-shortcut.service';
 import { ActionRegistryService } from '../../services/system/action-registry.service';
 

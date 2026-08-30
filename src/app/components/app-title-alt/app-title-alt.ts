@@ -1,10 +1,10 @@
 import { Component, inject, signal, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PopoverModule, Popover } from 'primeng/popover';
-import { AppConfigService } from '../../services/app-config/app-config.service';
 import { GitService } from '../../services/git/git.service';
 import { GitCommit } from '../../model/git.model';
 import { AppTitle } from "../app-title/app-title";
+import { AppConfigService } from '../../services/data/app-config/app-config.service';
 
 @Component({
   selector: 'app-title-alt',

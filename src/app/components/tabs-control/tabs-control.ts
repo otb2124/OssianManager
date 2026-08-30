@@ -2,10 +2,10 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TooltipModule } from 'primeng/tooltip';
-import { TabsService } from '../../services/app-config/tabs.service';
 import { RouteChild } from '../../app.routes';
 import { ButtonModule } from "primeng/button";
 import { ContextMenuDirective } from '../../services/system/context-menu.directive';
+import { TabsService } from '../../services/data/app-config/tabs.service';
 
 @Component({
   selector: 'app-tabs-control',

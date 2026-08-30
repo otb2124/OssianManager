@@ -6,7 +6,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { routes, RouteChild } from '../../app.routes';
-import { ProjectService } from '../../services/projects/project.service';
+import { ProjectService } from '../../services/data/projects/project.service';
 import { PopoverModule, Popover } from 'primeng/popover';
 import { ButtonModule } from 'primeng/button';
 

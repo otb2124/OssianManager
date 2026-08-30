@@ -2,9 +2,10 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { RoutesService } from '../routes/routes.service';
-import { FieldConfig } from '../../components/field-list/field-list';
-import { SETTINGS_PAGE_CONFIGS as FIELD_CONFIGS } from '../../model/fields-config.model';
+import { FieldConfig } from '../../../components/field-list/field-list';
+import { RoutesService } from '../../routes/routes.service';
+import { NODE_CONTROL_FIELDS_CONFIG, SETTINGS_PAGE_FIELDS_CONFIG } from '../../../model/fields-config.model';
+
 
 @Injectable({ providedIn: 'root' })
 export class FieldsDataService {
@@ -30,6 +31,6 @@ export class FieldsDataService {
 
   readonly currentConfig = computed<FieldConfig[] | null>(() => {
     const id = this.currentDataId();
-    return id ? FIELD_CONFIGS[id] ?? null : null;
+    return id ? SETTINGS_PAGE_FIELDS_CONFIG[id] ?? null : null;
   });
 }

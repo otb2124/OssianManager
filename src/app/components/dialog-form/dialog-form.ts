@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { FieldList } from '../field-list/field-list';
-import { DialogFormService } from '../../services/dialog-form/dialog-form.service';
+import { DialogFormService } from '../../services/ui/dialog-form/dialog-form.service';
 
 @Component({
   selector: 'app-dialog-form',

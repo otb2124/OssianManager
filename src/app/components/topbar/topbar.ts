@@ -2,8 +2,8 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TabsControl } from '../tabs-control/tabs-control';
-import { ProjectUiService } from '../../services/projects/project-ui/project-ui.service';
-import { ProjectService } from '../../services/projects/project.service';
+import { ProjectUiService } from '../../services/data/projects/project-ui/project-ui.service';
+import { ProjectService } from '../../services/data/projects/project.service';
 import { MenuNav } from '../menu-nav/menu-nav';
 
 @Component({

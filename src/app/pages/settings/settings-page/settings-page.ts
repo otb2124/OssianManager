@@ -1,7 +1,7 @@
 // settings-page.ts
 import { Component, inject } from '@angular/core';
 import { FieldList, FieldTarget, PropertyPath } from '../../../components/field-list/field-list';
-import { FieldsDataService } from '../../../services/fields/fields-data.service';
+import { FieldsDataService } from '../../../services/ui/fields/fields-data.service';
 
 export class PlainObjectFieldTarget implements FieldTarget {
 

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { TagModule } from 'primeng/tag';
 import { HydratedProjectRecord } from '../../model/project-record.model';
 import { ButtonModule } from "primeng/button";
-import { ProjectService } from '../../services/projects/project.service';
+import { ProjectService } from '../../services/data/projects/project.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({

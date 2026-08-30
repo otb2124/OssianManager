@@ -9,7 +9,7 @@ import { TagModule } from 'primeng/tag';
 import { DividerModule } from 'primeng/divider';
 import { ProjectRecordTag } from '../../model/project-record.model';
 import { NotificationService } from '../../services/notifications/notification.service';
-import { UserTagService } from '../../services/user-tags/user-tag.service';
+import { UserTagService } from '../../services/data/user-tags/user-tag.service';
 
 @Component({
   selector: 'app-tag-selector',

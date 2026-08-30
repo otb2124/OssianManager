@@ -1,12 +1,12 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { forkJoin, map, Observable, switchMap, of, catchError, tap, filter, take } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { PersistenceService } from '../persistence/persistence.service';
+import { PersistenceService } from '../../persistence/persistence.service';
 import { AppConfigService } from '../app-config/app-config.service';
-import { HydratedProjectRecord, ProjectRecord, ProjectRecordTag, ProjectRegistryEntry } from '../../model/project-record.model';
-import { ProjectConfig, ProjectData } from '../../model/project-config.model';
+import { HydratedProjectRecord, ProjectRecord, ProjectRecordTag, ProjectRegistryEntry } from '../../../model/project-record.model';
+import { ProjectConfig, ProjectData } from '../../../model/project-config.model';
+import { NotificationService } from '../../notifications/notification.service';
 import { UserTagService } from '../user-tags/user-tag.service';
-import { NotificationService } from '../notifications/notification.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService {

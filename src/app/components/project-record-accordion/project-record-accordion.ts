@@ -4,8 +4,8 @@ import { AccordionModule } from 'primeng/accordion';
 import { HydratedProjectRecord } from '../../model/project-record.model';
 import { ProjectRecordOverview } from '../project-record-overview/project-record-overview';
 import { ProjectRecordDetails } from '../project-record-details/project-record-details';
-import { ProjectUiService } from '../../services/projects/project-ui/project-ui.service';
-import { ProjectService } from '../../services/projects/project.service';
+import { ProjectUiService } from '../../services/data/projects/project-ui/project-ui.service';
+import { ProjectService } from '../../services/data/projects/project.service';
 import { ContextMenuDirective } from '../../services/system/context-menu.directive';
 
 export interface ProjectEntry {

@@ -3,9 +3,10 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { AppConfigService } from '../app-config/app-config.service';
-import { RoutesService } from '../routes/routes.service';
-import { RouteChild, routes } from '../../app.routes';
+import { RouteChild, routes } from '../../../app.routes';
+import { RoutesService } from '../../routes/routes.service';
 import { ProjectService } from '../projects/project.service';
+
 
 @Injectable({ providedIn: 'root' })
 export class TabsService {

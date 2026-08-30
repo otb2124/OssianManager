@@ -1,8 +1,8 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { EMPTY, Observable, tap } from 'rxjs';
-import { PersistenceService } from '../persistence/persistence.service';
 import { AppConfigService } from '../app-config/app-config.service';
-import { EngineConfig } from '../../model/engine-config.model';
+import { EngineConfig } from '../../../model/engine-config.model';
+import { PersistenceService } from '../../persistence/persistence.service';
 
 @Injectable({ providedIn: 'root' })
 export class EngineService {

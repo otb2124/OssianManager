@@ -9,7 +9,7 @@ import { DialogWrapper } from '../dialog-wrapper/dialog-wrapper';
 import { ProjectRecordForm } from '../project-record-form/project-record-form';
 import { ConfirmForm } from '../confirm-form/confirm-form';
 import { NotificationService } from '../../services/notifications/notification.service';
-import { ProjectService } from '../../services/projects/project.service';
+import { ProjectService } from '../../services/data/projects/project.service';
 
 @Component({
   selector: 'app-project-record-details',

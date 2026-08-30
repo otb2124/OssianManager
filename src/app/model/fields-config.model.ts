@@ -342,7 +342,7 @@ export const NODE_CONTROL_FIELDS_CONFIG: FieldConfig[] = [
 
 
 
-export const SETTINGS_PAGE_CONFIGS: Record<string, FieldConfig[]> = {
+export const SETTINGS_PAGE_FIELDS_CONFIG: Record<string, FieldConfig[]> = {
     'settings-app':
     [
       { kind: 'text', path: 'versionString', label: 'Version' },

@@ -3,12 +3,10 @@ import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Topbar } from "./components/topbar/topbar";
-import { AppConfigService } from './services/app-config/app-config.service';
 import { filter, switchMap } from 'rxjs';
 import { ThemeService } from './services/theme/theme.service';
 import { ToastModule } from 'primeng/toast';
-import { ProjectService } from './services/projects/project.service';
-import { EngineService } from './services/engine-config/engine.service';
+import { ProjectService } from './services/data/projects/project.service';
 import { Bottombar } from "./components/bottombar/bottombar";
 import { SidebarNav } from "./components/sidebar-nav/sidebar-nav";
 import { KeyShortcutService } from './services/system/key-shortcut.service';
@@ -17,6 +15,8 @@ import { ContextMenuService } from './services/system/context-menu.service';
 import { HydratedProjectRecord } from './model/project-record.model';
 import { RouteChild } from './app.routes';
 import { DialogFormHostComponent } from "./components/dialog-form/dialog-form";
+import { AppConfigService } from './services/data/app-config/app-config.service';
+import { EngineService } from './services/data/engine-config/engine.service';
 
 @Component({
   selector: 'app-root',

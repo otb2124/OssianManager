@@ -1,6 +1,6 @@
 import { Injectable, inject, signal, computed, effect } from '@angular/core';
-import { AppConfigService } from '../app-config/app-config.service';
-import { ProjectService } from '../projects/project.service';
+import { ProjectService } from '../data/projects/project.service';
+import { AppConfigService } from '../data/app-config/app-config.service';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {

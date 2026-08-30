@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { FieldConfig } from '../../components/field-list/field-list';
+import { FieldConfig } from '../../../components/field-list/field-list';
 
 export interface DialogFormConfig {
   title: string;

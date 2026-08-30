@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { PersistenceService } from '../persistence/persistence.service';
-import { ProjectRecordTag as UserTag } from '../../model/project-record.model';
+import { PersistenceService } from '../../persistence/persistence.service';
+import { ProjectRecordTag } from '../../../model/project-record.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserTagService {
@@ -9,19 +9,19 @@ export class UserTagService {
   private persistence = inject(PersistenceService);
   private readonly file = 'user-tags.json';
 
-  getAll(): Observable<UserTag[]> {
-    return this.persistence.read<UserTag[]>(this.file);
+  getAll(): Observable<ProjectRecordTag[]> {
+    return this.persistence.read<ProjectRecordTag[]>(this.file);
   }
 
-  getById(id: string): Observable<UserTag | undefined> {
+  getById(id: string): Observable<ProjectRecordTag | undefined> {
     return this.getAll().pipe(map(tags => tags.find(t => t.id === id)));
   }
 
-  getByLabel(label: string): Observable<UserTag | undefined> {
+  getByLabel(label: string): Observable<ProjectRecordTag | undefined> {
     return this.getAll().pipe(map(tags => tags.find(t => t.label === label)));
   }
 
-  save(tag: UserTag): Observable<void> {
+  save(tag: ProjectRecordTag): Observable<void> {
     return this.getAll().pipe(
       map(tags => {
         const index = tags.findIndex(t => t.id === tag.id);
