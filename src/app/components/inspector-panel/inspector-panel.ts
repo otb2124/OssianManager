@@ -1,24 +1,10 @@
+// components/inspector-panel/inspector-panel.ts
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TransformNode } from '@babylonjs/core';
-import { FieldConfig, FieldList, FieldTarget, PropertyPath } from '../field-list/field-list';
+import { FieldList } from '../field-list/field-list';
+import { NODE_CONTROL_FIELDS_CONFIG } from '../../model/fields.config.model';
 import { BabylonSceneService } from '../../services/babylon/babylonscene.service.ts';
-import { NODE_CONTROL_FIELDS_CONFIG } from '../../model/fields-config.model';
-
-export class TransformNodeFieldTarget implements FieldTarget {
-  constructor(private node: TransformNode) {}
-
-  getField(path: PropertyPath): unknown {
-    return path.split('.').reduce((obj: any, key) => obj?.[key], this.node);
-  }
-
-  setField(path: PropertyPath, value: unknown): void {
-    const keys = path.split('.');
-    const last = keys.pop()!;
-    const target = keys.reduce((obj: any, key) => obj?.[key], this.node);
-    if (target) target[last] = value;
-  }
-}
+import { InspectorSyncService } from '../../services/babylon/inspector-sync.service';
 
 @Component({
   selector: 'app-inspector-panel',
@@ -28,19 +14,8 @@ export class TransformNodeFieldTarget implements FieldTarget {
 })
 export class InspectorPanel {
   protected readonly sceneService = inject(BabylonSceneService);
-
-  protected readonly transformNode = computed<TransformNode | null>(() => {
-    const node = this.sceneService.selectedNode();
-    return this.sceneService.isTransformNode(node) ? node : null;
-  });
+  protected readonly inspectorSync = inject(InspectorSyncService);
 
   protected readonly nodeName = computed(() => this.sceneService.selectedNode()?.name ?? '');
-
-  protected readonly fieldTarget = computed<FieldTarget | null>(() => {
-    const node = this.transformNode();
-    return node ? new TransformNodeFieldTarget(node) : null;
-  });
-
   protected readonly inspectorFields = NODE_CONTROL_FIELDS_CONFIG;
 }
-

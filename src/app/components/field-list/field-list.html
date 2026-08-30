@@ -13,8 +13,8 @@
             [label]="hideLabels ? '' : field.label"
             [type]="field.inputType ?? 'text'"
             [maxlength]="field.maxlength ?? null"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-input-text-control>
         }
         @case ('number') {
@@ -27,16 +27,16 @@
             [maxFractionDigits]="field.maxFractionDigits ?? 2"
             [prefix]="field.prefix"
             [suffix]="field.suffix"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-input-number-control>
         }
         @case ('select') {
           <app-select-control
             [label]="hideLabels ? '' : field.label"
             [options]="field.options"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-select-control>
         }
         @case ('tree-select') {
@@ -45,15 +45,15 @@
             [options]="field.options"
             [selectionMode]="field.selectionMode ?? 'single'"
             [placeholder]="field.placeholder ?? ''"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-tree-select-control>
         }
         @case ('boolean') {
           <app-boolean-control
             [label]="hideLabels ? '' : field.label"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-boolean-control>
         }
         @case ('resource-picker') {
@@ -76,23 +76,23 @@
             [maxFractionDigits]="field.maxFractionDigits ?? 2"
             [prefix]="field.prefix"
             [suffix]="field.suffix"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-vector-control>
         }
         @case ('color') {
           <app-color-picker-control
             [label]="hideLabels ? '' : field.label"
             [allowAlpha]="field.allowAlpha ?? true"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-color-picker-control>
         }
         @case ('tags') {
           <app-tag-select-control
             [label]="hideLabels ? '' : field.label"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-tag-select-control>
         }
         @case ('image-select') {
@@ -101,16 +101,16 @@
             [options]="field.options"
             [size]="field.size ?? 'md'"
             [showItemLabels]="field.showItemLabels ?? true"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-image-select-control>
         }
         @case ('list') {
           <app-list-control
             [label]="hideLabels ? '' : field.label"
             [itemConfig]="field.itemConfig"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-list-control>
         }
         @case ('editable-table') {
@@ -120,8 +120,8 @@
             [allowAdd]="field.allowAdd ?? true"
             [allowDelete]="field.allowDelete ?? true"
             [allowReorder]="field.allowReorder ?? false"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-editable-table-control>
         }
         @case ('accordion') {
@@ -130,8 +130,8 @@
             [config]="field.config"
             [allowAdd]="field.allowAdd ?? true"
             [allowDelete]="field.allowDelete ?? true"
-            [ngModel]="getValue(field.path)"
-            (ngModelChange)="setValue(field.path, $event)">
+            [value]="getValue(field.path)"
+            (valueChange)="setValue(field.path, $event)">
           </app-accordion-control>
         }
       }

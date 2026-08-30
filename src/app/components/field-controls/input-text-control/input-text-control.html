@@ -8,6 +8,8 @@
       [placeholder]="placeholder"
       [ngModel]="value"
       (ngModelChange)="onChange($event)"
+      [ngModelOptions]="{ standalone: true }"
+      [name]="label || 'text-input'"
       id="text-input-{{label}}"
       class="w-full px-1.5 py-1 rounded outline-none text-sm" />
 

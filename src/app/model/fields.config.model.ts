@@ -1,6 +1,5 @@
 import { FieldConfig } from "../components/field-list/field-list";
 
-
 export const NODE_CONTROL_FIELDS_CONFIG: FieldConfig[] = [
   {
     kind: 'accordion',
@@ -83,36 +82,36 @@ export const NODE_CONTROL_FIELDS_CONFIG: FieldConfig[] = [
         node: {
           header: 'Node',
           fields: [
-            { kind: 'text', path: 'name', label: 'Name' },
-            { kind: 'text', path: 'id', label: 'Id' },
-            { kind: 'boolean', path: 'enable', label: 'Enable' },
-            { kind: 'boolean', path: 'enableStart', label: 'Enable Start' },
-            { kind: 'boolean', path: 'enableUpdate', label: 'Enable Update' },
-            { kind: 'boolean', path: 'enableRender', label: 'Enable Render' },
+            { kind: 'text', path: 'name', label: 'Name', defaultValue: 'New Node' },
+            { kind: 'text', path: 'id', label: 'Id', defaultValue: 'node_001' },
+            { kind: 'boolean', path: 'enable', label: 'Enable', defaultValue: true },
+            { kind: 'boolean', path: 'enableStart', label: 'Enable Start', defaultValue: true },
+            { kind: 'boolean', path: 'enableUpdate', label: 'Enable Update', defaultValue: true },
+            { kind: 'boolean', path: 'enableRender', label: 'Enable Render', defaultValue: true },
           ]
         },
         transform: {
           header: 'Transform',
           icon: 'pi pi-arrows-alt',
           fields: [
-            { kind: 'vector', path: 'position', label: 'Position' },
-            { kind: 'vector', path: 'rotation', label: 'Rotation' },
-            { kind: 'vector', path: 'scaling', label: 'Scale' },
-            { kind: 'select', path: 'renderSpace', label: 'Render Space',
+            { kind: 'vector', path: 'position', label: 'Position', defaultValue: [0, 0, 0] },
+            { kind: 'vector', path: 'rotation', label: 'Rotation', defaultValue: [0, 0, 0] },
+            { kind: 'vector', path: 'scaling', label: 'Scale', defaultValue: [1, 1, 1] },
+            { kind: 'select', path: 'renderSpace', label: 'Render Space', defaultValue: 'myworld0',
               options:
               [
                 { value: 'myworld0', label: 'myworld0', icon: 'pi pi-folder-open' },
                 { value: '3D_object', label: '3D_object', icon: 'pi pi-bolt' },
               ]
              },
-            { kind: 'select', path: 'anchor3D', label: 'Anchor3D',
+            { kind: 'select', path: 'anchor3D', label: 'Anchor3D', defaultValue: 'myworld0',
               options:
               [
                 { value: 'myworld0', label: 'myworld0', icon: 'pi pi-folder-open' },
                 { value: '3D_object', label: '3D_object', icon: 'pi pi-bolt' },
               ]
              },
-            { kind: 'select', path: 'propagationLock', label: 'Propagation Lock',
+            { kind: 'select', path: 'propagationLock', label: 'Propagation Lock', defaultValue: 'myworld0',
               options:
               [
                 { value: 'myworld0', label: 'myworld0', icon: 'pi pi-folder-open' },
@@ -179,41 +178,41 @@ export const NODE_CONTROL_FIELDS_CONFIG: FieldConfig[] = [
                 { id: 'quick_load', label: 'Quick Load', icon: 'pi pi-bolt', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
               ]
              },
-            { kind: 'text', path: 'content', label: 'Content' },
-            { kind: 'number', path: 'size', label: 'Size' },
-            { kind: 'color', path: 'color', label: 'Color' },
+            { kind: 'text', path: 'content', label: 'Content', defaultValue: 'Sample Text' },
+            { kind: 'number', path: 'size', label: 'Size', defaultValue: 12 },
+            { kind: 'color', path: 'color', label: 'Color', defaultValue: '#ffffff' },
           ]
         },
         wireframeMaterial: {
           header: 'Wireframe Material',
           icon: 'pi pi-image',
           fields: [
-            { kind: 'color', path: 'color', label: 'Color' },
+            { kind: 'color', path: 'color', label: 'Color', defaultValue: '#ffffff' },
           ]
         },
         rigidPhysics: {
           header: 'Rigid Physics',
           icon: 'pi pi-bolt',
           fields: [
-            { kind: 'select', path: 'physicsWorld', label: 'Physics World',
+            { kind: 'select', path: 'physicsWorld', label: 'Physics World', defaultValue: 'myworld0',
               options:
               [
                 { value: 'myworld0', label: 'myworld0', icon: 'pi pi-folder-open' },
                 { value: '3D_object', label: '3D_object', icon: 'pi pi-bolt' },
               ]
              },
-            { kind: 'number', path: 'mass', label: 'Mass' },
-            { kind: 'number', path: 'restitution', label: 'Restitution' },
-            { kind: 'number', path: 'linearDamping', label: 'Linear Damping' },
-            { kind: 'number', path: 'angularDamping', label: 'Angular Damping' },
-            { kind: 'number', path: 'friction', label: 'Friction' },
+            { kind: 'number', path: 'mass', label: 'Mass', defaultValue: 1 },
+            { kind: 'number', path: 'restitution', label: 'Restitution', defaultValue: 1 },
+            { kind: 'number', path: 'linearDamping', label: 'Linear Damping', defaultValue: 1 },
+            { kind: 'number', path: 'angularDamping', label: 'Angular Damping', defaultValue: 1 },
+            { kind: 'number', path: 'friction', label: 'Friction', defaultValue: 1 },
           ]
         },
         staticPhysics: {
           header: 'Static Physics',
           icon: 'pi pi-bolt',
           fields: [
-            { kind: 'select', path: 'physicsWorld', label: 'Physics World',
+            { kind: 'select', path: 'physicsWorld', label: 'Physics World', defaultValue: 'myworld0',
               options:
               [
                 { value: 'myworld0', label: 'myworld0', icon: 'pi pi-folder-open' },
@@ -226,17 +225,17 @@ export const NODE_CONTROL_FIELDS_CONFIG: FieldConfig[] = [
           header: 'Collider',
           icon: 'pi pi-globe',
           fields: [
-            { kind: 'resource-picker', path: 'colliderFile', label: 'Collider File', 
+            { kind: 'resource-picker', path: 'colliderFile', label: 'Collider File',
               actions: 
               [
                 { id: 'load', label: 'Load', icon: 'pi pi-folder-open', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
                 { id: 'quick_load', label: 'Quick Load', icon: 'pi pi-bolt', extensions: [{ name: 'Materials', extensions: ['png', 'jpg', 'tif'] }] },
               ]
              },
-            { kind: 'vector', path: 'position', label: 'Position' },
-            { kind: 'vector', path: 'rotation', label: 'Rotation' },
-            { kind: 'vector', path: 'scaling', label: 'Scale' },
-            { kind: 'select', path: 'anchor3D', label: 'Anchor3D',
+            { kind: 'vector', path: 'position', label: 'Position', defaultValue: [0,0,0] },
+            { kind: 'vector', path: 'rotation', label: 'Rotation', defaultValue: [0,0,0] },
+            { kind: 'vector', path: 'scaling', label: 'Scale', defaultValue: [1,1,1] },
+            { kind: 'select', path: 'anchor3D', label: 'Anchor3D', defaultValue: 'myworld0',
               options:
               [
                 { value: 'myworld0', label: 'myworld0', icon: 'pi pi-folder-open' },
@@ -249,30 +248,30 @@ export const NODE_CONTROL_FIELDS_CONFIG: FieldConfig[] = [
           header: 'Point Emission',
           icon: 'pi pi-sun',
           fields: [
-            { kind: 'color', path: 'color', label: 'Color' },
-            { kind: 'number', path: 'intensity', label: 'Intensity' },
-            { kind: 'number', path: 'radius', label: 'Radius' },
+            { kind: 'color', path: 'color', label: 'Color', defaultValue: '#ffffff' },
+            { kind: 'number', path: 'intensity', label: 'Intensity', defaultValue: 1.5 },
+            { kind: 'number', path: 'radius', label: 'Radius', defaultValue: 10 },
           ]
         },
         spotEmission: {
           header: 'Spot Emission',
           icon: 'pi pi-sun',
           fields: [
-            { kind: 'color', path: 'color', label: 'Color' },
-            { kind: 'number', path: 'intensity', label: 'Intensity' },
-            { kind: 'number', path: 'radius', label: 'Radius' },
-            { kind: 'vector', path: 'position', label: 'Direction' },
-            { kind: 'number', path: 'innerAngle', label: 'Inner Angle' },
-            { kind: 'number', path: 'outerAngle', label: 'Outer Angle' },
+            { kind: 'color', path: 'color', label: 'Color', defaultValue: '#ffffff' },
+            { kind: 'number', path: 'intensity', label: 'Intensity', defaultValue: 1.5 },
+            { kind: 'number', path: 'radius', label: 'Radius', defaultValue: 10 },
+            { kind: 'vector', path: 'position', label: 'Direction', defaultValue: [0,0,0] },
+            { kind: 'number', path: 'innerAngle', label: 'Inner Angle', defaultValue: 1 },
+            { kind: 'number', path: 'outerAngle', label: 'Outer Angle', defaultValue: 1 },
           ]
         },
         sunEmission: {
           header: 'Sun Emission',
           icon: 'pi pi-sun',
           fields: [
-            { kind: 'color', path: 'color', label: 'Color' },
-            { kind: 'number', path: 'intensity', label: 'Intensity' },
-            { kind: 'vector', path: 'position', label: 'Direction' },
+            { kind: 'color', path: 'color', label: 'Color', defaultValue: '#ffffff' },
+            { kind: 'number', path: 'intensity', label: 'Intensity', defaultValue: 1.5 },
+            { kind: 'vector', path: 'position', label: 'Direction', defaultValue: [0,0,0] },
           ]
         },
         camera: {
@@ -284,16 +283,16 @@ export const NODE_CONTROL_FIELDS_CONFIG: FieldConfig[] = [
           header: 'Orbital Camera',
           icon: 'pi pi-camera',
           fields: [
-            { kind: 'select', path: 'targetNode', label: 'Target Node',
+            { kind: 'select', path: 'targetNode', label: 'Target Node', defaultValue: 'myworld0',
               options:
               [
                 { value: 'myworld0', label: 'myworld0', icon: 'pi pi-folder-open' },
                 { value: '3D_object', label: '3D_object', icon: 'pi pi-bolt' },
               ]
              },
-            { kind: 'number', path: 'distance', label: 'Distance' },
-            { kind: 'number', path: 'minPitch', label: 'Min Pitch' },
-            { kind: 'number', path: 'maxPitch', label: 'Max Pitch' },
+            { kind: 'number', path: 'distance', label: 'Distance', defaultValue: 1.5 },
+            { kind: 'number', path: 'minPitch', label: 'Min Pitch', defaultValue: 1.5 },
+            { kind: 'number', path: 'maxPitch', label: 'Max Pitch', defaultValue: 1.5},
           ]
         },
         sound: {
@@ -449,7 +448,7 @@ export const SETTINGS_PAGE_FIELDS_CONFIG: Record<string, FieldConfig[]> = {
     'display-accessibility':
     [
       { kind: 'number', path: 'updatesPerSecond', label: 'Updates Per Second', suffix: ' updates'},
-      { kind: 'number', path: 'updatesPerSecond', label: 'Frames Per Second', suffix: ' frames' },
+      { kind: 'number', path: 'framesPerSecond', label: 'Frames Per Second', suffix: ' frames' },
     ],
     'display-rendering':
     [

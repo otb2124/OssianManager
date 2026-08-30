@@ -1,6 +1,6 @@
 import { Component, computed, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SelectControl, SelectControlOption } from '../field-controls/select-control/select-control';
 import { TreeNode } from 'primeng/api';
 import { ResourcePickerAction, ResourcePickerControl } from '../field-controls/resource-picker-control/resource-picker-control';
@@ -37,6 +37,7 @@ export class RecordFieldTarget implements FieldTarget {
 interface FieldConfigBase {
   path: PropertyPath;
   label: string;
+  defaultValue?: any;
   visibleIf?: (target: FieldTarget) => boolean;
 }
 
@@ -82,6 +83,7 @@ export interface PropertyPanelConfig {
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     InputTextControl,
     InputNumberControl,
     SelectControl,

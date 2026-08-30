@@ -14,24 +14,41 @@ import { FloatLabelModule } from "primeng/floatlabel";
 })
 export class ColorPickerControl {
   @Input() label = '';
-  @Input() value = '#000000ff';
   @Input() allowAlpha = true;
+
+  private _value = '#000000ff';
+
+  @Input()
+  set value(val: string | null | undefined) {
+    if (!val || typeof val !== 'string') {
+      this._value = '#000000ff';
+      return;
+    }
+    // Ensure hex starts with '#'
+    this._value = val.startsWith('#') ? val : `#${val}`;
+  }
+  get value(): string {
+    return this._value;
+  }
 
   @Output() valueChange = new EventEmitter<string>();
 
   get colorPart(): string {
-    return this.value.slice(0, 7); // "#rrggbb"
+    return (this._value || '#000000').slice(0, 7); // "#rrggbb"
   }
 
   get alphaPart(): number {
     if (!this.allowAlpha) return 100;
-    const hexAlpha = this.value.slice(7, 9);
+    const str = this._value || '';
+    const hexAlpha = str.length >= 9 ? str.slice(7, 9) : '';
     if (hexAlpha.length !== 2) return 100;
-    return Math.round((parseInt(hexAlpha, 16) / 255) * 100);
+    const parsed = parseInt(hexAlpha, 16);
+    return isNaN(parsed) ? 100 : Math.round((parsed / 255) * 100);
   }
 
   onColorChange(newColor: string): void {
-    this.emitCombined(newColor, this.alphaPart);
+    const formattedColor = newColor?.startsWith('#') ? newColor : `#${newColor || '000000'}`;
+    this.emitCombined(formattedColor, this.alphaPart);
   }
 
   onAlphaChange(newAlphaPercent: number): void {
@@ -40,7 +57,7 @@ export class ColorPickerControl {
 
   private emitCombined(color: string, alphaPercent: number): void {
     if (!this.allowAlpha) {
-      this.value = color;
+      this._value = color;
       this.valueChange.emit(color);
       return;
     }
@@ -49,7 +66,7 @@ export class ColorPickerControl {
       .toString(16)
       .padStart(2, '0');
     const combined = `${color}${alphaHex}`;
-    this.value = combined;
+    this._value = combined;
     this.valueChange.emit(combined);
   }
 }

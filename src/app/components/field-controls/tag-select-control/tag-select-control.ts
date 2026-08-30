@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, forwardRef, Input } from '@angular/core';
+import { Component, inject, OnInit, forwardRef, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
@@ -30,8 +30,13 @@ export class TagSelectControl implements OnInit, ControlValueAccessor {
 
   @Input() label?: string;
 
+  @Input() set value(val: string[] | null | undefined) {
+    this.selectedTagIds = val ?? [];
+  }
+  @Output() valueChange = new EventEmitter<string[]>();
+
   availableTags: ProjectRecordTag[] = [];
-  selectedTags: ProjectRecordTag[] = [];
+  selectedTagIds: string[] = [];
 
   activeTag: ProjectRecordTag | null = null;
   tagLabel = '';
@@ -39,7 +44,7 @@ export class TagSelectControl implements OnInit, ControlValueAccessor {
 
   disabled = false;
 
-  private onChange = (_: ProjectRecordTag[]) => {};
+  private onChange = (_: string[]) => {};
   private onTouched = () => {};
 
   ngOnInit(): void {
@@ -50,20 +55,28 @@ export class TagSelectControl implements OnInit, ControlValueAccessor {
     this.tagService.getAll().subscribe(tags => this.availableTags = tags);
   }
 
-  writeValue(tags: ProjectRecordTag[]): void {
-    this.selectedTags = tags ?? [];
+  // Model value is now an array of string IDs
+  writeValue(tagIds: string[]): void {
+    this.selectedTagIds = tagIds ?? [];
   }
 
   registerOnChange(fn: any): void { this.onChange = fn; }
   registerOnTouched(fn: any): void { this.onTouched = fn; }
   setDisabledState(isDisabled: boolean): void { this.disabled = isDisabled; }
 
-  isSelected(tag: ProjectRecordTag): boolean {
-    return this.selectedTags.some(t => t.id === tag.id);
+  // Map selected IDs to full tag objects for template rendering
+  get selectedTags(): ProjectRecordTag[] {
+    return this.selectedTagIds
+      .map(id => this.availableTags.find(t => t.id === id))
+      .filter((t): t is ProjectRecordTag => t !== undefined);
   }
 
   get unselectedTags(): ProjectRecordTag[] {
-    return this.availableTags.filter(t => !this.isSelected(t));
+    return this.availableTags.filter(t => !this.selectedTagIds.includes(t.id));
+  }
+
+  isSelected(tag: ProjectRecordTag): boolean {
+    return this.selectedTagIds.includes(tag.id);
   }
 
   openTagPopover(tag: ProjectRecordTag, event: Event, popover: any): void {
@@ -86,24 +99,21 @@ export class TagSelectControl implements OnInit, ControlValueAccessor {
 
   selectTag(): void {
     if (!this.activeTag) return;
-    this.selectedTags = [...this.selectedTags, this.activeTag];
-    this.onChange(this.selectedTags);
-    this.onTouched();
+    this.selectedTagIds = [...this.selectedTagIds, this.activeTag.id];
+    this.notifyChange();
   }
 
   deselectActiveTag(): void {
     if (!this.activeTag) return;
-    this.selectedTags = this.selectedTags.filter(t => t.id !== this.activeTag!.id);
-    this.onChange(this.selectedTags);
-    this.onTouched();
+    this.selectedTagIds = this.selectedTagIds.filter(id => id !== this.activeTag!.id);
+    this.notifyChange();
   }
 
   deselectTag(tag: ProjectRecordTag, event: Event): void {
     if (this.disabled) return;
     event.stopPropagation();
-    this.selectedTags = this.selectedTags.filter(t => t.id !== tag.id);
-    this.onChange(this.selectedTags);
-    this.onTouched();
+    this.selectedTagIds = this.selectedTagIds.filter(id => id !== tag.id);
+    this.notifyChange();
   }
 
   saveTag(popover: any): void {
@@ -115,10 +125,11 @@ export class TagSelectControl implements OnInit, ControlValueAccessor {
     };
     this.tagService.save(tag).subscribe(() => {
       if (this.activeTag) {
-        this.selectedTags = this.selectedTags.map(t => t.id === tag.id ? tag : t);
-        this.onChange(this.selectedTags);
         this.notifications.success('Tag updated');
       } else {
+        // Automatically select newly created tag
+        this.selectedTagIds = [...this.selectedTagIds, tag.id];
+        this.onChange(this.selectedTagIds);
         this.notifications.success('Tag created');
       }
       this.loadTags();
@@ -130,11 +141,17 @@ export class TagSelectControl implements OnInit, ControlValueAccessor {
     if (!this.activeTag) return;
     const id = this.activeTag.id;
     this.tagService.delete(id).subscribe(() => {
-      this.selectedTags = this.selectedTags.filter(t => t.id !== id);
-      this.onChange(this.selectedTags);
+      this.selectedTagIds = this.selectedTagIds.filter(tagId => tagId !== id);
+      this.onChange(this.selectedTagIds);
       this.loadTags();
       this.notifications.info('Tag deleted');
       popover.hide();
     });
+  }
+
+  private notifyChange(): void {
+    this.onChange(this.selectedTagIds);
+    this.valueChange.emit(this.selectedTagIds);
+    this.onTouched();
   }
 }

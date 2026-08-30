@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, forwardRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { AccordionModule } from 'primeng/accordion';
@@ -49,15 +49,27 @@ export class AccordionControl implements ControlValueAccessor {
   @Input() allowDelete = true;
   @Input() readonly = false;
 
-  private dialogService = inject(DialogFormService);
+  private _value: Record<string, any>[] = [];
 
-  value: Record<string, any>[] = [];
+  // Expose [value] Input binding
+  @Input()
+  set value(val: Record<string, any>[] | null | undefined) {
+    this._value = Array.isArray(val) ? val : [];
+  }
+  get value(): Record<string, any>[] {
+    return this._value;
+  }
+
+  // Expose (valueChange) Output binding
+  @Output() valueChange = new EventEmitter<Record<string, any>[]>();
+
+  private dialogService = inject(DialogFormService);
 
   onChange: (value: any[]) => void = () => {};
   onTouched: () => void = () => {};
 
   writeValue(val: any[]): void {
-    this.value = Array.isArray(val) ? val : [];
+    this._value = Array.isArray(val) ? val : [];
   }
 
   registerOnChange(fn: any): void {
@@ -103,9 +115,17 @@ export class AccordionControl implements ControlValueAccessor {
       if (!dialogResult) return;
 
       if (dialogResult['selectedTypeNode']) {
-        selectedType = typeof dialogResult['selectedTypeNode'] === 'object'
-          ? dialogResult['selectedTypeNode'].key
-          : dialogResult['selectedTypeNode'];
+        const nodeSelection = dialogResult['selectedTypeNode'];
+        
+        if (typeof nodeSelection === 'string') {
+          selectedType = nodeSelection;
+        } else if (nodeSelection?.key) {
+          selectedType = nodeSelection.key;
+        } else if (typeof nodeSelection === 'object') {
+          // Fallback for key-value selections (e.g. { 'transform': true })
+          const keys = Object.keys(nodeSelection);
+          if (keys.length > 0) selectedType = keys[0];
+        }
       }
 
       initialData = { ...dialogResult };
@@ -126,27 +146,27 @@ export class AccordionControl implements ControlValueAccessor {
       }
     }
 
-    this.value = [...this.value, newPanelModel];
+    this._value = [...this._value, newPanelModel];
     this.notifyChange();
   }
 
   removePanel(index: number, event: MouseEvent): void {
     event.stopPropagation();
     if (this.readonly) return;
-    this.value = this.value.filter((_, i) => i !== index);
+    this._value = this._value.filter((_, i) => i !== index);
     this.notifyChange();
   }
 
   onPanelModelChange(index: number, updatedModel: Record<string, any>): void {
-    const updated = [...this.value];
+    const updated = [...this._value];
     updated[index] = updatedModel;
-    this.value = updated;
+    this._value = updated;
     this.notifyChange();
   }
 
   getPanelHeader(panelItem: Record<string, any>, index: number): string {
     const templateDef = this.config.templates[panelItem['type']];
-    return panelItem['name'] || templateDef?.header || `Panel ${index + 1}`;
+    return templateDef?.header || `Panel ${index + 1}`;
   }
 
   getPanelIcon(panelItem: Record<string, any>): string {
@@ -158,7 +178,8 @@ export class AccordionControl implements ControlValueAccessor {
   }
 
   private notifyChange(): void {
-    this.onChange(this.value);
+    this.onChange(this._value);
+    this.valueChange.emit(this._value);
     this.onTouched();
   }
 }

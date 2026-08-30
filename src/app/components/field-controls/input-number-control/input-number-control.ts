@@ -1,14 +1,14 @@
 // input-number-control.ts
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FloatLabelModule } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-input-number-control',
   standalone: true,
-  imports: [CommonModule, FormsModule, InputNumberModule, FloatLabelModule],
+  imports: [CommonModule, FormsModule, InputNumberModule, FloatLabelModule, ReactiveFormsModule],
   templateUrl: './input-number-control.html'
 })
 export class InputNumberControl {

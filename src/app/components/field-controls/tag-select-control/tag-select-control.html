@@ -67,6 +67,7 @@
           <input
             pInputText
             [(ngModel)]="tagLabel"
+            [ngModelOptions]="{ standalone: true }"
             placeholder="Tag name"
             class="w-full text-sm">
         </div>
@@ -74,7 +75,10 @@
         <div class="flex flex-col gap-1">
           <label class="text-xs text-gray-400">Color</label>
           <div class="flex items-center gap-2">
-            <p-colorpicker [(ngModel)]="tagColor"></p-colorpicker>
+            <p-colorpicker 
+              [(ngModel)]="tagColor"
+              [ngModelOptions]="{ standalone: true }">
+            </p-colorpicker>
             <span class="text-xs font-mono text-gray-500">{{ tagColor }}</span>
           </div>
         </div>

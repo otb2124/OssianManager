@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputNumberControl } from '../input-number-control/input-number-control';
+import { FormsModule } from '@angular/forms';
 
 export type VectorLike = Record<string, any>;
 const DEFAULT_KEYS = ['x', 'y', 'z', 'w'];
@@ -8,7 +9,7 @@ const DEFAULT_KEYS = ['x', 'y', 'z', 'w'];
 @Component({
   selector: 'app-vector-control',
   standalone: true,
-  imports: [CommonModule, InputNumberControl],
+  imports: [CommonModule, InputNumberControl, FormsModule],
   templateUrl: './vector-control.html',
 })
 export class VectorControl {

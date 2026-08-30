@@ -29,13 +29,25 @@ export class ListControl implements ControlValueAccessor {
   @Input() itemConfig!: FieldConfig;
   @Input() readonly = false;
 
-  value: any[] = [];
+  private _value: any[] = [];
+
+  // Expose [value] Input binding
+  @Input()
+  set value(val: any[]) {
+    this._value = Array.isArray(val) ? val : [];
+  }
+  get value(): any[] {
+    return this._value;
+  }
+
+  // Expose (valueChange) Output binding
+  @Output() valueChange = new EventEmitter<any[]>();
 
   onChange: (value: any[]) => void = () => {};
   onTouched: () => void = () => {};
 
   writeValue(val: any[]): void {
-    this.value = Array.isArray(val) ? val : [];
+    this._value = Array.isArray(val) ? val : [];
   }
 
   registerOnChange(fn: any): void {
@@ -51,20 +63,20 @@ export class ListControl implements ControlValueAccessor {
     
     // Provide a default fallback based on item kind
     const defaultValue = this.getDefaultValueForKind(this.itemConfig?.kind);
-    this.value = [...this.value, defaultValue];
+    this._value = [...this._value, defaultValue];
     this.notifyChange();
   }
 
   removeItem(index: number): void {
     if (this.readonly) return;
-    this.value = this.value.filter((_, i) => i !== index);
+    this._value = this._value.filter((_, i) => i !== index);
     this.notifyChange();
   }
 
   updateItem(index: number, newValue: any): void {
-    const updated = [...this.value];
+    const updated = [...this._value];
     updated[index] = newValue;
-    this.value = updated;
+    this._value = updated;
     this.notifyChange();
   }
 
@@ -81,7 +93,7 @@ export class ListControl implements ControlValueAccessor {
 
   /** Wraps primitive items into a temporary model object for FieldList compatibility */
   getItemModel(index: number): Record<string, any> {
-    return { [`item_${index}`]: this.value[index] };
+    return { [`item_${index}`]: this._value[index] };
   }
 
   onModelChange(index: number, model: Record<string, any>): void {
@@ -89,7 +101,8 @@ export class ListControl implements ControlValueAccessor {
   }
 
   private notifyChange(): void {
-    this.onChange(this.value);
+    this.onChange(this._value);
+    this.valueChange.emit(this._value);
     this.onTouched();
   }
 

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { FieldList, FieldConfig } from '../../field-list/field-list';
+import { FormsModule } from '@angular/forms';
 
 export type TableRowData = Record<string, any>;
 
@@ -13,6 +14,7 @@ export type TableRowData = Record<string, any>;
     CommonModule,
     ButtonModule,
     DragDropModule,
+    FormsModule,
     forwardRef(() => FieldList)
   ],
   templateUrl: './editable-table-control.html',

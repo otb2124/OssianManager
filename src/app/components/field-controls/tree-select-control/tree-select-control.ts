@@ -1,4 +1,5 @@
-import { Component, Input, forwardRef } from '@angular/core';
+// tree-select-control.ts
+import { Component, Input, Output, EventEmitter, forwardRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { TreeSelectModule } from 'primeng/treeselect';
@@ -24,8 +25,10 @@ export class TreeSelectControl implements ControlValueAccessor {
   @Input() selectionMode: 'single' | 'multiple' | 'checkbox' = 'single';
   @Input() placeholder = '';
   @Input() readonly = false;
+  @Input() value: any = null;
 
-  value: any = null;
+  // Emits value back to FieldList when form control value accessor isn't used directly
+  @Output() valueChange = new EventEmitter<any>();
 
   onChange: (value: any) => void = () => {};
   onTouched: () => void = () => {};
@@ -45,6 +48,7 @@ export class TreeSelectControl implements ControlValueAccessor {
   onSelectionChange(newValue: any): void {
     this.value = newValue;
     this.onChange(this.value);
+    this.valueChange.emit(this.value);
     this.onTouched();
   }
 }

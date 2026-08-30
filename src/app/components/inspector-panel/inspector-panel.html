@@ -1,3 +1,4 @@
+<!-- components/inspector-panel/inspector-panel.html -->
 <div class="flex flex-col gap-3 p-3 h-full overflow-auto text-xs">
 
   @if (!sceneService.selectedNode()) {
@@ -13,11 +14,15 @@
       <span class="font-medium truncate">{{ nodeName() }}</span>
     </div>
 
-    <!-- Dynamic Accordion Component Host -->
-    <app-field-list 
-      [fields]="inspectorFields" 
-      [target]="fieldTarget()!">
-    </app-field-list>
+    <!-- Re-creations forced on selection change using a tracked 1-item loop -->
+    @for (key of [inspectorSync.selectionKey()]; track key) {
+      @if (inspectorSync.fieldTarget(); as target) {
+        <app-field-list 
+          [fields]="inspectorFields" 
+          [target]="target">
+        </app-field-list>
+      }
+    }
   }
 
 </div>
