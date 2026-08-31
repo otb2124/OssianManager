@@ -9,13 +9,13 @@
   },
   "engineProjectPath": "C:\\Users\\orest\\Downloads\\pojects\\OssianEngine",
   "openTabs": [
-    "/scene01",
     "/project/display/rendering",
     "/project/display/cursor",
     "/project/display/physics",
     "/tools/settings/theme",
     "/project/display/accessibility",
-    "/project/display/window"
+    "/project/display/window",
+    "/scene01"
   ],
   "activeTab": "/scene01",
   "currentProjectId": "12886441-196f-42d8-b6ea-c8a0d07e0e2f"

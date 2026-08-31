@@ -4,7 +4,7 @@ use tauri::Manager;
 use std::fs;
 
 // Re-export commands and bounds updater from engine_host module
-use engine_host::{spawn_engine_process, update_viewport_bounds, apply_bounds};
+use engine_host::{spawn_engine_process, update_viewport_bounds, apply_bounds, set_engine_visibility };
 
 #[derive(serde::Serialize)]
 struct GitCommit {
@@ -237,7 +237,8 @@ pub fn run() {
 
             // Engine Host Module Commands
             spawn_engine_process,
-            update_viewport_bounds
+            update_viewport_bounds,
+            set_engine_visibility 
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

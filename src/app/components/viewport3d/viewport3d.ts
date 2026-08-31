@@ -1,85 +1,51 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, inject, NgZone } from '@angular/core';
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, inject } from '@angular/core';
 import { EngineBridgeService } from '../../services/engine/engine-bridge.service';
 
 @Component({
   selector: 'app-viewport3d',
-  templateUrl: './viewport3d.html',
+  template: `<div #container class="viewport-container"></div>`,
   styleUrl: './viewport3d.css'
 })
-export class Viewport3D implements OnInit, OnDestroy {
-  @ViewChild('viewportContainer', { static: true }) viewportContainer!: ElementRef<HTMLDivElement>;
+export class Viewport3D implements AfterViewInit, OnDestroy {
+  @ViewChild('container') container?: ElementRef<HTMLDivElement>;
 
-  private resizeObserver!: ResizeObserver;
-  private engineBridge = inject(EngineBridgeService);
-  private zone = inject(NgZone);
-  private initPollInterval: any = null;
-  private unlistenWindowResize?: () => void;
+  private engineBridgeService = inject(EngineBridgeService);
+  private resizeObserver?: ResizeObserver;
 
-  async ngOnInit(): Promise<void> {
-    try {
-      await this.engineBridge.initializeEngine();
-    } catch (err) {
-      console.error('Failed to launch C# engine:', err);
+  async ngAfterViewInit(): Promise<void> {
+    console.log('[Viewport3D] Component mounted. Enabling visibility...');
+    
+    // 1. Force visibility true first so Rust knows to show the HWND
+    await this.engineBridgeService.setVisibility(true);
+
+    // 2. Attach resize tracking once DOM container exists
+    if (this.container?.nativeElement) {
+      this.resizeObserver = new ResizeObserver(() => this.updateBounds());
+      this.resizeObserver.observe(this.container.nativeElement);
+
+      // Wait 1 animation frame for browser layout calculation after @switch insertion
+      requestAnimationFrame(() => {
+        this.updateBounds();
+      });
+    } else {
+      console.warn('[Viewport3D] #container element not found in DOM.');
     }
-
-    this.zone.runOutsideAngular(async () => {
-      // 1. Observe div size changes directly without requestAnimationFrame
-      this.resizeObserver = new ResizeObserver(() => {
-        this.syncBounds();
-      });
-
-      if (this.viewportContainer?.nativeElement) {
-        this.resizeObserver.observe(this.viewportContainer.nativeElement);
-      }
-
-      window.addEventListener('resize', this.syncBounds);
-
-      // 2. Tauri Native Window Resize Listener (Bypasses WebView2 drag pause)
-      const appWindow = getCurrentWindow();
-      this.unlistenWindowResize = await appWindow.onResized(() => {
-        this.syncBounds();
-      });
-
-      // 3. Init poll to catch the C# window attach
-      let elapsed = 0;
-      this.initPollInterval = setInterval(() => {
-        this.syncBounds();
-        elapsed += 250;
-        if (elapsed >= 5000) {
-          clearInterval(this.initPollInterval);
-          this.initPollInterval = null;
-        }
-      }, 250);
-    });
-
-    this.syncBounds();
   }
 
-  // Changed to an arrow function so it can be passed directly as a listener
-  private syncBounds = (): void => {
-    if (!this.viewportContainer?.nativeElement) return;
+  async ngOnDestroy(): Promise<void> {
+    console.log('[Viewport3D] Component destroyed. Hiding engine...');
+    this.resizeObserver?.disconnect();
+    await this.engineBridgeService.setVisibility(false);
+  }
 
-    const rect = this.viewportContainer.nativeElement.getBoundingClientRect();
+  private updateBounds(): void {
+    if (!this.container?.nativeElement) return;
 
-    this.engineBridge.updateViewportBounds(
-      Math.round(rect.left),
-      Math.round(rect.top),
-      Math.round(rect.width),
-      Math.round(rect.height)
-    );
-  };
-
-  ngOnDestroy(): void {
-    window.removeEventListener('resize', this.syncBounds);
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-    }
-    if (this.initPollInterval) {
-      clearInterval(this.initPollInterval);
-    }
-    if (this.unlistenWindowResize) {
-      this.unlistenWindowResize();
+    const rect = this.container.nativeElement.getBoundingClientRect();
+    
+    // Avoid sending 0x0 bounds during layout shifts
+    if (rect.width > 0 && rect.height > 0) {
+      this.engineBridgeService.updateBounds(rect.left, rect.top, rect.width, rect.height);
     }
   }
 }

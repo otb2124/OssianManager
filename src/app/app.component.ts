@@ -1,9 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Topbar } from "./components/topbar/topbar";
-import { filter, switchMap } from 'rxjs';
+import { filter, switchMap, tap } from 'rxjs';
 import { ThemeService } from './services/theme/theme.service';
 import { ToastModule } from 'primeng/toast';
 import { ProjectService } from './services/data/projects/project.service';
@@ -16,7 +16,7 @@ import { HydratedProjectRecord } from './model/project-record.model';
 import { RouteChild } from './app.routes';
 import { DialogFormHostComponent } from "./components/dialog-form/dialog-form";
 import { AppConfigService } from './services/data/app-config/app-config.service';
-import { EngineService } from './services/data/engine-config/engine.service';
+import { EngineBridgeService } from './services/engine/engine-bridge.service';
 
 @Component({
   selector: 'app-root',
@@ -24,23 +24,26 @@ import { EngineService } from './services/data/engine-config/engine.service';
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   private appConfigService = inject(AppConfigService);
   private projectRecordService = inject(ProjectService);
   private themeService = inject(ThemeService);
-  private engineService = inject(EngineService);
+
+  private engineBridgeService = inject(EngineBridgeService);
 
   private readonly shortcuts = inject(KeyShortcutService);
-  
   private readonly contextMenus = inject(ContextMenuService);
 
   ngOnInit(): void {
     this.appConfigService.load().pipe(
-      switchMap(config => {
+      tap(config => {
         if (config.engineProjectPath) {
-          this.engineService.load().subscribe();
+          this.engineBridgeService.spawnEngine();
+          this.engineBridgeService.load().subscribe();
         }
+      }),
+      switchMap(config => {
         if (!config.currentProjectId) return [];
         return this.projectRecordService.getById(config.currentProjectId);
       }),

@@ -2,7 +2,7 @@ use std::ffi::OsString;
 use std::os::windows::ffi::OsStringExt;
 use std::path::PathBuf;
 use std::process::Command;
-use std::sync::atomic::{AtomicI32, AtomicPtr, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicI32, AtomicPtr, Ordering};
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -12,20 +12,21 @@ use winapi::shared::windef::{HWND, POINT, RECT};
 use winapi::um::winuser::{
     ClientToScreen, EnumWindows, GetWindowLongPtrA, GetWindowRect, GetWindowTextW,
     GetWindowThreadProcessId, IsWindowVisible, SetWindowLongPtrA, SetWindowPos, ShowWindow,
-    GWL_EXSTYLE, GWL_STYLE, GWLP_HWNDPARENT, HWND_TOP, SW_SHOW, SWP_FRAMECHANGED, SWP_NOACTIVATE,
-    SWP_NOMOVE, SWP_NOSIZE, SWP_SHOWWINDOW, WS_CAPTION, WS_EX_LAYERED, WS_EX_TRANSPARENT,
-    WS_MAXIMIZEBOX, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU, WS_THICKFRAME, WS_VISIBLE,
+    GWL_EXSTYLE, GWL_STYLE, GWLP_HWNDPARENT, HWND_TOP, SW_HIDE, SW_SHOW, SWP_FRAMECHANGED,
+    SWP_HIDEWINDOW, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_SHOWWINDOW, WS_CAPTION,
+    WS_EX_LAYERED, WS_EX_TRANSPARENT, WS_MAXIMIZEBOX, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU,
+    WS_THICKFRAME, WS_VISIBLE,
 };
 
 static ENGINE_HWND: AtomicPtr<std::ffi::c_void> = AtomicPtr::new(std::ptr::null_mut());
 static PARENT_HWND: AtomicPtr<std::ffi::c_void> = AtomicPtr::new(std::ptr::null_mut());
+static ENGINE_VISIBLE: AtomicBool = AtomicBool::new(false);
 
 static LAST_X: AtomicI32 = AtomicI32::new(0);
 static LAST_Y: AtomicI32 = AtomicI32::new(0);
 static LAST_W: AtomicI32 = AtomicI32::new(0);
 static LAST_H: AtomicI32 = AtomicI32::new(0);
 
-// Track absolute screen position to detect when the main window moves
 static APPLIED_SCREEN_X: AtomicI32 = AtomicI32::new(-1);
 static APPLIED_SCREEN_Y: AtomicI32 = AtomicI32::new(-1);
 static APPLIED_W: AtomicI32 = AtomicI32::new(-1);
@@ -60,10 +61,6 @@ unsafe extern "system" fn enum_windows_callback(hwnd: HWND, lparam: isize) -> i3
             .into_owned();
 
         if IsWindowVisible(hwnd) != 0 && width > 50 && height > 50 {
-            println!(
-                "[Rust Window Search] Valid Render HWND Found: {:?}, Title: '{}', Dimensions: {}x{}",
-                hwnd, title, width, height
-            );
             data.hwnd = Some(hwnd);
             return 0;
         }
@@ -77,30 +74,38 @@ pub fn apply_bounds(scale_factor: f64) {
         let hwnd = ENGINE_HWND.load(Ordering::SeqCst) as HWND;
         let parent_hwnd = PARENT_HWND.load(Ordering::SeqCst) as HWND;
 
+        if hwnd.is_null() || parent_hwnd.is_null() {
+            return;
+        }
+
+        if !ENGINE_VISIBLE.load(Ordering::SeqCst) {
+            ShowWindow(hwnd, SW_HIDE);
+            return;
+        }
+
         let x = LAST_X.load(Ordering::SeqCst);
         let y = LAST_Y.load(Ordering::SeqCst);
         let w = LAST_W.load(Ordering::SeqCst);
         let h = LAST_H.load(Ordering::SeqCst);
 
-        if !hwnd.is_null() && !parent_hwnd.is_null() && w > 0 && h > 0 {
+        if w > 0 && h > 0 {
             let scaled_x = (x as f64 * scale_factor) as i32;
             let scaled_y = (y as f64 * scale_factor) as i32;
             let scaled_w = (w as f64 * scale_factor) as i32;
             let scaled_h = (h as f64 * scale_factor) as i32;
 
-            // Convert local container position to absolute screen coordinates
             let mut pt = POINT {
                 x: scaled_x,
                 y: scaled_y,
             };
             ClientToScreen(parent_hwnd, &mut pt);
 
-            // Compare against computed screen coordinates
             if APPLIED_SCREEN_X.load(Ordering::SeqCst) == pt.x
                 && APPLIED_SCREEN_Y.load(Ordering::SeqCst) == pt.y
                 && APPLIED_W.load(Ordering::SeqCst) == scaled_w
                 && APPLIED_H.load(Ordering::SeqCst) == scaled_h
             {
+                ShowWindow(hwnd, SW_SHOW);
                 return;
             }
 
@@ -124,11 +129,16 @@ pub fn apply_bounds(scale_factor: f64) {
 
 #[tauri::command]
 pub fn spawn_engine_process(window: tauri::Window, exe_path: String) -> Result<(), String> {
-    println!("[Rust] Launching C# engine: {}", exe_path);
+    println!("[Rust] Spawning C# engine process at startup: {}", exe_path);
 
-    let path = PathBuf::from(&exe_path);
-    if !path.exists() {
-        return Err(format!("Engine executable not found: {}", path.display()));
+    let mut path = PathBuf::from(&exe_path);
+
+    if path.is_dir() {
+        path = path.join("OssianEngine.exe"); 
+    }
+
+    if !path.exists() || !path.is_file() {
+        return Err(format!("Engine executable not found at path: {}", path.display()));
     }
 
     let exe_dir = path
@@ -143,7 +153,6 @@ pub fn spawn_engine_process(window: tauri::Window, exe_path: String) -> Result<(
 
     let pid = child.id();
 
-    // Attach event handler so window movement updates the C# viewport position
     let move_window_clone = window.clone();
     window.on_window_event(move |event| {
         if let tauri::WindowEvent::Moved(_) = event {
@@ -156,7 +165,6 @@ pub fn spawn_engine_process(window: tauri::Window, exe_path: String) -> Result<(
     {
         let tauri_hwnd = window.hwnd().map_err(|e| e.to_string())?.0;
         let tauri_hwnd_usize = tauri_hwnd as usize;
-        let window_clone = window.clone();
 
         thread::spawn(move || {
             let start = Instant::now();
@@ -184,7 +192,7 @@ pub fn spawn_engine_process(window: tauri::Window, exe_path: String) -> Result<(
                             | WS_MINIMIZEBOX
                             | WS_MAXIMIZEBOX
                             | WS_SYSMENU) as isize;
-                        let new_style = (old_style & !strip_styles) | (WS_POPUP | WS_VISIBLE) as isize;
+                        let new_style = (old_style & !strip_styles) | (WS_POPUP) as isize;
                         SetWindowLongPtrA(child_hwnd, GWL_STYLE, new_style);
 
                         let old_exstyle = GetWindowLongPtrA(child_hwnd, GWL_EXSTYLE);
@@ -195,21 +203,8 @@ pub fn spawn_engine_process(window: tauri::Window, exe_path: String) -> Result<(
                         SetWindowLongPtrA(child_hwnd, GWLP_HWNDPARENT, parent_hwnd as isize);
                         ENGINE_HWND.store(child_hwnd as *mut _, Ordering::SeqCst);
 
-                        ShowWindow(child_hwnd, SW_SHOW);
-                        SetWindowPos(
-                            child_hwnd,
-                            HWND_TOP,
-                            0,
-                            0,
-                            0,
-                            0,
-                            SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW | SWP_FRAMECHANGED,
-                        );
-
-                        let scale = window_clone.scale_factor().unwrap_or(1.0);
-                        apply_bounds(scale);
-
-                        println!("[Rust] Successfully attached owned viewport window!");
+                        ShowWindow(child_hwnd, SW_HIDE);
+                        println!("[Rust] C# Engine ready (background idle)");
                         break;
                     }
                 }
@@ -219,6 +214,13 @@ pub fn spawn_engine_process(window: tauri::Window, exe_path: String) -> Result<(
     }
 
     Ok(())
+}
+
+#[tauri::command]
+pub fn set_engine_visibility(window: tauri::Window, visible: bool) {
+    ENGINE_VISIBLE.store(visible, Ordering::SeqCst);
+    let scale = window.scale_factor().unwrap_or(1.0);
+    apply_bounds(scale);
 }
 
 #[tauri::command]
