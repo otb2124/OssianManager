@@ -34,11 +34,11 @@
   <!-- Content Container with Viewport Overlay -->
   <div class="flex-1 min-h-0 min-w-0 relative bg-transparent">
     
-    <!-- Permanent Viewport Host with active tab flag -->
-    <app-viewport3d></app-viewport3d>
-
     <!-- Overlay tabs -->
     @switch (activeTab()) {
+      @case ('3d-viewport') {
+        <app-viewport3d></app-viewport3d>
+      }
       @case ('2d-viewport') {
         <div class="absolute inset-0 bg-neutral-900 z-10">
           <app-viewport2d></app-viewport2d>
