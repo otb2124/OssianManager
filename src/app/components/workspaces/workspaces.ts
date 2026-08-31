@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal, ElementRef, ViewChild, AfterViewInit, OnDestroy, inject } from '@angular/core';
+import { Component, signal, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { Viewport3D } from '../viewport3d/viewport3d';
@@ -25,24 +25,11 @@ const HARDCODED_TABS: WorkspaceTab[] = [
   templateUrl: './workspaces.html',
   styleUrl: './workspaces.css',
 })
-export class Workspaces implements AfterViewInit, OnDestroy {
-  @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
-
-  //private readonly babylonSceneService = inject(BabylonSceneService);
+export class Workspaces implements OnDestroy {
   private resizeObserver!: ResizeObserver;
 
-  // TODO: swap back to TabsService once it's wired up; hardcoded for now.
   protected tabs = signal<WorkspaceTab[]>(HARDCODED_TABS);
   protected activeTab = signal<string>(HARDCODED_TABS[0].path);
-
-  ngAfterViewInit(): void {
-    const canvas = this.canvasRef.nativeElement;
-    //this.babylonSceneService.setControlCanvas(canvas);
-    //this.babylonSceneService.init(canvas);
-
-    //this.resizeObserver = new ResizeObserver(() => this.babylonSceneService.resize());
-    //this.resizeObserver.observe(canvas);
-  }
 
   activateTab(tab: WorkspaceTab): void {
     this.activeTab.set(tab.path);
@@ -50,11 +37,9 @@ export class Workspaces implements AfterViewInit, OnDestroy {
 
   closeTab(tab: WorkspaceTab, event: Event): void {
     event.stopPropagation();
-    // No-op for now — hardcoded tabs aren't removable yet.
   }
 
   ngOnDestroy(): void {
     this.resizeObserver?.disconnect();
-    //this.babylonSceneService.disposeEngine();
   }
 }

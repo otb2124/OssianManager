@@ -1,5 +1,10 @@
+mod engine_host;
+
 use tauri::Manager;
 use std::fs;
+
+// Re-export commands and bounds updater from engine_host module
+use engine_host::{spawn_engine_process, update_viewport_bounds, apply_bounds};
 
 #[derive(serde::Serialize)]
 struct GitCommit {
@@ -47,13 +52,10 @@ fn run_git(cwd: &str, args: &[&str]) -> Result<String, String> {
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
 }
 
-
 #[tauri::command]
 fn read_config(relative_path: String) -> Result<String, String> {
     let cwd = std::env::current_dir().map_err(|e| e.to_string())?;
     let full_path = cwd.join(&relative_path);
-    println!("read_config cwd: {:?}", cwd);
-    println!("read_config full_path: {:?}", full_path);
     fs::read_to_string(&full_path).map_err(|e| format!("{}: {}", full_path.display(), e))
 }
 
@@ -61,20 +63,16 @@ fn read_config(relative_path: String) -> Result<String, String> {
 fn write_config(relative_path: String, content: String) -> Result<(), String> {
     let cwd = std::env::current_dir().map_err(|e| e.to_string())?;
     let full_path = cwd.join(&relative_path);
-    println!("write_config cwd: {:?}", cwd);
-    println!("write_config full_path: {:?}", full_path);
     fs::write(&full_path, content).map_err(|e| format!("{}: {}", full_path.display(), e))
 }
 
 #[tauri::command]
 fn read_config_absolute(path: String) -> Result<String, String> {
-    println!("read_config_absolute: {:?}", path);
     fs::read_to_string(&path).map_err(|e| format!("{}: {}", path, e))
 }
 
 #[tauri::command]
 fn write_config_absolute(path: String, content: String) -> Result<(), String> {
-    println!("write_config_absolute: {:?}", path);
     fs::write(&path, content).map_err(|e| format!("{}: {}", path, e))
 }
 
@@ -132,7 +130,7 @@ fn scan_dir(dir: &std::path::Path, found: &mut Vec<String>, depth: u32) {
         if let Some(p) = dir.to_str() {
             found.push(p.to_string());
         }
-        return; // don't recurse into project folders
+        return;
     }
     if let Ok(entries) = fs::read_dir(dir) {
         for entry in entries.flatten() {
@@ -218,6 +216,12 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
+        .on_window_event(|window, event| {
+            if let tauri::WindowEvent::Resized(_) = event {
+                let scale = window.scale_factor().unwrap_or(1.0);
+                apply_bounds(scale);
+            }
+        })
         .invoke_handler(tauri::generate_handler![
             greet,
             reveal_in_explorer,
@@ -229,19 +233,21 @@ pub fn run() {
             get_latest_commit,
             delete_directory,
             list_directory,
-            rename_entry
+            rename_entry,
+
+            // Engine Host Module Commands
+            spawn_engine_process,
+            update_viewport_bounds
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]
             {
-                let window = app.get_webview_window("main").unwrap();
-                window.open_devtools();
+                if let Some(window) = app.get_webview_window("main") {
+                    window.open_devtools();
+                }
             }
             Ok(())
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
-
-

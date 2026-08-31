@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.viewport-container {
+  width: 100%;
+  height: 100%;
+  /* MUST BE TRANSPARENT so native HWND drawn on top/behind isn't blocked by CSS */
+  background: transparent !important; 
+}
