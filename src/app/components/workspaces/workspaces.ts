@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { Viewport3D } from '../viewport3d/viewport3d';
 import { Viewport2D } from '../viewport2d/viewport2d';
-import { BabylonSceneService } from '../../services/babylon/babylonscene.service.ts';
 import { ScriptEditor } from "../script-editor/script-editor";
 
 interface WorkspaceTab {
@@ -29,7 +28,7 @@ const HARDCODED_TABS: WorkspaceTab[] = [
 export class Workspaces implements AfterViewInit, OnDestroy {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
-  private readonly babylonSceneService = inject(BabylonSceneService);
+  //private readonly babylonSceneService = inject(BabylonSceneService);
   private resizeObserver!: ResizeObserver;
 
   // TODO: swap back to TabsService once it's wired up; hardcoded for now.
@@ -38,11 +37,11 @@ export class Workspaces implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     const canvas = this.canvasRef.nativeElement;
-    this.babylonSceneService.setControlCanvas(canvas);
-    this.babylonSceneService.init(canvas);
+    //this.babylonSceneService.setControlCanvas(canvas);
+    //this.babylonSceneService.init(canvas);
 
-    this.resizeObserver = new ResizeObserver(() => this.babylonSceneService.resize());
-    this.resizeObserver.observe(canvas);
+    //this.resizeObserver = new ResizeObserver(() => this.babylonSceneService.resize());
+    //this.resizeObserver.observe(canvas);
   }
 
   activateTab(tab: WorkspaceTab): void {
@@ -56,6 +55,6 @@ export class Workspaces implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.resizeObserver?.disconnect();
-    this.babylonSceneService.disposeEngine();
+    //this.babylonSceneService.disposeEngine();
   }
 }
