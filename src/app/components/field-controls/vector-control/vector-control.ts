@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { InputNumberControl } from '../input-number-control/input-number-control';
 import { FormsModule } from '@angular/forms';
@@ -26,6 +26,8 @@ export class VectorControl {
   @Input() maxFractionDigits = 2;
   @Input() prefix?: string | string[];
   @Input() suffix?: string | string[];
+
+  @Output() valueChange = new EventEmitter<VectorLike>();
 
   get gridClass(): string {
     const count = this.axisLabels.length;
@@ -72,5 +74,6 @@ export class VectorControl {
     const key = this.getKey(index);
     const rawVal = val ?? 0;
     this.value[key] = rawVal / this.displayScale;
+    this.valueChange.emit(this.value);
   }
 }

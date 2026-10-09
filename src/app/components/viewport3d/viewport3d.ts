@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, inject } from '@angular/core';
-import { EngineBridgeService } from '../../services/engine/engine-bridge.service';
+import { EngineBridgeService } from '../../services/engine/bridge/engine-bridge.service';
 
 @Component({
   selector: 'app-viewport3d',

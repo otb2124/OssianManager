@@ -1,13 +1,22 @@
 use std::ffi::OsString;
 use std::os::windows::ffi::OsStringExt;
+use std::os::windows::io::AsRawHandle;
 use std::path::PathBuf;
-use std::process::Command;
+use std::process::{Child, Command};
 use std::sync::atomic::{AtomicBool, AtomicI32, AtomicPtr, Ordering};
+use std::sync::Mutex;
 use std::thread;
 use std::time::{Duration, Instant};
 
 #[cfg(target_os = "windows")]
 use winapi::shared::windef::{HWND, POINT, RECT};
+#[cfg(target_os = "windows")]
+use winapi::um::jobapi2::{AssignProcessToJobObject, CreateJobObjectW, SetInformationJobObject};
+#[cfg(target_os = "windows")]
+use winapi::um::winnt::{
+    JobObjectExtendedLimitInformation, HANDLE, JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
+    JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE,
+};
 #[cfg(target_os = "windows")]
 use winapi::um::winuser::{
     ClientToScreen, EnumWindows, GetWindowLongPtrA, GetWindowRect, GetWindowTextW,
@@ -21,6 +30,35 @@ use winapi::um::winuser::{
 static ENGINE_HWND: AtomicPtr<std::ffi::c_void> = AtomicPtr::new(std::ptr::null_mut());
 static PARENT_HWND: AtomicPtr<std::ffi::c_void> = AtomicPtr::new(std::ptr::null_mut());
 static ENGINE_VISIBLE: AtomicBool = AtomicBool::new(false);
+
+// The running engine process, so a respawn can replace it instead of leaving a second one behind.
+static ENGINE_CHILD: Mutex<Option<Child>> = Mutex::new(None);
+
+// Job object with KILL_ON_JOB_CLOSE. Created once and never closed on purpose: Windows closes the
+// handle when the manager process ends (closed, crashed, restarted by `cargo run`), which kills the
+// engine and anything it spawned. Stored as usize because raw pointers aren't Sync.
+#[cfg(target_os = "windows")]
+static ENGINE_JOB: std::sync::OnceLock<usize> = std::sync::OnceLock::new();
+
+#[cfg(target_os = "windows")]
+fn engine_job() -> Option<HANDLE> {
+    let raw = *ENGINE_JOB.get_or_init(|| unsafe {
+        let job = CreateJobObjectW(std::ptr::null_mut(), std::ptr::null());
+        if job.is_null() {
+            return 0;
+        }
+        let mut info: JOBOBJECT_EXTENDED_LIMIT_INFORMATION = std::mem::zeroed();
+        info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        let ok = SetInformationJobObject(
+            job,
+            JobObjectExtendedLimitInformation,
+            &mut info as *mut _ as *mut _,
+            std::mem::size_of::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() as u32,
+        );
+        if ok == 0 { 0 } else { job as usize }
+    });
+    if raw == 0 { None } else { Some(raw as HANDLE) }
+}
 
 static LAST_X: AtomicI32 = AtomicI32::new(0);
 static LAST_Y: AtomicI32 = AtomicI32::new(0);
@@ -128,7 +166,11 @@ pub fn apply_bounds(scale_factor: f64) {
 }
 
 #[tauri::command]
-pub fn spawn_engine_process(window: tauri::Window, exe_path: String) -> Result<(), String> {
+pub fn spawn_engine_process(
+    app: tauri::AppHandle,
+    window: tauri::Window,
+    exe_path: String,
+) -> Result<(), String> {
     println!("[Rust] Spawning C# engine process at startup: {}", exe_path);
 
     let mut path = PathBuf::from(&exe_path);
@@ -145,13 +187,40 @@ pub fn spawn_engine_process(window: tauri::Window, exe_path: String) -> Result<(
         .parent()
         .ok_or_else(|| "Failed to get executable directory".to_string())?;
 
+    // Replace a previous engine (e.g. after a webview reload) instead of leaving it running.
+    if let Some(mut old) = ENGINE_CHILD.lock().unwrap().take() {
+        let _ = old.kill();
+        let _ = old.wait();
+    }
+    ENGINE_HWND.store(std::ptr::null_mut(), Ordering::SeqCst);
+    APPLIED_SCREEN_X.store(-1, Ordering::SeqCst);
+    APPLIED_SCREEN_Y.store(-1, Ordering::SeqCst);
+    APPLIED_W.store(-1, Ordering::SeqCst);
+    APPLIED_H.store(-1, Ordering::SeqCst);
+
+    let pipe_name = crate::engine_link::new_pipe_name();
+    let server = crate::engine_link::create_server(&pipe_name)
+        .map_err(|e| format!("Failed to create engine pipe: {}", e))?;
+
     let child = Command::new(&path)
         .arg("--embedded")
+        .arg("--pipe")
+        .arg(&pipe_name)
         .current_dir(exe_dir)
         .spawn()
         .map_err(|e| format!("Failed to launch process: {}", e))?;
 
+    #[cfg(target_os = "windows")]
+    if let Some(job) = engine_job() {
+        unsafe {
+            AssignProcessToJobObject(job, child.as_raw_handle() as HANDLE);
+        }
+    }
+
+    crate::engine_link::start(app, server);
+
     let pid = child.id();
+    *ENGINE_CHILD.lock().unwrap() = Some(child);
 
     let move_window_clone = window.clone();
     window.on_window_event(move |event| {

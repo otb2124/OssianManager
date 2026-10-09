@@ -1,6 +1,7 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AppTreeNode, TreeControl, TreeControlConfig } from '../field-controls/tree-control/tree-control';
+import { EngineIpcService, EngineTreeNode } from '../../services/engine/ipc/engine-ipc';
 
 @Component({
   selector: 'app-hierarchy-panel',
@@ -9,43 +10,50 @@ import { AppTreeNode, TreeControl, TreeControlConfig } from '../field-controls/t
   templateUrl: './hierarchy-panel.html',
 })
 export class HierarchyPanel {
-  //protected readonly sceneService = inject(BabylonSceneService);
+  protected readonly engine = inject(EngineIpcService);
 
-  //protected readonly treeNodes = computed<AppTreeNode<BabylonNode>[]>(() => {
-    // Reading nodeVersion forces computation whenever nodes change
-    //this.sceneService.nodeVersion(); 
-    
-    //const scene = this.sceneService.scene();
-    //if (!scene) return [];
+  // Plain Set on purpose: it must not retrigger the computed below.
+  // Keeps expand/collapse state across tree refreshes (nodes.changed rebuilds every node object).
+  private readonly collapsed = new Set<string>();
 
-    //return scene.rootNodes.map(node => this.toTreeNode(node));
-  //});
+  protected readonly treeNodes = computed<AppTreeNode<EngineTreeNode>[]>(() =>
+    this.engine.tree().map((node, i) => this.toTreeNode(node, `${i}`))
+  );
 
-  //protected readonly treeConfig: TreeControlConfig<BabylonNode> = {
-  //  showIcons: true,
-  //  isSelected: (node) => !!node.data && this.sceneService.isSelected(node.data),
-  //};
+  protected readonly treeConfig: TreeControlConfig<EngineTreeNode> = {
+    showIcons: true,
+    isSelected: (node) => !!node.data?.id && node.data.id === this.engine.selectedId(),
+  };
 
-  /*
-  private toTreeNode(node: BabylonNode): AppTreeNode<BabylonNode> {
-    const children = node.getChildren();
-    const hasChildren = children.length > 0;
+  // Engine ids can be empty for unnamed nodes, so fall back to the tree path for the key.
+  private toTreeNode(node: EngineTreeNode, path: string): AppTreeNode<EngineTreeNode> {
+    const key = node.id || `path:${path}`;
+    const hasChildren = node.children.length > 0;
 
     return {
-      id: node.uniqueId.toString(),
-      key: node.uniqueId.toString(),
-      label: node.name || `Node_${node.uniqueId}`,
+      id: key,
+      key,
+      label: node.name || node.id || 'Node',
       icon: 'pi pi-box',
+      styleClass: node.enabled ? undefined : 'opacity-50',
       data: node,
       leaf: !hasChildren,
-      expanded: hasChildren,
-      children: hasChildren ? children.map(child => this.toTreeNode(child)) : undefined,
+      expanded: hasChildren && !this.collapsed.has(key),
+      children: hasChildren
+        ? node.children.map((child, i) => this.toTreeNode(child, `${path}/${i}`))
+        : undefined,
     };
   }
 
-  onNodeSelect(node: AppTreeNode<BabylonNode>): void {
-    if (node.data) {
-      this.sceneService.select(node.data);
-    }
-  }*/
+  onNodeSelect(node: AppTreeNode<EngineTreeNode>): void {
+    if (node.data?.id) this.engine.select(node.data.id);
+  }
+
+  onNodeExpand(node: AppTreeNode<EngineTreeNode>): void {
+    this.collapsed.delete(node.id);
+  }
+
+  onNodeCollapse(node: AppTreeNode<EngineTreeNode>): void {
+    this.collapsed.add(node.id);
+  }
 }

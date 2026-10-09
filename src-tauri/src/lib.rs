@@ -1,4 +1,5 @@
 mod engine_host;
+mod engine_link;
 
 use tauri::Manager;
 use std::fs;
@@ -213,6 +214,7 @@ fn rename_entry(old_path: String, new_name: String) -> Result<String, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .manage(engine_link::EngineLink::default())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
@@ -238,7 +240,8 @@ pub fn run() {
             // Engine Host Module Commands
             spawn_engine_process,
             update_viewport_bounds,
-            set_engine_visibility 
+            set_engine_visibility,
+            engine_link::engine_request
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

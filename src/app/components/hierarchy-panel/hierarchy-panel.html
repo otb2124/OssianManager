@@ -1,9 +1,13 @@
-<!-- 
 <div class="p-2 overflow-auto h-full">
-  <app-tree-control
-    [nodes]="treeNodes()"
-    [config]="treeConfig"
-    (nodeSelect)="onNodeSelect($event)">
-  </app-tree-control>
+  @if (engine.connected()) {
+    <app-tree-control
+      [nodes]="treeNodes()"
+      [config]="treeConfig"
+      (nodeSelect)="onNodeSelect($event)"
+      (nodeExpand)="onNodeExpand($event)"
+      (nodeCollapse)="onNodeCollapse($event)">
+    </app-tree-control>
+  } @else {
+    <div class="text-xs opacity-60 p-2">Engine not running</div>
+  }
 </div>
- -->

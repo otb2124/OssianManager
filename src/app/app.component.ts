@@ -16,7 +16,8 @@ import { HydratedProjectRecord } from './model/project-record.model';
 import { RouteChild } from './app.routes';
 import { DialogFormHostComponent } from "./components/dialog-form/dialog-form";
 import { AppConfigService } from './services/data/app-config/app-config.service';
-import { EngineBridgeService } from './services/engine/engine-bridge.service';
+import { EngineBridgeService } from './services/engine/bridge/engine-bridge.service';
+import { EngineIpcService } from './services/engine/ipc/engine-ipc';
 
 @Component({
   selector: 'app-root',
@@ -31,15 +32,17 @@ export class AppComponent implements OnInit {
   private themeService = inject(ThemeService);
 
   private engineBridgeService = inject(EngineBridgeService);
+  private engineIpc = inject(EngineIpcService);
 
   private readonly shortcuts = inject(KeyShortcutService);
   private readonly contextMenus = inject(ContextMenuService);
 
   ngOnInit(): void {
     this.appConfigService.load().pipe(
-      tap(config => {
+      tap(async config => {
         if (config.engineProjectPath) {
-          this.engineBridgeService.spawnEngine();
+          await this.engineIpc.init();                 // listeners first
+          await this.engineBridgeService.spawnEngine();
           this.engineBridgeService.load().subscribe();
         }
       }),

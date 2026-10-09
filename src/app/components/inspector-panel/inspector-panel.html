@@ -1,28 +1,59 @@
-<!-- 
 <div class="flex flex-col gap-3 p-3 h-full overflow-auto text-xs">
 
-  @if (!sceneService.selectedNode()) {
-    <div class="text-gray-400 dark:text-gray-500 italic">
-      No object selected
-    </div>
-  }
+  @if (!engine.connected()) {
+    <div class="text-gray-400 dark:text-gray-500 italic">Engine not running</div>
+  } @else if (!engine.selectedId()) {
+    <div class="text-gray-400 dark:text-gray-500 italic">No object selected</div>
+  } @else if (node(); as n) {
 
-  @if (sceneService.selectedNode(); as node) {
     <div class="flex items-center gap-2 pb-2 border-b border-[var(--theme-color-border)]">
       <i class="pi pi-box shrink-0"></i>
-      <span class="font-medium truncate">{{ nodeName() }}</span>
+      <span class="font-medium truncate flex-1">{{ n.name || n.id }}</span>
+      <p-button
+        icon="pi pi-refresh"
+        (onClick)="reload()"
+        severity="secondary"
+        size="small"
+        [text]="true"
+        styleClass="!p-1" />
     </div>
 
-    @for (key of [inspectorSync.selectionKey()]; track key) {
-      @if (inspectorSync.fieldTarget(); as target) {
-        <app-field-list 
-          [fields]="inspectorFields" 
-          [target]="target">
-        </app-field-list>
+    <app-field-list [fields]="nodeFields" [target]="nodeTarget"></app-field-list>
+
+    <p-accordion
+      class="w-full"
+      [multiple]="true"
+      [value]="openPanels()"
+      (valueChange)="onOpenChange($event)">
+      @for (section of sections(); track section.key) {
+        <p-accordion-panel [value]="section.key">
+          <p-accordion-header>
+            <div class="flex items-center gap-2">
+              <i [class]="section.icon + ' text-xs'"></i>
+              <span class="font-semibold text-sm">{{ section.header }}</span>
+            </div>
+          </p-accordion-header>
+
+          <p-accordion-content>
+            <div class="pt-2">
+              <app-field-list [fields]="section.fields" [target]="section.target"></app-field-list>
+            </div>
+          </p-accordion-content>
+        </p-accordion-panel>
+      } @empty {
+        <div class="text-center py-4 border border-dashed border-surface-300 dark:border-surface-700 rounded text-xs text-gray-400 italic">
+          This node has no properties.
+        </div>
       }
-    }
+    </p-accordion>
+
+  } @else if (loadError(); as error) {
+    <div class="flex items-center gap-2">
+      <span class="text-red-400 flex-1">{{ error }}</span>
+      <p-button icon="pi pi-refresh" (onClick)="reload()" severity="secondary" size="small" [text]="true" styleClass="!p-1" />
+    </div>
+  } @else {
+    <div class="text-gray-400 dark:text-gray-500 italic">Loading...</div>
   }
 
 </div>
-
- -->

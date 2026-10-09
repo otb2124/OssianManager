@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { HierarchyPanel } from "../../../components/hierarchy-panel/hierarchy-panel";
 import { InspectorPanel } from "../../../components/inspector-panel/inspector-panel";
 import { FileExplorerPanel } from "../../../components/file-tree-panel/file-tree-panel";
 import { FileInspectorPanel } from "../../../components/file-inspector-panel/file-inspector-panel";
 import { Workspaces } from "../../../components/workspaces/workspaces";
+import { HierarchyPanel } from '../../../components/hierarchy-panel/hierarchy-panel';
 
 @Component({
   selector: 'app-scene-page',

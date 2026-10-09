@@ -67,3 +67,5 @@ Thumbs.db
 # Optional: Tauri development files
 src-tauri/gen/
 src-tauri/src-tauri.log
+
+/exports
