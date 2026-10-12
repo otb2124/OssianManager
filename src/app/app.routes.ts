@@ -341,6 +341,40 @@ export const routes: RouteChild[] =
         pathMatch: 'full'
       },
       {
+        path: 'scenes',
+        title: 'Scenes',
+        displayBreadcrumb: true,
+        displayModule: true,
+        navigatesModule: true,
+        displaySidebar: true,
+        children:
+        [
+          {
+            path: '',
+            redirectTo: 'scene-management',
+            pathMatch: 'full'
+          },
+          {
+            path: 'scene-management',
+            title: 'Scene Management',
+            icon: 'pi pi-cog',
+            displayBreadcrumb: true,
+            displayModule: true,
+            loadComponent: () => import('./pages/graph-page/graph-page.js').then(m => m.GraphPage),
+            data: { id:"build-details" }
+          },
+          {
+            path: 'tree',
+            title: 'Tree',
+            icon: 'pi pi-microchip',
+            displayBreadcrumb: true,
+            displayModule: true,
+            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            data: { id:"build-tree" }
+          },
+        ]
+      },
+      {
         path: 'build',
         title: 'Build',
         displayBreadcrumb: true,
@@ -362,15 +396,6 @@ export const routes: RouteChild[] =
             displayModule: true,
             loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
             data: { id:"build-details" }
-          },
-          {
-            path: 'tree',
-            title: 'Tree',
-            icon: 'pi pi-microchip',
-            displayBreadcrumb: true,
-            displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
-            data: { id:"build-tree" }
           },
           {
             path: 'startup',

@@ -7,13 +7,12 @@
   "settings": {
     "themeColor": "#eb1e92"
   },
-  "engineProjectPath": "C:\\Users\\orest\\Downloads\\pojects\\OssianEngine",
+  "engineProjectPath": "C:\\Users\\orest\\Downloads\\ossian-manager\\OssianForge-snapshot-09-10-2026\\OssianForge.exe",
   "openTabs": [
     "/scene01",
     "/file/projects/my-projects",
     "/tools/settings/app",
     "/project/build/details",
-    "/project/build/tree",
     "/project/build/startup",
     "/project/display/window",
     "/project/display/accessibility",
@@ -27,8 +26,11 @@
     "/project/events/conditions",
     "/project/events/state-machines",
     "/project/events/pronouns",
-    "/tools/logs"
+    "/tools/logs",
+    "/project/scenes/scene-management",
+    "/project/scenes/tree",
+    "/file/projects/recents"
   ],
   "activeTab": "/scene01",
-  "currentProjectId": "12886441-196f-42d8-b6ea-c8a0d07e0e2f"
+  "currentProjectId": "af7e3ead-6dfc-440e-8a47-3eef3885ce9c"
 }

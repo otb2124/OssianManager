@@ -1,24 +1,36 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { invoke } from '@tauri-apps/api/core';
 import { Observable, of } from 'rxjs';
-
-export const ENGINE_PATH = `C:\\Users\\orest\\Downloads\\pojects\\OssianForge\\bin\\Debug\\net8.0\\OssianForge.exe`;
+import { AppConfigService } from '../../data/app-config/app-config.service';
+import { NotificationService } from '../../notifications/notification.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EngineBridgeService {
+  private readonly appConfig = inject(AppConfigService);
+  private readonly notifications = inject(NotificationService);
 
   /**
-   * Spawns the C# engine process using the provided path or default ENGINE_PATH.
+   * Spawns the C# engine process. `path` defaults to `engineProjectPath` from app.json, which can be
+   * the engine executable itself or a folder (the Rust side resolves the executable inside it).
+   * Returns true when the process was launched.
    */
-  async spawnEngine(path: string = ENGINE_PATH): Promise<void> {
+  async spawnEngine(path: string | null = this.appConfig.engineProjectPath()): Promise<boolean> {
+    if (!path) {
+      console.warn('[EngineService] No engineProjectPath in app.json; engine not started.');
+      return false;
+    }
+
     try {
       // Must pass { exePath } so Tauri maps it to Rust's `exe_path` parameter
       await invoke('spawn_engine_process', { exePath: path });
       console.log('[EngineService] C# Engine initialized.');
+      return true;
     } catch (err) {
       console.error('[EngineService] Failed to spawn engine:', err);
+      this.notifications.error('Could not start the engine', String(err));
+      return false;
     }
   }
 

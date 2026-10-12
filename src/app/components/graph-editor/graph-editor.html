@@ -1,0 +1,84 @@
+<f-flow
+  fDraggable
+  tabindex="0"
+  class="
+        bg-transparent!
+        block size-full outline-none
+         [&_.f-connection-path]:fill-none!
+         [&_.f-connection-path]:stroke-2!
+         [&_.f-connection-path]:stroke-gray-400!
+         [&_.f-connection.f-selected_.f-connection-path]:stroke-[var(--theme-color)]!
+         [&_.f-connection-selection]:stroke-transparent!"
+  (fLoaded)="onLoaded()"
+  (fCreateConnection)="onCreateConnection($event)"
+  (fReassignConnection)="onReassignConnection($event)"
+  (fSelectionChange)="onSelectionChange($event)">
+
+  <f-canvas class="bg-transparent!">
+    <f-connection-for-create />
+
+    @for (e of store.edges(); track e.id) {
+      <f-connection
+        [fOutputId]="socketKey(e.fromNode, e.fromSocket)"
+        [fInputId]="socketKey(e.toNode, e.toSocket)" />
+    }
+
+    @for (n of store.nodes(); track n.id) {
+      @let t = store.typeOf(n);
+
+      <div
+        fNode
+        fDragHandle
+        [fNodeId]="n.id"
+        [fNodePosition]="n.position"
+        (fNodePositionChange)="onNodeMoved(n.id, $event)"
+        (dblclick)="onNodeDblClick(n)"
+        [attr.data-selected]="isSelected(n.id)"
+        class="min-w-[200px] overflow-visible rounded-lg border text-xs
+               bg-[#1f1f24]/50! text-neutral-200!
+               border-[var(--theme-color-border)]!
+               shadow-[0_4px_14px_rgba(0,0,0,0.45)]
+               data-[selected=true]:border-[var(--theme-color)]!
+               data-[selected=true]:shadow-[0_0_0_1px_var(--theme-color),0_4px_14px_rgba(0,0,0,0.45)]">
+
+        <header
+          class="flex items-center gap-2 rounded-t-[7px] px-2.5 py-1.5
+                 font-semibold text-white cursor-grab select-none"
+          [style.background]="t.color ?? 'var(--theme-color)'">
+          @if (t.icon) { <i [class]="t.icon + ' text-xs'"></i> }
+          <span class="truncate">{{ t.title }}</span>
+        </header>
+
+        @for (o of t.outputs; track o.id) {
+          <div class="relative flex min-h-6 items-center justify-end px-3.5 py-1">
+            <span>{{ o.label }}</span>
+            <span
+              fNodeOutput
+              [fOutputId]="outId(n, o)"
+              class="absolute -right-1.5 top-1/2 size-3 -translate-y-1/2
+                     cursor-crosshair rounded-full border-2 border-[#141417]"
+              [style.background]="socketColor(o.dataType)"></span>
+          </div>
+        }
+
+        @if (t.fields?.length) {
+          <div class="px-2.5 py-2">
+            <app-field-list [fields]="t.fields!" [model]="n.values" />
+          </div>
+        }
+
+        @for (i of t.inputs; track i.id) {
+          <div class="relative flex min-h-6 items-center justify-start px-3.5 py-1">
+            <span
+              fNodeInput
+              [fInputId]="inId(n, i)"
+              class="absolute -left-1.5 top-1/2 size-3 -translate-y-1/2
+                     cursor-crosshair rounded-full border-2 border-[#141417]"
+              [style.background]="socketColor(i.dataType)"></span>
+            <span>{{ i.label }}</span>
+          </div>
+        }
+      </div>
+    }
+  </f-canvas>
+</f-flow>

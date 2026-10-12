@@ -7,6 +7,7 @@ use std::sync::atomic::{AtomicBool, AtomicI32, AtomicPtr, Ordering};
 use std::sync::Mutex;
 use std::thread;
 use std::time::{Duration, Instant};
+use std::os::windows::process::CommandExt;
 
 #[cfg(target_os = "windows")]
 use winapi::shared::windef::{HWND, POINT, RECT};
@@ -202,11 +203,14 @@ pub fn spawn_engine_process(
     let server = crate::engine_link::create_server(&pipe_name)
         .map_err(|e| format!("Failed to create engine pipe: {}", e))?;
 
+    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+
     let child = Command::new(&path)
         .arg("--embedded")
         .arg("--pipe")
         .arg(&pipe_name)
         .current_dir(exe_dir)
+        .creation_flags(CREATE_NO_WINDOW)   // engine still gets a (hidden) console, so stdout/Console.WriteLine keep working
         .spawn()
         .map_err(|e| format!("Failed to launch process: {}", e))?;
 

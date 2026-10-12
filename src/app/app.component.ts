@@ -18,10 +18,12 @@ import { DialogFormHostComponent } from "./components/dialog-form/dialog-form";
 import { AppConfigService } from './services/data/app-config/app-config.service';
 import { EngineBridgeService } from './services/engine/bridge/engine-bridge.service';
 import { EngineIpcService } from './services/engine/ipc/engine-ipc';
+import { BackgroundService } from './services/ui/background/background.service';
+import { ShaderBackground } from './components/shader-background/shader-background';
 
 @Component({
   selector: 'app-root',
-  imports: [FormsModule, CommonModule, RouterOutlet, Topbar, ToastModule, Bottombar, SidebarNav, ContextMenu, DialogFormHostComponent],
+  imports: [FormsModule, CommonModule, RouterOutlet, Topbar, ToastModule, Bottombar, SidebarNav, ContextMenu, DialogFormHostComponent, ShaderBackground],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -36,6 +38,8 @@ export class AppComponent implements OnInit {
 
   private readonly shortcuts = inject(KeyShortcutService);
   private readonly contextMenus = inject(ContextMenuService);
+
+  protected readonly bg = inject(BackgroundService);
 
   ngOnInit(): void {
     this.appConfigService.load().pipe(
@@ -82,5 +86,8 @@ export class AppComponent implements OnInit {
         ];
       },
     });
+
+    this.bg.setShader('cosmos');
+    this.bg.patch({ uCoverage: 0.9, uDrift: 0.2, uPerspective: 0.75 });   // flat top-down, faster
   }
 }
