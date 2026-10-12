@@ -69,3 +69,7 @@ src-tauri/gen/
 src-tauri/src-tauri.log
 
 /exports
+
+/release
+/src-tauri/.ossian
+/artifacts

@@ -1,0 +1,18 @@
+{
+  "version": "v.0.2",
+  "versionTags": ["dev_start"],
+  "appTitle": "OssianManager",
+  "settings": {
+    "themeColor": "#eb1e92"
+  },
+  "engineProjectPath": "./OssianForge\\OssianForge.exe",
+  "openTabs": [
+    "/scene01",
+    "/tools/libraries/browse",
+    "/project/display/window",
+    "/file/projects/my-projects",
+    "/project/build/startup",
+    "/project/build/details"
+  ],
+  "activeTab": "/scene01"
+}
