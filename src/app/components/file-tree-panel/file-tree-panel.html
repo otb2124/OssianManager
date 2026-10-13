@@ -9,7 +9,7 @@
 
   <div class="flex-1 min-h-0 p-2 overflow-auto">
     <app-tree-control
-      [nodes]="rootNodes()"
+      [nodes]="nodes()"
       [config]="treeConfig"
       (nodeSelect)="onNodeSelect($event)">
     </app-tree-control>

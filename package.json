@@ -9,7 +9,8 @@
     "build:web": "ng build",
     "build:release": "powershell -NoProfile -ExecutionPolicy Bypass -File ./build.ps1 -Configuration Release",
     "build:debug": "powershell -NoProfile -ExecutionPolicy Bypass -File ./build.ps1 -Configuration Debug",
-    "dev": "tauri dev"
+    "dev": "tauri dev",
+    "export": "powershell -NoProfile -ExecutionPolicy Bypass -File ./export_codebase.ps1"
   },
   "private": true,
   "dependencies": {
