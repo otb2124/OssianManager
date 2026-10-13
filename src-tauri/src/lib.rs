@@ -1,5 +1,6 @@
 mod engine_host;
 mod engine_link;
+mod engine_console;
 
 use tauri::Manager;
 use std::fs;
@@ -241,7 +242,8 @@ pub fn run() {
             spawn_engine_process,
             update_viewport_bounds,
             set_engine_visibility,
-            engine_link::engine_request
+            engine_link::engine_request,
+            engine_console::engine_console_write
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

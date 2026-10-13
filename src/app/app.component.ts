@@ -20,6 +20,7 @@ import { EngineBridgeService } from './services/engine/bridge/engine-bridge.serv
 import { EngineIpcService } from './services/engine/ipc/engine-ipc';
 import { BackgroundService } from './services/ui/background/background.service';
 import { ShaderBackground } from './components/shader-background/shader-background';
+import { EngineConsoleService } from './services/engine/console/engine-console.service';
 
 @Component({
   selector: 'app-root',
@@ -34,6 +35,7 @@ export class AppComponent implements OnInit {
   private themeService = inject(ThemeService);
 
   private engineBridgeService = inject(EngineBridgeService);
+  private engineConsole = inject(EngineConsoleService);
   private engineIpc = inject(EngineIpcService);
 
   private readonly shortcuts = inject(KeyShortcutService);
@@ -46,6 +48,7 @@ export class AppComponent implements OnInit {
       tap(async config => {
         if (config.engineProjectPath) {
           await this.engineIpc.init();                 // listeners first
+          await this.engineConsole.init();
           await this.engineBridgeService.spawnEngine();
           this.engineBridgeService.load().subscribe();
         }

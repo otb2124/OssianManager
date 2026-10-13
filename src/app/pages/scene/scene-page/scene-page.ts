@@ -4,10 +4,11 @@ import { FileExplorerPanel } from "../../../components/file-tree-panel/file-tree
 import { FileInspectorPanel } from "../../../components/file-inspector-panel/file-inspector-panel";
 import { Workspaces } from "../../../components/workspaces/workspaces";
 import { HierarchyPanel } from '../../../components/hierarchy-panel/hierarchy-panel';
+import { ConsolePanel } from '../../../components/console-panel/console-panel';
 
 @Component({
   selector: 'app-scene-page',
-  imports: [HierarchyPanel, InspectorPanel, FileExplorerPanel, FileInspectorPanel, Workspaces],
+  imports: [HierarchyPanel, InspectorPanel, FileExplorerPanel, FileInspectorPanel, Workspaces, ConsolePanel],
   templateUrl: './scene-page.html',
   styleUrl: './scene-page.css',
 })

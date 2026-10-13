@@ -2,7 +2,7 @@ use std::ffi::OsString;
 use std::os::windows::ffi::OsStringExt;
 use std::os::windows::io::AsRawHandle;
 use std::path::PathBuf;
-use std::process::{Child, Command};
+use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicBool, AtomicI32, AtomicPtr, Ordering};
 use std::sync::Mutex;
 use std::thread;
@@ -193,6 +193,7 @@ pub fn spawn_engine_process(
         let _ = old.kill();
         let _ = old.wait();
     }
+    crate::engine_console::detach();
     ENGINE_HWND.store(std::ptr::null_mut(), Ordering::SeqCst);
     APPLIED_SCREEN_X.store(-1, Ordering::SeqCst);
     APPLIED_SCREEN_Y.store(-1, Ordering::SeqCst);
@@ -205,11 +206,14 @@ pub fn spawn_engine_process(
 
     const CREATE_NO_WINDOW: u32 = 0x0800_0000;
 
-    let child = Command::new(&path)
+    let mut child = Command::new(&path)
         .arg("--embedded")
         .arg("--pipe")
         .arg(&pipe_name)
         .current_dir(exe_dir)
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
         .creation_flags(CREATE_NO_WINDOW)   // engine still gets a (hidden) console, so stdout/Console.WriteLine keep working
         .spawn()
         .map_err(|e| format!("Failed to launch process: {}", e))?;
@@ -221,6 +225,7 @@ pub fn spawn_engine_process(
         }
     }
 
+    crate::engine_console::attach(&app, &mut child);
     crate::engine_link::start(app, server);
 
     let pid = child.id();
