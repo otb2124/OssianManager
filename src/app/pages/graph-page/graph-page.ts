@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { GraphEditor } from '../../components/graph-editor/graph-editor';
-import { GraphConfig, GraphModel } from '../../model/graph.model';
+import { GraphConfig, GraphModel, GraphNode } from '../../model/graph.model';
+import { Router } from '@angular/router';
+import { AppConfigService } from '../../services/data/app-config/app-config.service';
+import { ProjectService } from '../../services/data/projects/project.service';
+import { EngineIpcService } from '../../services/engine/ipc/engine-ipc';
 
 @Component({
   selector: 'app-graph-page',
@@ -9,8 +13,25 @@ import { GraphConfig, GraphModel } from '../../model/graph.model';
   styleUrl: './graph-page.css',
 })
 export class GraphPage {
+  private router = inject(Router);
+
   config: GraphConfig = SCENE_GRAPH_CONFIG;
-  model: GraphModel = SCENE_GRAPH_MODEL; 
+  model: GraphModel = SCENE_GRAPH_MODEL;
+
+  private readonly project = inject(ProjectService);
+  private readonly appConfig = inject(AppConfigService);
+  private readonly engine = inject(EngineIpcService);
+  
+  protected readonly loading = computed(() =>
+    !this.project.hasProject() ||
+    !this.project.hasConfig() ||
+    (!!this.appConfig.engineProjectPath() && !this.engine.connected())
+  );
+
+  protected openScene(node: GraphNode): void {
+    if (node.type !== 'scene') return;
+    this.router.navigate(['/project', 'scene', node.id]);
+  }
 }
 
 

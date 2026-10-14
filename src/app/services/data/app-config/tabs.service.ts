@@ -118,11 +118,7 @@ export class TabsService {
   private resolveTab(url: string): RouteChild | null {
     const found = this.routesService.findByPath(url);
     if (!found) return null;
-    return {
-      ...found,
-      path: url,
-      //title: this.routesService.getT(url),
-    };
+    return { ...found, path: url, title: this.routesService.getLabel(url) };
   }
 
   activateTab(tab: RouteChild): void {

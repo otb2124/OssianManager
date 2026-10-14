@@ -2,11 +2,17 @@ import {
   Component, ChangeDetectionStrategy, HostListener, computed, effect,
   inject, input, output, signal, untracked, viewChild,
   ViewEncapsulation,
+  ElementRef,
 } from '@angular/core';
-import { FFlowModule, FCanvasComponent, FReassignConnectionEvent } from '@foblex/flow';
+import { FFlowModule, FCanvasComponent, FReassignConnectionEvent, FFlowComponent, FZoomDirective } from '@foblex/flow';
 import { FieldList } from '../field-list/field-list';
 import { GraphConfig, GraphModel, SocketDef, GraphNode } from '../../model/graph.model';
 import { GraphStore } from '../../services/ui/graph/graphstore';
+import { Menu, MenuModule } from 'primeng/menu';
+import { ButtonModule } from 'primeng/button';
+import { MenuItem } from 'primeng/api';
+import { TooltipModule } from 'primeng/tooltip';
+import { InputText } from 'primeng/inputtext';
 
 const SEP = '::';
 export const socketKey = (nodeId: string, socketId: string) => `${nodeId}${SEP}${socketId}`;
@@ -20,7 +26,7 @@ const FALLBACK_SOCKET_COLOR = '#9ca3af';
 @Component({
   selector: 'app-graph-editor',
   standalone: true,
-  imports: [FFlowModule, FieldList],
+  imports: [FFlowModule, FieldList, ButtonModule, MenuModule, TooltipModule, InputText],
   providers: [GraphStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './graph-editor.html',
@@ -48,8 +54,35 @@ export class GraphEditor {
   /** Last model we emitted, so a parent echoing it back doesn't reset the store. */
   private lastEmitted: GraphModel | null = null;
 
+  /** Store has been filled from the model; f-flow is only created after this. */
+  protected readonly storeReady = signal(false);
+  /** Foblex has loaded, the view is fitted, and the first frame has settled. */
+  protected readonly flowReady = signal(false);
+
+  /** Parent says dependencies (project, config, engine…) aren't ready yet. */
+  readonly loading = input(false);
+  
+  /** f-flow only exists once the store is filled AND nothing upstream is loading. */
+  protected readonly renderFlow = computed(() => this.storeReady() && !this.loading());
+
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly flow = viewChild(FFlowComponent);
+  private readonly zoom = viewChild(FZoomDirective);
+  private readonly addMenu = viewChild<Menu>('addMenu');
+  
+  protected readonly hasSelection = computed(() => this.selectedIds().length > 0);
+
+  protected readonly addItems = computed<MenuItem[]>(() =>
+    Object.values(this.config().types).map(t => ({
+      label: t.title,
+      icon: t.icon,
+      command: () => this.addNode(t.id),
+    })));
+
+  protected readonly editingId = signal<string | null>(null);
+
   constructor() {
-    // Parent -> store (only when the parent hands us a genuinely new model).
+    // Parent -> store
     effect(() => {
       const config = this.config();
       const model = this.model();
@@ -57,7 +90,20 @@ export class GraphEditor {
         if (model === this.lastEmitted) return;
         this.store.init(config, model);
         this.selectedIds.set([]);
+        this.storeReady.set(true);          // safety-net timeout moved below
       });
+    });
+  
+    // Going back into loading => show spinner again; f-flow gets destroyed by @if
+    effect(() => {
+      if (this.loading()) untracked(() => this.flowReady.set(false));
+    });
+  
+    // Safety net, armed every time f-flow is (re)created
+    effect((onCleanup) => {
+      if (!this.renderFlow()) return;
+      const t = setTimeout(() => this.flowReady.set(true), 1500);
+      onCleanup(() => clearTimeout(t));
     });
 
     // Store -> parent. Skip the initial emission that follows init().
@@ -144,12 +190,82 @@ export class GraphEditor {
   /** Call from (fLoaded) on <f-flow>, or from a toolbar button. */
   protected onLoaded(): void {
     this.fit(false);
+    // Two frames: Foblex applies node sizes/positions, and the field controls
+    // finish their first (async ngModel) render, before we reveal the graph.
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => this.flowReady.set(true)));
   }
 
   fit(animated = true): void {
     // VERIFY: method name/signature on FCanvasComponent in your version
     // (resetScaleAndCenter / fitToScreen).
     this.canvas()?.resetScaleAndCenter(animated);
+  }
+
+
+  protected onAddClick(event: Event): void {
+    const types = Object.values(this.config().types);
+    if (types.length === 1) this.addNode(types[0].id);
+    else this.addMenu()?.toggle(event);
+  }
+  
+  private addNode(typeId: string): void {
+    if (this.isReadonly()) return;
+    const id = this.store.addNode(typeId, this.viewportCenter());
+    this.selectNodes([id]);
+  }
+  
+  protected duplicateSelected(): void {
+    if (this.isReadonly() || !this.hasSelection()) return;
+    this.selectNodes(this.store.duplicateNodes(this.selectedIds()));
+  }
+  
+  protected deleteSelected(): void {
+    const ids = this.selectedIds();
+    if (this.isReadonly() || !ids.length) return;
+    this.store.removeNodes(ids);
+    this.selectedIds.set([]);
+  }
+  
+  protected selectAll(): void {
+    this.selectNodes(this.store.nodes().map(n => n.id));
+  }
+  
+  protected zoomIn(): void  { this.zoom()?.zoomIn(); }   // VERIFY: FZoomDirective API in 19.x
+  protected zoomOut(): void { this.zoom()?.zoomOut(); }
+  
+  private selectNodes(ids: string[]): void {
+    this.flow()?.select(ids, []);                         // VERIFY: FFlowComponent.select(nodeIds, connectionIds)
+    this.selectedIds.set(ids);
+    this.selectionChange.emit(ids);
+  }
+  
+  /** Center of the visible area, in flow coordinates, offset so the node's middle lands there. */
+  private viewportCenter(): { x: number; y: number } {
+    const r = this.host.nativeElement.getBoundingClientRect();
+    const p = this.flow()?.getPositionInFlow({ x: r.left + r.width / 2, y: r.top + r.height / 2 }); // VERIFY
+    return p ? { x: Math.round(p.x - 100), y: Math.round(p.y - 30) } : { x: 0, y: 0 };
+  }
+
+  protected startRename(node: GraphNode, event: Event): void {
+    event.stopPropagation();                 // don't trigger nodeActivated (scene navigation)
+    if (this.isReadonly()) return;
+    this.editingId.set(node.id);
+    setTimeout(() => {
+      const el = this.host.nativeElement.querySelector<HTMLInputElement>('input[data-rename]');
+      el?.focus();
+      el?.select();
+    });
+  }
+  
+  protected commitRename(node: GraphNode, value: string): void {
+    if (this.editingId() !== node.id) return;   // already committed/cancelled (Enter then blur)
+    this.editingId.set(null);
+    if (value.trim() !== (node.name ?? node.id)) this.store.renameNode(node.id, value);
+  }
+  
+  protected cancelRename(): void {
+    this.editingId.set(null);
   }
 
   // ── keyboard ───────────────────────────────────────────────────────────
@@ -162,10 +278,14 @@ export class GraphEditor {
     if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
 
     if (e.key === 'Delete' || e.key === 'Backspace') {
-      const ids = this.selectedIds();
-      if (!ids.length) return;
-      this.store.removeNodes(ids);
-      this.selectedIds.set([]);
+      if (!this.hasSelection()) return;
+      this.deleteSelected();
+      e.preventDefault();
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd') {
+      this.duplicateSelected();
+      e.preventDefault();
+    } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+      this.selectAll();
       e.preventDefault();
     }
   }

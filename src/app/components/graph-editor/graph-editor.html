@@ -1,84 +1,124 @@
-<f-flow
-  fDraggable
-  tabindex="0"
-  class="
-        bg-transparent!
-        block size-full outline-none
-         [&_.f-connection-path]:fill-none!
-         [&_.f-connection-path]:stroke-2!
-         [&_.f-connection-path]:stroke-gray-400!
-         [&_.f-connection.f-selected_.f-connection-path]:stroke-[var(--theme-color)]!
-         [&_.f-connection-selection]:stroke-transparent!"
-  (fLoaded)="onLoaded()"
-  (fCreateConnection)="onCreateConnection($event)"
-  (fReassignConnection)="onReassignConnection($event)"
-  (fSelectionChange)="onSelectionChange($event)">
+@if (renderFlow()) {
+  <f-flow fDraggable tabindex="0" class="
+          bg-transparent!
+          block size-full outline-none
+          [&_.f-connection-path]:fill-none!
+          [&_.f-connection-path]:stroke-2!
+          [&_.f-connection-path]:stroke-gray-400!
+          [&_.f-connection.f-selected_.f-connection-path]:stroke-[var(--theme-color)]!
+          [&_.f-connection-selection]:stroke-transparent!" (fLoaded)="onLoaded()"
+    (fCreateConnection)="onCreateConnection($event)" (fReassignConnection)="onReassignConnection($event)"
+    (fSelectionChange)="onSelectionChange($event)">
 
-  <f-canvas class="bg-transparent!">
-    <f-connection-for-create />
+    <f-canvas fZoom class="bg-transparent!">
+      <f-connection-for-create />
 
-    @for (e of store.edges(); track e.id) {
-      <f-connection
-        [fOutputId]="socketKey(e.fromNode, e.fromSocket)"
-        [fInputId]="socketKey(e.toNode, e.toSocket)" />
-    }
+      @for (e of store.edges(); track e.id) {
+      <f-connection [fOutputId]="socketKey(e.fromNode, e.fromSocket)" [fInputId]="socketKey(e.toNode, e.toSocket)" />
+      }
 
-    @for (n of store.nodes(); track n.id) {
-      @let t = store.typeOf(n);
+      @for (n of store.nodes(); track n.id) {
 
-      <div
-        fNode
-        fDragHandle
-        [fNodeId]="n.id"
-        [fNodePosition]="n.position"
-        (fNodePositionChange)="onNodeMoved(n.id, $event)"
-        (dblclick)="onNodeDblClick(n)"
-        [attr.data-selected]="isSelected(n.id)"
-        class="min-w-[200px] overflow-visible rounded-lg border text-xs
-               bg-[#1f1f24]/50! text-neutral-200!
-               border-[var(--theme-color-border)]!
-               shadow-[0_4px_14px_rgba(0,0,0,0.45)]
-               data-[selected=true]:border-[var(--theme-color)]!
-               data-[selected=true]:shadow-[0_0_0_1px_var(--theme-color),0_4px_14px_rgba(0,0,0,0.45)]">
 
-        <header
-          class="flex items-center gap-2 rounded-t-[7px] px-2.5 py-1.5
-                 font-semibold text-white cursor-grab select-none"
+      <div fNode fDragHandle [fNodeId]="n.id" [fNodePosition]="n.position"
+        (fNodePositionChange)="onNodeMoved(n.id, $event)" (dblclick)="onNodeDblClick(n)"
+        [attr.data-selected]="isSelected(n.id)" class="min-w-[200px] overflow-visible rounded-lg border text-xs
+                bg-[#1f1f24]/50! text-neutral-200!
+                border-[var(--theme-color-border)]!
+                shadow-[0_4px_14px_rgba(0,0,0,0.45)]
+                data-[selected=true]:border-[var(--theme-color)]!
+                data-[selected=true]:shadow-[0_0_0_1px_var(--theme-color),0_4px_14px_rgba(0,0,0,0.45)]">
+
+        @let t = store.typeOf(n);
+
+
+
+        <header class="flex items-center gap-2 rounded-t-[7px] px-2.5 py-1.5
+          font-semibold text-white cursor-grab select-none"
           [style.background]="t.color ?? 'var(--theme-color)'">
           @if (t.icon) { <i [class]="t.icon + ' text-xs'"></i> }
-          <span class="truncate">{{ t.title }}</span>
+
+          @if (editingId() === n.id) {
+            <input pInputText #nameInput data-rename fDragBlocker type="text"
+                  class="min-w-0 flex-1 rounded bg-black/30 px-1 py-0 font-semibold text-white
+                          outline-none ring-1 ring-white/60 select-text"
+                  [value]="n.name ?? n.id"
+                  (keydown.enter)="commitRename(n, nameInput.value)"
+                  (keydown.escape)="cancelRename()"
+                  (blur)="commitRename(n, nameInput.value)"
+                  (dblclick)="$event.stopPropagation()" />
+          } @else {
+            <span class="truncate" [title]="t.title + (n.name ? ' (' + n.id + ')' : '')"
+                  (dblclick)="startRename(n, $event)">{{ n.name ?? n.id }}</span>
+          }
         </header>
 
         @for (o of t.outputs; track o.id) {
-          <div class="relative flex min-h-6 items-center justify-end px-3.5 py-1">
-            <span>{{ o.label }}</span>
-            <span
-              fNodeOutput
-              [fOutputId]="outId(n, o)"
-              class="absolute -right-1.5 top-1/2 size-3 -translate-y-1/2
-                     cursor-crosshair rounded-full border-2 border-[#141417]"
-              [style.background]="socketColor(o.dataType)"></span>
-          </div>
+        <div class="relative flex min-h-6 items-center justify-end px-3.5 py-1">
+          <span>{{ o.label }}</span>
+          <span fNodeOutput [fOutputId]="outId(n, o)" class="absolute -right-1.5 top-1/2 size-3 -translate-y-1/2
+                      cursor-crosshair rounded-full border-2 border-[#141417]"
+            [style.background]="socketColor(o.dataType)"></span>
+        </div>
         }
 
         @if (t.fields?.length) {
-          <div class="px-2.5 py-2">
-            <app-field-list [fields]="t.fields!" [model]="n.values" />
-          </div>
+        <div class="px-2.5 py-2">
+          <app-field-list [fields]="t.fields!" [model]="n.values" />
+        </div>
         }
 
         @for (i of t.inputs; track i.id) {
-          <div class="relative flex min-h-6 items-center justify-start px-3.5 py-1">
-            <span
-              fNodeInput
-              [fInputId]="inId(n, i)"
-              class="absolute -left-1.5 top-1/2 size-3 -translate-y-1/2
-                     cursor-crosshair rounded-full border-2 border-[#141417]"
-              [style.background]="socketColor(i.dataType)"></span>
-            <span>{{ i.label }}</span>
-          </div>
+        <div class="relative flex min-h-6 items-center justify-start px-3.5 py-1">
+          <span fNodeInput [fInputId]="inId(n, i)" class="absolute -left-1.5 top-1/2 size-3 -translate-y-1/2
+                      cursor-crosshair rounded-full border-2 border-[#141417]"
+            [style.background]="socketColor(i.dataType)"></span>
+          <span>{{ i.label }}</span>
+        </div>
         }
       </div>
-    }
-  </f-canvas>
-</f-flow>
+      }
+    </f-canvas>
+  </f-flow>
+
+  @if (renderFlow() && flowReady()) {
+    <div class="absolute left-3 top-3 z-20 flex items-center gap-0.5 rounded-lg border
+                border-[var(--theme-color-border)] bg-[#1f1f24]/80 p-1 backdrop-blur-sm
+                shadow-[0_4px_14px_rgba(0,0,0,0.45)]">
+  
+      <p-button icon="pi pi-plus" [text]="true" size="small" severity="secondary"
+                pTooltip="Add node" tooltipPosition="bottom"
+                [disabled]="isReadonly()" (onClick)="onAddClick($event)" />
+      <p-menu #addMenu [model]="addItems()" [popup]="true" appendTo="body" />
+  
+      <p-button icon="pi pi-clone" [text]="true" size="small" severity="secondary"
+                pTooltip="Duplicate (Ctrl+D)" tooltipPosition="bottom"
+                [disabled]="isReadonly() || !hasSelection()" (onClick)="duplicateSelected()" />
+  
+      <p-button icon="pi pi-trash" [text]="true" size="small" severity="danger"
+                pTooltip="Delete (Del)" tooltipPosition="bottom"
+                [disabled]="isReadonly() || !hasSelection()" (onClick)="deleteSelected()" />
+  
+      <span class="mx-1 h-4 w-px bg-[var(--theme-color-border)]"></span>
+  
+      <p-button icon="pi pi-search-plus" [text]="true" size="small" severity="secondary"
+                pTooltip="Zoom in" tooltipPosition="bottom" (onClick)="zoomIn()" />
+      <p-button icon="pi pi-search-minus" [text]="true" size="small" severity="secondary"
+                pTooltip="Zoom out" tooltipPosition="bottom" (onClick)="zoomOut()" />
+      <p-button icon="pi pi-expand" [text]="true" size="small" severity="secondary"
+                pTooltip="Fit to view" tooltipPosition="bottom" (onClick)="fit()" />
+  
+      <span class="mx-1 h-4 w-px bg-[var(--theme-color-border)]"></span>
+  
+      <p-button icon="pi pi-th-large" [text]="true" size="small" severity="secondary"
+                pTooltip="Select all (Ctrl+A)" tooltipPosition="bottom" (onClick)="selectAll()" />
+    </div>
+  }
+}
+@if (loading() || !flowReady()) {
+  <div class="absolute inset-0 z-10 flex items-center justify-center gap-2
+              text-xs text-gray-400 dark:text-gray-500 select-none">
+    <i class="pi pi-spin pi-spinner"></i>
+    <span>Loading graph…</span>
+  </div>
+}

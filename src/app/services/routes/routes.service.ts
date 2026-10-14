@@ -27,60 +27,10 @@ export class RoutesService {
     return (route.children ?? []).filter(c => c.displayBreadcrumb && c.path && !c.redirectTo);
   }
 
-  // Get siblings of the current route at the same level
-  getSiblings(url: string): RouteChild[] {
-    const segments = url.split('/').filter(Boolean);
-    if (segments.length === 0) return [];
-
-    // Navigate to the parent level
-    let level: RouteChild[] = routes;
-    let parent: RouteChild | null = null;
-
-    for (let i = 0; i < segments.length - 1; i++) {
-      const match = level.find(r => r.path === segments[i]);
-      if (!match) return [];
-      parent = match;
-      level = match.children ?? [];
-    }
-
-    return level.filter(r => r.displayBreadcrumb && r.path && !r.redirectTo);
-  }
-
   // Build full title from url: "General - Home" or "Project - Overview - Detail"
   getFullTitle(url: string): string {
     const parts = this.getTitleParts(url);
     return parts.join(' - ');
-  }
-
-  // Get individual title segments for a url
-  getTitleParts(url: string): string[] {
-    const segments = url.split('/').filter(Boolean);
-    const parts: string[] = [];
-    let level: RouteChild[] = routes;
-
-    for (const segment of segments) {
-      const match = level.find(r => r.path === segment);
-      if (!match) break;
-      if (match.title) parts.push(match.title);
-      level = match.children ?? [];
-    }
-
-    return parts;
-  }
-
-  // Find a route config by its full path
-  findByPath(fullPath: string): RouteChild | null {
-    const segments = fullPath.split('/').filter(Boolean);
-    let level: RouteChild[] = routes;
-    let match: RouteChild | null = null;
-
-    for (const segment of segments) {
-      match = level.find(r => r.path === segment) ?? null;
-      if (!match) return null;
-      level = match.children ?? [];
-    }
-
-    return match;
   }
 
   // Get current url's route
@@ -104,18 +54,80 @@ export class RoutesService {
     return walk(routes, '');
   }
 
-
-  getSidebarSection(url: string): RouteChild | null {
-    const segments = url.split('/').filter(Boolean);
-    let level: RouteChild[] = routes;
+  private consume(route: RouteChild, segments: string[], i: number): number {
+    if (!route.path) return 0;
+    const parts = route.path.split('/');
+    if (i + parts.length > segments.length) return 0;
+    return parts.every((p, k) => p.startsWith(':') || p === segments[i + k]) ? parts.length : 0;
+  }
   
-    for (const segment of segments) {
-      const match = level.find(r => r.path === segment);
-      if (!match) return null;
-      if (match.displaySidebar) return match;
+  isParam(route: RouteChild): boolean {
+    return !!route.path?.split('/').some(p => p.startsWith(':'));
+  }
+  
+  /** Walks the route tree along a url. Returns true if the whole url was matched. */
+  private walk(
+    url: string,
+    visit: (match: RouteChild, consumed: string[], level: RouteChild[]) => boolean | void
+  ): boolean {
+    const segments = url.split(/[?#]/)[0].split('/').filter(Boolean);
+    let level: RouteChild[] = routes;
+    let i = 0;
+  
+    while (i < segments.length) {
+      let match: RouteChild | undefined;
+      let n = 0;
+      for (const r of level) {
+        n = this.consume(r, segments, i);
+        if (n) { match = r; break; }
+      }
+      if (!match) return false;
+      if (visit(match, segments.slice(i, i + n), level) === false) return true;
+      i += n;
       level = match.children ?? [];
     }
+    return true;
+  }
   
-    return null;
+  findByPath(fullPath: string): RouteChild | null {
+    let last: RouteChild | null = null;
+    const ok = this.walk(fullPath, m => { last = m; });
+    return ok ? (last as RouteChild | null) : null;
+  }
+  
+  getTitleParts(url: string): string[] {
+    const parts: string[] = [];
+    this.walk(url, (match, consumed) => {
+      if (match.title) parts.push(match.title);
+      // param segments contribute their value: "Project - Scene - terrainScene"
+      match.path!.split('/').forEach((p, k) => {
+        if (p.startsWith(':')) parts.push(decodeURIComponent(consumed[k]));
+      });
+    });
+    return parts;
+  }
+  
+  /** Tab label: the param value for param routes ("terrainScene"), otherwise the route title. */
+  getLabel(url: string): string {
+    const route = this.findByPath(url);
+    if (!route) return '';
+    if (!this.isParam(route)) return route.title ?? '';
+    return this.getTitleParts(url).at(-1) ?? route.title ?? '';
+  }
+  
+  getSiblings(url: string): RouteChild[] {
+    let siblings: RouteChild[] = [];
+    this.walk(url, (_m, _c, level) => { siblings = level; });
+    return siblings.filter(r => r.displayBreadcrumb && r.path && !r.redirectTo && !this.isParam(r));
+  }
+  
+  getSidebarSection(url: string): RouteChild | null {
+    let found: RouteChild | null = null;
+    this.walk(url, m => {
+      if (!m.displaySidebar) return true;   // keep walking
+      found = m;
+      return false;                         // stop
+    });
+    return found;
   }
 }

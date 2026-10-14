@@ -349,7 +349,7 @@ const allRoutes: RouteChild[] =
     [
       {
         path: '',
-        redirectTo: 'build',
+        redirectTo: 'scenes',
         pathMatch: 'full'
       },
       {
@@ -358,33 +358,16 @@ const allRoutes: RouteChild[] =
         displayBreadcrumb: true,
         displayModule: true,
         navigatesModule: true,
-        displaySidebar: true,
-        children:
-        [
-          {
-            path: '',
-            redirectTo: 'scene-management',
-            pathMatch: 'full'
-          },
-          {
-            path: 'scene-management',
-            title: 'Scene Management',
-            icon: 'pi pi-cog',
-            displayBreadcrumb: true,
-            displayModule: true,
-            loadComponent: () => import('./pages/graph-page/graph-page.js').then(m => m.GraphPage),
-            data: { id:"build-details" }
-          },
-          {
-            path: 'tree',
-            title: 'Tree',
-            icon: 'pi pi-microchip',
-            displayBreadcrumb: true,
-            displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
-            data: { id:"build-tree" }
-          },
-        ]
+        displaySidebar: false,
+        loadComponent: () => import('./pages/graph-page/graph-page.js').then(m => m.GraphPage)
+      },
+      {
+        path: 'scene/:id',
+        title: 'Scene',
+        displayBreadcrumb: false,
+        displayModule: false,
+        navigatesModule: true,
+        loadComponent: () => import('./pages/scene/scene-page/scene-page.js').then(m => m.ScenePage)
       },
       {
         path: 'build',
@@ -669,14 +652,7 @@ const allRoutes: RouteChild[] =
     title: undefined,
     displayBreadcrumb: false,
     loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
-  },
-  {
-    path: 'scene01',
-    title: 'scene01',
-    displayBreadcrumb: true,
-    windows: ['editor'],
-    loadComponent: () => import('./pages/scene/scene-page/scene-page.js').then(m => m.ScenePage),
-  },
+  }
 ]
 
 function prune(list: RouteChild[], kind: WindowKind): RouteChild[] {

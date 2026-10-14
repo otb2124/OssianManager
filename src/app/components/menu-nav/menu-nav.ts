@@ -152,7 +152,7 @@ export class MenuNav {
   }
 
   private resolveLeafChildren(children: RouteChild[]): RouteChild[] {
-    return children.filter(c => c.displayModule && c.path);
+    return children.filter(c => c.displayModule && c.path && !c.path.includes(':'));
   }
 
   getSelectedValue(route: RouteChild, options: RouteOption[]): RouteOption | null {

@@ -48,4 +48,57 @@ export class GraphStore {
     const n = this.nodes().find(x => x.id === ref.node);
     return n ? this.typeOf(n)[side].find(s => s.id === ref.socket) : undefined;
   }
+
+  addNode(typeId: string, at: { x: number; y: number }): string {
+    const type = this.config.types[typeId];
+    const values: Record<string, unknown> = {};
+    for (const f of type.fields ?? []) {
+      const d = (f as { defaultValue?: unknown }).defaultValue;
+      if (d !== undefined) values[String(f.path)] = d;
+    }
+  
+    // nudge so repeated adds don't stack exactly on top of each other
+    const pos = { ...at };
+    while (this.nodes().some(n => n.position.x === pos.x && n.position.y === pos.y)) {
+      pos.x += 30; pos.y += 30;
+    }
+  
+    const id = crypto.randomUUID();
+    const count = this.nodes().filter(n => n.type === typeId).length + 1;
+
+    this.nodes.update(ns => [...ns, { id, type: typeId, name: `${type.title} ${count}`, position: pos, values }]);
+    return id;
+  }
+  
+  duplicateNodes(ids: string[]): string[] {
+    const src = this.nodes().filter(n => ids.includes(n.id));
+    if (!src.length) return [];
+  
+    const idMap = new Map(src.map(n => [n.id, crypto.randomUUID()]));
+    const nodeCopies: GraphNode[] = src.map(n => ({
+      ...n,
+      id: idMap.get(n.id)!,
+      name: `${n.name ?? n.id} copy`,
+      position: { x: n.position.x + 40, y: n.position.y + 40 },
+      values: structuredClone(n.values),
+    }));
+    const edgeCopies: GraphEdge[] = this.edges()
+      .filter(e => idMap.has(e.fromNode) && idMap.has(e.toNode))
+      .map(e => ({
+        ...e,
+        id: crypto.randomUUID(),
+        fromNode: idMap.get(e.fromNode)!,
+        toNode: idMap.get(e.toNode)!,
+      }));
+  
+    this.nodes.update(ns => [...ns, ...nodeCopies]);
+    this.edges.update(es => [...es, ...edgeCopies]);
+    return nodeCopies.map(n => n.id);
+  }
+
+  renameNode(id: string, name: string) {
+    const trimmed = name.trim();
+    this.nodes.update(ns => ns.map(n =>
+      n.id === id ? { ...n, name: trimmed || undefined } : n));   // empty => back to id
+  }
 }

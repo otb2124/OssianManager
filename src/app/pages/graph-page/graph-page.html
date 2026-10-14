@@ -1,1 +1,2 @@
-<app-graph-editor [config]="config" [model]="model"></app-graph-editor>
+<app-graph-editor [config]="config" [model]="model" [loading]="loading()"
+                  (nodeActivated)="openScene($event)" />

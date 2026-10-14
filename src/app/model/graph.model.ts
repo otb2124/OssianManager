@@ -19,6 +19,7 @@ export interface NodeTypeDef {
 
 export interface GraphNode {
   id: string;
+  name?: string;
   type: string;                       // NodeTypeDef.id
   position: { x: number; y: number };
   values: Record<string, unknown>;    // model for the node's fields
