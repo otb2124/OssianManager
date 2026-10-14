@@ -1,54 +1,240 @@
 <!-- file-inspector-panel.html -->
 <div class="flex flex-col gap-3 p-3 h-full overflow-auto text-xs">
 
-    <div *ngIf="!selected()" class="text-gray-400 dark:text-gray-500 italic">
-      No file selected
-    </div>
-  
-    <ng-container *ngIf="selected() as entry">
-  
-      <div class="flex items-center gap-2 pb-2 border-b border-[var(--theme-color-border)]">
-        <i [class]="(entry.isDirectory ? 'pi pi-folder' : 'pi pi-file') + ' shrink-0'"></i>
-  
-        <span *ngIf="!renaming()" class="font-medium truncate">{{ entry.name }}</span>
+  @if (fsEntry(); as entry) {
+
+    <!-- Header -->
+    <div class="flex items-center gap-2 pb-2 border-b border-[var(--theme-color-border)]">
+      <i [class]="(kind()?.icon ?? 'pi pi-file') + ' shrink-0'"></i>
+
+      @if (renaming()) {
         <input
-          *ngIf="renaming()"
           pInputText
           type="text"
-          [ngModel]="renameValue"
+          class="flex-1 min-w-0 px-1.5 py-1 rounded bg-[var(--theme-color-muted)] outline-none"
+          [ngModel]="renameValue()"
+          (ngModelChange)="renameValue.set($event)"
           (keydown.enter)="confirmRename()"
-          (keydown.escape)="cancelRename()"
-          class="w-full px-1.5 py-1 rounded bg-[var(--theme-color-muted)] outline-none" />
+          (keydown.escape)="cancelRename()" />
+      } @else {
+        <span class="font-medium truncate flex-1" [title]="entry.name">{{ entry.name }}</span>
+      }
+
+      <p-button icon="pi pi-refresh" (onClick)="reload()" severity="secondary" size="small"
+                [text]="true" styleClass="!p-1" />
+    </div>
+
+    <!-- Actions -->
+    <div class="flex flex-wrap gap-1">
+      @if (!renaming()) {
+        <p-button label="Rename" icon="pi pi-pencil" (onClick)="startRename()" [text]="true" size="small" severity="secondary" />
+      } @else {
+        <p-button label="Save" icon="pi pi-check" (onClick)="confirmRename()" [text]="true" size="small" />
+        <p-button label="Cancel" icon="pi pi-times" (onClick)="cancelRename()" [text]="true" size="small" severity="secondary" />
+      }
+      <p-button label="Reveal" icon="pi pi-folder-open" (onClick)="reveal(entry.path)" [text]="true" size="small" severity="secondary" />
+      <p-button [label]="copied() === 'path' ? 'Copied' : 'Copy path'"
+                [icon]="copied() === 'path' ? 'pi pi-check' : 'pi pi-copy'"
+                (onClick)="copy(entry.path, 'path')" [text]="true" size="small" severity="secondary" />
+    </div>
+
+    @if (loading()) {
+      <div class="flex items-center gap-2 text-gray-400 dark:text-gray-500 italic">
+        <i class="pi pi-spin pi-spinner"></i><span>Reading details…</span>
       </div>
-  
+    }
+    @if (infoError(); as err) {
+      <div class="text-red-400 break-all">{{ err }}</div>
+    }
+
+    <!-- Preview -->
+    @if (previewUrl(); as url) {
       <div class="flex flex-col gap-1.5">
-        <div class="flex justify-between">
-          <span class="text-gray-400 dark:text-gray-500">Path</span>
-          <span class="truncate max-w-[60%]" [title]="entry.path">{{ entry.path }}</span>
-        </div>
-        <div class="flex justify-between" *ngIf="!entry.isDirectory">
-          <span class="text-gray-400 dark:text-gray-500">Size</span>
-          <span>{{ formattedSize() }}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-gray-400 dark:text-gray-500">Modified</span>
-          <span>{{ formattedModified() }}</span>
+        <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Preview</span>
+        <div class="flex items-center justify-center p-2 rounded border border-[var(--theme-color-border)]"
+             style="background: repeating-conic-gradient(#2a2a2e 0% 25%, #1f1f24 0% 50%) 50% / 16px 16px">
+          <img [src]="url" [alt]="entry.name" class="max-h-48 max-w-full object-contain" />
         </div>
       </div>
-  
-      <div class="flex flex-col gap-1">
-        <span class="text-gray-400 dark:text-gray-500">Build Action</span>
-        <div class="px-1.5 py-1 rounded bg-[var(--theme-color-muted)] text-gray-400 dark:text-gray-500 italic">
-            //
+    } @else if (info()?.textPreview; as preview) {
+      <div class="flex flex-col gap-1.5">
+        <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Preview</span>
+        <pre class="max-h-48 overflow-auto rounded p-2 font-mono text-[11px] leading-4 bg-[var(--theme-color-muted)]">{{ preview }}</pre>
+        @if (info()?.previewTruncated) {
+          <span class="text-gray-400 dark:text-gray-500 italic">Preview truncated</span>
+        }
+      </div>
+    }
+
+    <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'General', rows: generalRows() }" />
+    <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Dates', rows: dateRows() }" />
+    <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Attributes', rows: attributeRows() }" />
+    <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Content', rows: contentRows() }" />
+    <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Folder contents', rows: directoryRows() }" />
+
+    @if (info()?.dir; as dir) {
+      @if (dir.extensions.length) {
+        <div class="flex flex-col gap-1.5">
+          <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">File types</span>
+          <div class="flex flex-wrap gap-1.5">
+            @for (e of dir.extensions; track e.ext) {
+              <p-tag [value]="e.ext + ' ×' + e.count" severity="secondary" [rounded]="true" styleClass="text-xs" />
+            }
+          </div>
         </div>
+      }
+    }
+
+    <!-- Checksum -->
+    @if (!entry.isDirectory) {
+      <div class="flex flex-col gap-1.5">
+        <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Checksum</span>
+        @switch (hash().state) {
+          @case ('idle') {
+            <div>
+              <p-button label="Compute SHA-256" icon="pi pi-key" (onClick)="computeHash()"
+                        [text]="true" size="small" severity="secondary" />
+            </div>
+          }
+          @case ('busy') {
+            <div class="flex items-center gap-2 text-gray-400 dark:text-gray-500 italic">
+              <i class="pi pi-spin pi-spinner"></i><span>Hashing…</span>
+            </div>
+          }
+          @case ('done') {
+            <div class="flex items-start gap-2">
+              <span class="font-mono break-all select-all flex-1">{{ hash().value }}</span>
+              <i [class]="(copied() === 'sha256' ? 'pi pi-check' : 'pi pi-copy') + ' text-[10px] cursor-pointer shrink-0 mt-0.5'"
+                 (click)="copy(hash().value ?? '', 'sha256')"></i>
+            </div>
+          }
+          @case ('error') {
+            <span class="text-red-400 break-all">{{ hash().error }}</span>
+          }
+        }
       </div>
-  
-      <div class="flex gap-2 pt-2">
-        <p-button *ngIf="!renaming()" (click)="startRename()" label="Rename" [text]="true" size="small"></p-button>
-        <p-button *ngIf="renaming()" (click)="confirmRename()" label="Save" [text]="true" size="small"></p-button>
-        <p-button *ngIf="renaming()" (click)="cancelRename()" label="Cancel" [text]="true" size="small"></p-button>
+    }
+
+    <!-- Build action (placeholder) -->
+    <div class="flex flex-col gap-1">
+      <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Build Action</span>
+      <div class="px-1.5 py-1 rounded bg-[var(--theme-color-muted)] text-gray-400 dark:text-gray-500 italic">
+        //
       </div>
-  
-    </ng-container>
-  
-  </div>
+    </div>
+
+  } @else if (resourceView(); as view) {
+
+    <!-- Resource header -->
+    <div class="flex items-center gap-2 pb-2 border-b border-[var(--theme-color-border)]">
+      <i [class]="view.icon + ' shrink-0'"></i>
+      <span class="font-medium truncate flex-1 font-mono" [title]="view.resource.id">{{ view.resource.id }}</span>
+      <p-tag [value]="view.type || 'unknown'" severity="secondary" [rounded]="true" styleClass="text-xs" />
+    </div>
+
+    @if (!view.inCatalog) {
+      <div class="text-gray-400 dark:text-gray-500 italic">
+        @if (catalog.error(); as err) {
+          Could not read the engine's resources.json: {{ err }}
+        } @else if (!catalog.entries().length) {
+          The engine's resources.json isn't loaded, so only placeholder information is available.
+        } @else {
+          This id isn't defined in the engine's resources.json.
+        }
+      </div>
+    }
+
+    <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'General', rows: view.rows }" />
+
+    <!-- Data -->
+    <div class="flex flex-col gap-1.5">
+      <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Data ({{ view.items.length }})</span>
+
+      @for (item of view.items; track $index) {
+        <div class="flex items-center gap-2 px-2 py-1 rounded border border-[var(--theme-color-border)]">
+          @switch (item.kind) {
+
+            @case ('ref') {
+              <i class="pi pi-link text-[10px] shrink-0"></i>
+              @if (item.entry; as ref) {
+                <a class="font-mono truncate cursor-pointer hover:underline" [title]="item.text"
+                   (click)="openResource(ref)">{{ item.text }}</a>
+                <span class="ml-auto shrink-0 text-gray-400 dark:text-gray-500">{{ ref.type }}</span>
+              }
+            }
+
+            @case ('file') {
+              <i class="pi pi-file text-[10px] shrink-0"></i>
+              @let st = statusOf(item);
+              @if (st) {
+                <a class="font-mono truncate cursor-pointer hover:underline" [title]="st.path"
+                   (click)="openFile(st)">{{ item.text }}</a>
+                <span class="ml-auto shrink-0 text-gray-400 dark:text-gray-500">{{ fmtBytes(st.size) }}</span>
+              } @else if (st === null) {
+                <span class="font-mono truncate" [title]="item.absolute ?? item.text">{{ item.text }}</span>
+                <p-tag value="Missing" severity="danger" class="ml-auto shrink-0" />
+              } @else {
+                <span class="font-mono truncate" [title]="item.text">{{ item.text }}</span>
+                @if (item.absolute) {
+                  <i class="pi pi-spin pi-spinner text-[10px] ml-auto shrink-0"></i>
+                }
+              }
+            }
+
+            @case ('literal') {
+              <i class="pi pi-tag text-[10px] shrink-0"></i>
+              <span class="font-mono truncate" [title]="item.text">{{ item.text }}</span>
+              <span class="ml-auto shrink-0 text-gray-400 dark:text-gray-500">built-in</span>
+            }
+
+            @default {
+              <i class="pi pi-hashtag text-[10px] shrink-0"></i>
+              <span class="font-mono">{{ item.text }}</span>
+            }
+          }
+        </div>
+      } @empty {
+        <div class="text-gray-400 dark:text-gray-500 italic">No data.</div>
+      }
+    </div>
+
+    <!-- Used by -->
+    <div class="flex flex-col gap-1.5">
+      <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Used by ({{ view.usedBy.length }})</span>
+
+      @for (user of view.usedBy; track user.id) {
+        <div class="flex items-center gap-2 px-2 py-1 rounded border border-[var(--theme-color-border)]">
+          <i class="pi pi-link text-[10px] shrink-0"></i>
+          <a class="font-mono truncate cursor-pointer hover:underline" [title]="user.id"
+             (click)="openResource(user)">{{ user.id }}</a>
+          <span class="ml-auto shrink-0 text-gray-400 dark:text-gray-500">{{ user.type }}</span>
+        </div>
+      } @empty {
+        <div class="text-gray-400 dark:text-gray-500 italic">No other resource references this one.</div>
+      }
+    </div>
+
+  } @else {
+    <div class="text-gray-400 dark:text-gray-500 italic">No file or resource selected</div>
+  }
+
+</div>
+
+<!-- Shared "title + label/value rows" block -->
+<ng-template #rowsBlock let-title let-rows="rows">
+  @if (rows.length) {
+    <div class="flex flex-col gap-1.5">
+      <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">{{ title }}</span>
+      @for (row of rows; track row.label) {
+        <div class="flex justify-between gap-3">
+          <span class="text-gray-400 dark:text-gray-500 shrink-0">{{ row.label }}</span>
+          <span class="min-w-0 text-right break-all" [class.font-mono]="row.mono" [title]="row.value">{{ row.value }}</span>
+          @if (row.copyable) {
+            <i [class]="(copied() === row.label ? 'pi pi-check' : 'pi pi-copy') + ' text-[10px] cursor-pointer shrink-0 mt-0.5'"
+               (click)="copy(row.value, row.label)"></i>
+          }
+        </div>
+      }
+    </div>
+  }
+</ng-template>

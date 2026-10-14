@@ -2,6 +2,7 @@ mod engine_host;
 mod engine_link;
 mod engine_console;
 mod windows;
+mod entry_info;
 
 use tauri::Manager;
 use std::fs;
@@ -241,6 +242,9 @@ pub fn run() {
             delete_directory,
             list_directory,
             rename_entry,
+            entry_info::inspect_entry,
+            entry_info::hash_file,
+            entry_info::read_file_bytes,
 
             // Engine Host Module Commands
             spawn_engine_process,

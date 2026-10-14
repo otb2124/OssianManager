@@ -307,6 +307,7 @@ const allRoutes: RouteChild[] =
       {
         path: 'library/:id',
         title: 'Library',
+        icon: 'pi pi-book',
         displayBreadcrumb: false,
         displayModule: false,
         navigatesModule: true,

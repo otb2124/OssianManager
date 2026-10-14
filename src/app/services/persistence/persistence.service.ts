@@ -10,6 +10,41 @@ export interface FsEntry {
   modified: string | null;
 }
 
+export interface DirStats {
+  files: number;
+  folders: number;
+  totalSize: number;
+  directFiles: number;
+  directFolders: number;
+  truncated: boolean;
+  extensions: { ext: string; count: number }[];
+}
+
+export interface EntryInfo {
+  name: string;
+  path: string;
+  parent: string | null;
+  extension: string | null;
+  isDirectory: boolean;
+  isSymlink: boolean;
+  symlinkTarget: string | null;
+  size: number;
+  createdMs: number | null;
+  modifiedMs: number | null;
+  accessedMs: number | null;
+  readonly: boolean;
+  hidden: boolean;
+  detectedType: string | null;
+  isText: boolean | null;
+  encoding: string | null;
+  lineCount: number | null;
+  lineEndings: string | null;
+  image: { width: number; height: number } | null;
+  textPreview: string | null;
+  previewTruncated: boolean;
+  dir: DirStats | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PersistenceService {
 
@@ -78,5 +113,17 @@ export class PersistenceService {
 
   rename(oldPath: string, newName: string): Observable<string> {
     return from(invoke<string>('rename_entry', { oldPath, newName }));
+  }
+
+  inspectEntry(path: string): Observable<EntryInfo> {
+    return from(invoke<EntryInfo>('inspect_entry', { path }));
+  }
+
+  hashFile(path: string): Observable<string> {
+    return from(invoke<string>('hash_file', { path }));
+  }
+
+  readFileBytes(path: string, maxBytes: number): Observable<ArrayBuffer> {
+    return from(invoke<ArrayBuffer>('read_file_bytes', { path, maxBytes }));
   }
 }

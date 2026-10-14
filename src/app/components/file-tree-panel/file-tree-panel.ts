@@ -1,13 +1,15 @@
 // file-explorer-panel.ts
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, inject, signal, effect, untracked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { map, of } from 'rxjs';
 import { FsEntry } from '../../services/persistence/persistence.service';
 import { FileExplorerService } from '../../services/persistence/file-explorer.service';
 import { DialogService } from '../../services/persistence/dialog.service';
+import { ResourceCatalogService } from '../../services/data/resources/resource-catalog.service';
 import { TreeControl, AppTreeNode, TreeControlConfig } from '../field-controls/tree-control/tree-control';
-import { MOCK_RESOURCE_GROUPS, ResourceEntry } from '../../model/file-tree.mock';
+import { MOCK_RESOURCE_GROUPS, ResourceGroup } from '../../model/file-tree.mock';
+import { RESOURCE_GROUP_META, ResourceEntry, resourceGroupOf } from '../../model/resource.model';
 
 /** What each node in the combined tree stands for. */
 export type PanelNodeData =
@@ -28,6 +30,7 @@ type PanelNode = AppTreeNode<PanelNodeData>;
 export class FileExplorerPanel {
   protected readonly explorerService = inject(FileExplorerService);
   private readonly dialogService = inject(DialogService);
+  private readonly catalog = inject(ResourceCatalogService);
 
   // Root node objects are kept stable on purpose: tree-control mutates them
   // (expanded state, lazily loaded children), so they must survive refreshes.
@@ -52,18 +55,17 @@ export class FileExplorerPanel {
     data: { kind: 'resources-root' },
     leaf: false,
     expanded: true,
-    children: this.buildMockResourceNodes(),
+    children: [], // filled by the effect below
   };
 
   protected readonly nodes = signal<PanelNode[]>([this.filesRoot, this.resourcesRoot]);
-  private readonly selectedResourceId = signal<string | null>(null);
 
   protected readonly treeConfig: TreeControlConfig<PanelNodeData> = {
     showIcons: true,
     isSelected: (node) => {
       const d = node.data;
       if (d?.kind === 'fs') return this.explorerService.isSelected(d.entry);
-      if (d?.kind === 'resource') return node.id === this.selectedResourceId();
+      if (d?.kind === 'resource') return this.explorerService.selectedResource()?.id === d.resource.id;
       return false;
     },
     loadChildren: (node) => {
@@ -93,6 +95,15 @@ export class FileExplorerPanel {
         this.nodes.set([this.filesRoot, this.resourcesRoot]); // new array ref, same node objects
       });
     });
+
+    // Resources: the engine's resources.json when it can be read, the mock groups otherwise.
+    effect(() => {
+      this.catalog.entries(); // re-run when the catalog (re)loads
+      untracked(() => {
+        this.resourcesRoot.children = this.buildResourceNodes();
+        this.nodes.set([this.filesRoot, this.resourcesRoot]);
+      });
+    });
   }
 
   private toFsNode(entry: FsEntry): PanelNode {
@@ -107,25 +118,40 @@ export class FileExplorerPanel {
     };
   }
 
-  // MOCK: swap for real resource data later
-  private buildMockResourceNodes(): PanelNode[] {
-    return MOCK_RESOURCE_GROUPS.map((group: { key: any; label: any; items: any[]; icon: any; }) => ({
+  private buildResourceNodes(): PanelNode[] {
+    const entries = this.catalog.entries();
+    const groups = entries.length ? this.groupEntries(entries) : MOCK_RESOURCE_GROUPS;
+
+    return groups.map((group): PanelNode => ({
       id: `res-group:${group.key}`,
       key: `res-group:${group.key}`,
       label: `${group.label} (${group.items.length})`,
       icon: group.icon,
-      data: { kind: 'resource-group', group: group.key } as PanelNodeData,
+      data: { kind: 'resource-group', group: group.key },
       leaf: false,
       expanded: false,
-      children: group.items.map((item: { id: any; }) => ({
+      children: group.items.map((item): PanelNode => ({
         id: `res:${item.id}`,
         key: `res:${item.id}`,
         label: item.id,
         icon: 'pi pi-circle',
-        data: { kind: 'resource', resource: item } as PanelNodeData,
+        data: { kind: 'resource', resource: item },
         leaf: true,
       })),
     }));
+  }
+
+  private groupEntries(entries: ResourceEntry[]): ResourceGroup[] {
+    const byGroup = new Map<string, ResourceEntry[]>();
+    for (const entry of entries) {
+      const key = resourceGroupOf(entry.type);
+      const list = byGroup.get(key);
+      if (list) list.push(entry);
+      else byGroup.set(key, [entry]);
+    }
+    return RESOURCE_GROUP_META
+      .filter(meta => byGroup.has(meta.key))
+      .map(meta => ({ ...meta, items: byGroup.get(meta.key)! }));
   }
 
   onNodeSelect(node: PanelNode): void {
@@ -136,8 +162,7 @@ export class FileExplorerPanel {
         this.explorerService.select(d.entry);
         break;
       case 'resource':
-        this.selectedResourceId.set(node.id);
-        // TODO: hook into the file inspector / engine once real resource data exists
+        this.explorerService.selectResource(d.resource);
         break;
       default:
         break; // roots and groups only organize the tree
