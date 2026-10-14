@@ -12,9 +12,10 @@
   "app": {
     "windows": [
       {
+        "label": "launcher",
         "title": "ossian-manager",
-        "width": 800,
-        "height": 600,
+        "width": 1200,
+        "height": 800,
         "transparent": false,
         "decorations": true
       }

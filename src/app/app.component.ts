@@ -3,7 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Topbar } from "./components/topbar/topbar";
-import { filter, switchMap, tap } from 'rxjs';
+import { filter, firstValueFrom, switchMap, tap } from 'rxjs';
 import { ThemeService } from './services/theme/theme.service';
 import { ToastModule } from 'primeng/toast';
 import { ProjectService } from './services/data/projects/project.service';
@@ -21,6 +21,8 @@ import { EngineIpcService } from './services/engine/ipc/engine-ipc';
 import { BackgroundService } from './services/ui/background/background.service';
 import { ShaderBackground } from './components/shader-background/shader-background';
 import { EngineConsoleService } from './services/engine/console/engine-console.service';
+import { launchProjectId, windowKind } from './services/system/windows/window-kind';
+import { invoke } from '@tauri-apps/api/core';
 
 @Component({
   selector: 'app-root',
@@ -44,23 +46,9 @@ export class AppComponent implements OnInit {
   protected readonly bg = inject(BackgroundService);
 
   ngOnInit(): void {
-    this.appConfigService.load().pipe(
-      tap(async config => {
-        if (config.engineProjectPath) {
-          await this.engineIpc.init();                 // listeners first
-          await this.engineConsole.init();
-          await this.engineBridgeService.spawnEngine();
-          this.engineBridgeService.load().subscribe();
-        }
-      }),
-      switchMap(config => {
-        if (!config.currentProjectId) return [];
-        return this.projectRecordService.getById(config.currentProjectId);
-      }),
-      filter(result => !!result)
-    ).subscribe(result => {
-      this.projectRecordService.setProject(result!.project, result!.directoryPath);
-    });
+
+    if (windowKind === 'editor') void this.initEditor();
+    else this.appConfigService.load().subscribe();
 
     this.shortcuts.listen();
 
@@ -92,5 +80,29 @@ export class AppComponent implements OnInit {
 
     this.bg.setShader('cosmos');
     this.bg.patch({ uCoverage: 0.9, uDrift: 0.2, uPerspective: 0.75 });   // flat top-down, faster
+  }
+
+
+
+  private async initEditor(): Promise<void> {
+    await firstValueFrom(this.appConfigService.load());
+  
+    try {
+      if (this.appConfigService.engineProjectPath()) {
+        await this.engineIpc.init();          // listeners first
+        await this.engineConsole.init();
+        await this.engineBridgeService.spawnEngine();
+        this.engineBridgeService.load().subscribe();
+      }
+    } catch (err) {
+      console.error('[Editor] engine init failed:', err);
+    }
+  
+    const found = launchProjectId
+      ? await firstValueFrom(this.projectRecordService.getById(launchProjectId))
+      : undefined;
+  
+    if (found) this.projectRecordService.setProject(found.project, found.directoryPath);
+    else await invoke('close_editor');        // project vanished from the registry
   }
 }

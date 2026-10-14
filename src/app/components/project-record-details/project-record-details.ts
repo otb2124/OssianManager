@@ -33,11 +33,9 @@ export class ProjectRecordDetails {
   showDeleteDialog = false;
   showRemoveDialog = false;
 
-  openProject(event: Event): void {
+  async openProject(event: Event): Promise<void> {
     event.stopPropagation();
-    if (this.isActive()) return;
-    this.projectService.setProject(this.project, this.directoryPath);
-    this.router.navigateByUrl('/project');
+    await invoke('open_editor', { projectId: this.project.id });
   }
 
   closeProject(event: Event): void {

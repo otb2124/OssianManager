@@ -1,7 +1,8 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { EMPTY, Observable, tap } from 'rxjs';
-import { AppConfig } from '../../../model/app-config.model';
+import { EMPTY, Observable, switchMap, tap } from 'rxjs';
+import { AppConfig, WindowTabsState } from '../../../model/app-config.model';
 import { PersistenceService } from '../../persistence/persistence.service';
+import { WindowKind } from '../../system/windows/window-kind';
 
 
 @Injectable({ providedIn: 'root' })
@@ -26,21 +27,33 @@ export class AppConfigService {
     );
   }
 
-  update(partial: Partial<AppConfig>): Observable<void> {
-    const current = this._config();
-    if (!current) return EMPTY;
-    const merged = { ...current, ...partial };
-    const updated = Object.fromEntries(
-      Object.entries(merged).filter(([_, v]) => v !== undefined)
-    ) as unknown as AppConfig;
-    return this.persistence.write(this.file, updated).pipe(
-      tap(() => this._config.set(updated))
+  private mutate(fn: (disk: AppConfig) => AppConfig): Observable<void> {
+    return this.persistence.read<AppConfig>(this.file).pipe(
+      switchMap(disk => {
+        const next = Object.fromEntries(
+          Object.entries(fn(disk)).filter(([, v]) => v !== undefined)
+        ) as unknown as AppConfig;
+        return this.persistence.write(this.file, next).pipe(
+          tap(() => this._config.set(next))
+        );
+      })
     );
   }
 
+  update(partial: Partial<AppConfig>): Observable<void> {
+    if (!this._config()) return EMPTY;
+    return this.mutate(disk => ({ ...disk, ...partial }));
+  }
+  
   updateSettings(partial: Partial<AppConfig['settings']>): Observable<void> {
-    const current = this._config();
-    if (!current) throw new Error('AppConfig not loaded');
-    return this.update({ settings: { ...current.settings, ...partial } });
+    if (!this._config()) throw new Error('AppConfig not loaded');
+    return this.mutate(disk => ({ ...disk, settings: { ...disk.settings, ...partial } }));
+  }
+  
+  updateWindowTabs(kind: WindowKind, state: WindowTabsState): Observable<void> {
+    return this.mutate(disk => ({
+      ...disk,
+      windowTabs: { ...disk.windowTabs, [kind]: state },
+    }));
   }
 }

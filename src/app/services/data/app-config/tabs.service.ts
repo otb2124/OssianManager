@@ -6,6 +6,7 @@ import { AppConfigService } from '../app-config/app-config.service';
 import { RouteChild, routes } from '../../../app.routes';
 import { RoutesService } from '../../routes/routes.service';
 import { ProjectService } from '../projects/project.service';
+import { windowKind } from '../../system/windows/window-kind';
 
 
 @Injectable({ providedIn: 'root' })
@@ -69,30 +70,27 @@ export class TabsService {
   }
 
   private init(): void {
-    const config = this.appConfigService.config();
-
-    if (config?.openTabs?.length) {
-      const restored = config.openTabs
+    const saved = this.appConfigService.config()?.windowTabs?.[windowKind];
+  
+    if (saved?.openTabs?.length) {
+      const restored = saved.openTabs
         .map(path => this.resolveTab(path))
         .filter((t): t is RouteChild => !!t);
-
       this._tabs.set(restored);
-      const savedActive = config.activeTab ?? '';
-      this._activeTab.set(savedActive);
-      if (savedActive) {
-        this.router.navigate([savedActive]);
+  
+      // Only restore the active tab if this window actually has that route.
+      const active = saved.activeTab ?? '';
+      if (active && this.resolveTab(active)) {
+        this._activeTab.set(active);
+        this.router.navigate([active]);
       }
     }
-
+  
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd)
-    ).subscribe((e: NavigationEnd) => {
-      this.onNavigate(e.urlAfterRedirects);
-    });
-
-    if (!config?.openTabs?.length) {
-      this.onNavigate(this.router.url);
-    }
+    ).subscribe((e: NavigationEnd) => this.onNavigate(e.urlAfterRedirects));
+  
+    if (!this._tabs().length) this.onNavigate(this.router.url);
   }
 
   private onNavigate(url: string): void {
@@ -111,7 +109,7 @@ export class TabsService {
 
   private persist(): void {
     if (!this.appConfigService.hasConfig()) return;
-    this.appConfigService.update({
+    this.appConfigService.updateWindowTabs(windowKind, {
       openTabs: this._tabs().map(t => t.path).filter((p): p is string => !!p),
       activeTab: this._activeTab(),
     }).subscribe();

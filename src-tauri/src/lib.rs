@@ -1,6 +1,7 @@
 mod engine_host;
 mod engine_link;
 mod engine_console;
+mod windows;
 
 use tauri::Manager;
 use std::fs;
@@ -219,11 +220,14 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
-        .on_window_event(|window, event| {
-            if let tauri::WindowEvent::Resized(_) = event {
-                let scale = window.scale_factor().unwrap_or(1.0);
-                apply_bounds(scale);
+        .on_window_event(|window, event| match event {
+            tauri::WindowEvent::Resized(_) if window.label() == windows::EDITOR => {
+                apply_bounds(window.scale_factor().unwrap_or(1.0));
             }
+            tauri::WindowEvent::Destroyed if window.label() == windows::EDITOR => {
+                windows::on_editor_destroyed(window.app_handle());
+            }
+            _ => {}
         })
         .invoke_handler(tauri::generate_handler![
             greet,
@@ -243,7 +247,8 @@ pub fn run() {
             update_viewport_bounds,
             set_engine_visibility,
             engine_link::engine_request,
-            engine_console::engine_console_write
+            engine_console::engine_console_write,
+            windows::open_editor
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

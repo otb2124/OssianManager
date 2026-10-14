@@ -1,5 +1,6 @@
 import { Route } from "@angular/router";
 import { RouteAction } from "./services/system/action-registry.service";
+import { windowKind, WindowKind } from "./services/system/windows/window-kind";
 
 export interface RouteChild extends Route {
   title?: string;
@@ -12,9 +13,10 @@ export interface RouteChild extends Route {
   actions?: RouteAction[];
   navigatesModule?: boolean;
   data?: { id:string };
+  windows?: WindowKind[];
 }
 
-export const routes: RouteChild[] =
+const allRoutes: RouteChild[] =
 [
   {
     path: '',
@@ -28,15 +30,17 @@ export const routes: RouteChild[] =
     displayModule: true,
     children:
     [
-      {
-        path: '',
-        redirectTo: 'projects',
-        pathMatch: 'full'
+      { 
+        path: '', 
+        redirectTo: 
+        windowKind === 'launcher' ? 'file' : 'project', 
+        pathMatch: 'full' 
       },
       {
         path: 'action-new-project',
         title: 'New Project',
         displayModule: true,
+        windows: ['launcher'],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
@@ -47,6 +51,7 @@ export const routes: RouteChild[] =
         displayModule: true,
         navigatesModule: true,
         displaySidebar: true,
+        windows: ['launcher'],
         children:
         [
           {
@@ -78,12 +83,14 @@ export const routes: RouteChild[] =
         path: 'action-import-project',
         title: 'Import Project...',
         displayModule: true,
+        windows: ['launcher'],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-scan-project',
         title: 'Scan Project...',
         displayModule: true,
+        windows: ['launcher'],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
@@ -93,6 +100,7 @@ export const routes: RouteChild[] =
         actions: [
           { id: 'save_project', shortcut: { key: 's', ctrl: true } },
         ],
+        windows: ['editor'],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
@@ -102,6 +110,7 @@ export const routes: RouteChild[] =
         actions: [
           { id: 'save_project_as', shortcut: { key: 's', ctrl: true, shift: true } },
         ],
+        windows: ['editor'],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
@@ -116,6 +125,7 @@ export const routes: RouteChild[] =
     path: 'edit',
     title: 'Edit',
     displayModule: true,
+    windows: ['editor'],
     children:
     [
       {
@@ -188,6 +198,7 @@ export const routes: RouteChild[] =
     path: 'view',
     title: 'View',
     displayModule: true,
+    windows: ['editor'],
     children:
     [
       {
@@ -333,6 +344,7 @@ export const routes: RouteChild[] =
     title: 'Project',
     displayBreadcrumb: true,
     displayModule: true,
+    windows: ['editor'],
     children:
     [
       {
@@ -623,6 +635,7 @@ export const routes: RouteChild[] =
     title: 'Build',
     displayBreadcrumb: true,
     displayModule: true,
+    windows: ['editor'],
     children:
     [
       {
@@ -661,6 +674,21 @@ export const routes: RouteChild[] =
     path: 'scene01',
     title: 'scene01',
     displayBreadcrumb: true,
+    windows: ['editor'],
     loadComponent: () => import('./pages/scene/scene-page/scene-page.js').then(m => m.ScenePage),
   },
 ]
+
+function prune(list: RouteChild[], kind: WindowKind): RouteChild[] {
+  const kept = list
+    .filter(r => !r.windows || r.windows.includes(kind))
+    .map(r => r.children ? { ...r, children: prune(r.children, kind) } : r);
+
+  return kept.filter(r =>
+    typeof r.redirectTo !== 'string' ||
+    r.redirectTo.startsWith('/') ||
+    kept.some(s => s.path === r.redirectTo)
+  );
+}
+
+export const routes: RouteChild[] = prune(allRoutes, windowKind);

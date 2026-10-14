@@ -311,3 +311,24 @@ pub fn update_viewport_bounds(window: tauri::Window, x: i32, y: i32, width: i32,
     let scale = window.scale_factor().unwrap_or(1.0);
     apply_bounds(scale);
 }
+
+/// Kills the running engine and clears per-engine window state. Used before a respawn.
+fn stop_engine() {
+    if let Some(mut old) = ENGINE_CHILD.lock().unwrap().take() {
+        let _ = old.kill();
+        let _ = old.wait();
+    }
+    crate::engine_console::detach();
+    ENGINE_HWND.store(std::ptr::null_mut(), Ordering::SeqCst);
+    APPLIED_SCREEN_X.store(-1, Ordering::SeqCst);
+    APPLIED_SCREEN_Y.store(-1, Ordering::SeqCst);
+    APPLIED_W.store(-1, Ordering::SeqCst);
+    APPLIED_H.store(-1, Ordering::SeqCst);
+}
+
+/// Editor window is gone: stop the engine and forget the destroyed parent window.
+pub fn shutdown_engine() {
+    stop_engine();
+    PARENT_HWND.store(std::ptr::null_mut(), Ordering::SeqCst);
+    ENGINE_VISIBLE.store(false, Ordering::SeqCst);
+}

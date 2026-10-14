@@ -6,6 +6,7 @@ import { HydratedProjectRecord } from '../../model/project-record.model';
 import { ButtonModule } from "primeng/button";
 import { ProjectService } from '../../services/data/projects/project.service';
 import { FormsModule } from '@angular/forms';
+import { invoke } from '@tauri-apps/api/core';
 
 @Component({
   selector: 'app-project-record-overview',
@@ -21,11 +22,9 @@ export class ProjectRecordOverview {
 
   readonly isActive = computed(() => this.projectService.projectId() === this.project.id);
 
-  openProject(event: Event): void {
+  async openProject(event: Event): Promise<void> {
     event.stopPropagation();
-    if (this.isActive()) return;
-    this.projectService.setProject(this.project, this.directoryPath);
-    this.router.navigateByUrl('/project');
+    await invoke('open_editor', { projectId: this.project.id });
   }
 
   toggleFavorite(event: Event): void {
