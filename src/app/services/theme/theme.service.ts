@@ -1,11 +1,9 @@
 import { Injectable, inject, signal, computed, effect } from '@angular/core';
-import { ProjectService } from '../data/projects/project.service';
 import { AppConfigService } from '../data/app-config/app-config.service';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
 
-  private projectService = inject(ProjectService);
   private appConfigService = inject(AppConfigService);
 
   private readonly _themeColor = signal<string>('#ffffff');
@@ -27,11 +25,9 @@ export class ThemeService {
 
   constructor() {
     effect(() => {
-      const projectColor = this.projectService.currentProject()?.color;
-      const fallback = this.appConfigService.themeColor() ?? '#ffffff';
-      this.setColor(projectColor ?? fallback);
+      this.setColor(this.appConfigService.themeColor() ?? '#ffffff');
     });
-
+  
     effect(() => {
       this._font.set(this.appConfigService.themeFont() ?? 'roboto');
       this._fontSize.set(this.appConfigService.fontSize() ?? 100);
