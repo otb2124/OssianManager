@@ -18,7 +18,12 @@ export class AppConfigService {
   readonly versionTags = computed(() => this._config()?.versionTags ?? []);
   readonly appTitle = computed(() => this._config()?.appTitle ?? null);
   readonly currentProjectId = computed(() => this._config()?.currentProjectId ?? null);
+  
   readonly themeColor = computed(() => this._config()?.settings.themeColor ?? null);
+  readonly themeFont = computed(() => this._config()?.settings.themeFont ?? null);
+  readonly fontSize = computed(() => this._config()?.settings.fontSize ?? null);
+  readonly backgroundPreset = computed(() => this._config()?.settings.backgroundPreset ?? null);
+
   readonly engineProjectPath = computed(() => this._config()?.engineProjectPath ?? null);
 
   load(): Observable<AppConfig> {

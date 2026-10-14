@@ -1,15 +1,17 @@
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { ThemeService } from '../../theme/theme.service';
 import {
   ShaderDef, UniformValues, defaultValues, uniformFields,
 } from '../../../model/shader.model';
 import { AURORA, COSMOS, SHADER_PRESETS } from '../../../model/shader.presets';
+import { AppConfigService } from '../../data/app-config/app-config.service';
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
 @Injectable({ providedIn: 'root' })
 export class BackgroundService {
   private readonly theme = inject(ThemeService);
+  private readonly appConfig = inject(AppConfigService);
 
   // ── state ──────────────────────────────────────────────────────────────
   private readonly _presets = signal<Record<string, ShaderDef>>({ ...SHADER_PRESETS });
@@ -34,6 +36,18 @@ export class BackgroundService {
   readonly themeColor = this.theme.themeColor;
   /** FieldConfig[] for the current shader, ready for <app-field-list>. */
   readonly fields = computed(() => uniformFields(this._shader()));
+
+  constructor() {
+    // Follows the saved setting. Skips when that shader is already active, so the
+    // startup patch in AppComponent is not wiped by a reset to defaults.
+    effect(() => {
+      const id = this.appConfig.backgroundPreset();
+      if (!id) return;
+      untracked(() => {
+        if (this._shader().id !== id) this.setShader(id);
+      });
+    });
+  }
 
   // ── shader selection ───────────────────────────────────────────────────
 

@@ -355,20 +355,7 @@ export const SETTINGS_PAGE_FIELDS_CONFIG: Record<string, FieldConfig[]> = {
     ],
     'settings-theme':
     [
-      { kind: 'image-select', 
-        path: 'themeTemplateId', 
-        label: 'Template',
-        size: 'xl',
-        options: 
-        [ 
-          { value: 'black', label: 'Black', imageUrl: 'https://www.color-hex.com/palettes/1405.png' },
-          { value: 'soft-black', label: 'Soft Black', imageUrl: 'https://www.color-hex.com/palettes/46586.png' },
-          { value: 'bleeding-black', label: 'Bleeding Black', imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEVKBBVtIxJ17uCUY1jxvIAqij6t6LYemQcYVN0N06KwcTyRWW7xhlRTU&s=10' },
-          { value: 'makara', label: 'Makara', imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBwSbLrt5roCZ3BjkDZnILjpReHMqlhyIhxK6mehRwdQ&s=10' },
-          { value: 'coffee-black', label: 'Coffee Black', imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWYGurD-1J-rffnx0GVpLnMsTt8XlK8pNXbPEkyzueCw&s=10' },
-          { value: 'pink-black', label: 'Pink Black', imageUrl: 'https://images.media.io/colors/midnight-velvet-black-color-palette.jpg' },
-        ] 
-      },
+      { kind: 'image-select', path: 'backgroundPreset', label: 'Background', size: 'xl', options: [] },
       { kind: 'color', path: 'themeColor', label: 'Theme Color', allowAlpha: false },
       {
         kind: 'select',

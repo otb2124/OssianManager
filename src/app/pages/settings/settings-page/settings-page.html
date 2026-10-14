@@ -1,13 +1,12 @@
 <!-- settings-page.html -->
 <div class="flex flex-col gap-3 p-3 h-full overflow-auto text-xs">
 
-    @if (context.currentConfig(); as config) {
+  @if (context.currentConfig(); as config) {
+    <app-field-list [fields]="config" [target]="fieldTarget()"></app-field-list>
+  } @else {
+    <div class="text-gray-400 dark:text-gray-500 italic">
+      No settings configuration for this page.
+    </div>
+  }
 
-      <app-field-list [fields]="config" [target]="fieldTarget"></app-field-list>
-    } @else {
-      <div class="text-gray-400 dark:text-gray-500 italic">
-        No settings configuration for this page.
-      </div>
-    }
-  
-  </div>
+</div>

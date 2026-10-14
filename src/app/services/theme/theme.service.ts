@@ -10,6 +10,10 @@ export class ThemeService {
 
   private readonly _themeColor = signal<string>('#ffffff');
   readonly themeColor = this._themeColor.asReadonly();
+  private readonly _font = signal<string>('roboto');
+  private readonly _fontSize = signal<number>(100);
+  readonly font = this._font.asReadonly();
+  readonly fontSize = this._fontSize.asReadonly();
 
   readonly themeColorMuted = computed(() => this.withOpacity(this._themeColor(), 0.15));
   readonly themeColorBorder = computed(() => this.withOpacity(this._themeColor(), 0.3));
@@ -26,6 +30,11 @@ export class ThemeService {
       const projectColor = this.projectService.currentProject()?.color;
       const fallback = this.appConfigService.themeColor() ?? '#ffffff';
       this.setColor(projectColor ?? fallback);
+    });
+
+    effect(() => {
+      this._font.set(this.appConfigService.themeFont() ?? 'roboto');
+      this._fontSize.set(this.appConfigService.fontSize() ?? 100);
     });
   }
 

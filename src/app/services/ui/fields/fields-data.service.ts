@@ -5,12 +5,15 @@ import { filter } from 'rxjs/operators';
 import { FieldConfig } from '../../../components/field-list/field-list';
 import { RoutesService } from '../../routes/routes.service';
 import { NODE_CONTROL_FIELDS_CONFIG, SETTINGS_PAGE_FIELDS_CONFIG } from '../../../model/fields.config.model';
+import { BackgroundService } from '../background/background.service';
+import { ShaderDef } from '../../../model/shader.model';
 
 
 @Injectable({ providedIn: 'root' })
 export class FieldsDataService {
   private router = inject(Router);
   private routesService = inject(RoutesService);
+  private background = inject(BackgroundService);
 
   // Tracks the current url; updates on every completed navigation.
   private currentUrl = signal(this.router.url);
@@ -31,6 +34,34 @@ export class FieldsDataService {
 
   readonly currentConfig = computed<FieldConfig[] | null>(() => {
     const id = this.currentDataId();
-    return id ? SETTINGS_PAGE_FIELDS_CONFIG[id] ?? null : null;
+    const config = id ? SETTINGS_PAGE_FIELDS_CONFIG[id] ?? null : null;
+    return config ? config.map(f => this.withLiveOptions(f)) : null;
   });
+
+  private withLiveOptions(field: FieldConfig): FieldConfig {
+    if (field.kind === 'image-select' && field.path === 'backgroundPreset') {
+      return {
+        ...field,
+        options: Object.values(this.background.presets()).map(def => ({
+          value: def.id,
+          label: def.name,
+          imageUrl: this.presetThumbnail(def),
+        })),
+      };
+    }
+    return field;
+  }
+
+  presetThumbnail(def: ShaderDef): string {
+    let hue = 0;
+    for (const ch of def.id) hue = (hue * 31 + ch.charCodeAt(0)) % 360;
+    const svg =
+      `<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'>` +
+      `<defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>` +
+      `<stop offset='0' stop-color='hsl(${hue},70%,45%)'/>` +
+      `<stop offset='1' stop-color='hsl(${(hue + 60) % 360},70%,15%)'/>` +
+      `</linearGradient></defs><rect width='96' height='96' fill='url(#g)'/></svg>`;
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+  }
+  
 }

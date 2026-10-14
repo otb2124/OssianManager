@@ -15,4 +15,7 @@ export interface AppConfig {
   
   export interface AppConfigSettings {
     themeColor: string;
-  }
+    themeFont?: string;
+    fontSize?: number;          // percent
+    backgroundPreset?: string;  // ShaderDef id
+}
