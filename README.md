@@ -1,5 +1,7 @@
 # Ossian Manager
 
+<img width="1024" height="1024" alt="ossian1024x1024" src="https://github.com/user-attachments/assets/8e683aa1-501d-408b-957a-fa91a72eb386" />
+
 Ossian Manager is the desktop editor/tooling shell for the **OssianForge** game engine. It's an Angular + Tauri (Rust) application that provides project management, a data-driven inspector, and 2D/3D scene viewports, and it embeds the compiled OssianForge engine executable directly inside its window as a live viewport.
 
 ## How It Works
