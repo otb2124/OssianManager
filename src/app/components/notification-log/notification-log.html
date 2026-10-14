@@ -1,31 +1,176 @@
-<div class="flex flex-col gap-2 p-4">
+<div class="flex flex-col h-full min-h-0 gap-3 p-4">
 
-    <div class="flex items-center justify-between mb-2">
+    <!-- Header -->
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-baseline gap-2">
         <span class="text-sm font-medium text-gray-900 dark:text-white">Notification Log</span>
-        <p-button label="Clear" icon="pi pi-trash" size="small" severity="secondary" [text]="true"s
-            (click)="notificationService.clearLog()">
+        <span class="text-xs text-gray-400 dark:text-gray-500">
+          {{ visibleCount() }}@if (visibleCount() !== totalCount()) { of {{ totalCount() }}}
+        </span>
+      </div>
+  
+      <div class="flex items-center gap-1">
+        <p-button label="Export" icon="pi pi-download" size="small" severity="secondary" [text]="true"
+          [disabled]="!visibleCount()" (onClick)="exportJson()">
         </p-button>
+        <p-button label="Clear" icon="pi pi-trash" size="small" severity="secondary" [text]="true"
+          [disabled]="!totalCount()" (onClick)="notificationService.clearLog()">
+        </p-button>
+      </div>
     </div>
-
-    <div *ngFor="let entry of notificationService.log()"
-        class="flex flex-col gap-0.5 px-3 py-2 rounded-lg border border-[var(--theme-color-border)]">
-        <div class="flex items-center gap-2">
-            <span class="w-1.5 h-1.5 rounded-full shrink-0" [style.background-color]="severityStyle(entry.severity)">
-            </span>
-            <span class="text-sm font-medium text-gray-900 dark:text-white flex-1">{{ entry.title }}</span>
-            <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0">
-                {{ entry.timestamp | date:'HH:mm:ss' }}
-            </span>
+  
+    <!-- Toolbar -->
+    <div class="flex flex-wrap items-center gap-2">
+  
+      <p-iconfield class="flex-1 min-w-[180px]">
+        <p-inputicon class="pi pi-search" />
+        <input
+          pInputText
+          type="text"
+          class="w-full"
+          placeholder="Search title or description..."
+          [value]="query()"
+          (input)="query.set($any($event.target).value)" />
+        @if (query()) {
+          <p-inputicon class="cursor-pointer" (click)="query.set('')">
+            <i class="pi pi-times"></i>
+          </p-inputicon>
+        }
+      </p-iconfield>
+  
+      <p-select
+        [options]="sortOptions"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="sort()"
+        (ngModelChange)="sort.set($event)"
+        appendTo="body"
+        size="small"
+        styleClass="min-w-[140px]" />
+  
+      <p-select
+        [options]="rangeOptions"
+        optionLabel="label"
+        optionValue="value"
+        [ngModel]="range()"
+        (ngModelChange)="range.set($event)"
+        appendTo="body"
+        size="small"
+        styleClass="min-w-[140px]" />
+  
+      <p-togglebutton
+        [ngModel]="collapseDuplicates()"
+        (ngModelChange)="collapseDuplicates.set($event)"
+        onLabel="Collapse duplicates"
+        offLabel="Collapse duplicates"
+        onIcon="pi pi-clone"
+        offIcon="pi pi-clone"
+        size="small" />
+    </div>
+  
+    <!-- Severity chips -->
+    <div class="flex flex-wrap items-center gap-1.5">
+      @for (s of severities; track s) {
+        <p-button
+          [label]="severityLabel(s)"
+          [badge]="'' + severityCounts()[s]"
+          [severity]="severityButton(s)"
+          [outlined]="!activeSeverities().has(s)"
+          [rounded]="true"
+          size="small"
+          [class.opacity-40]="activeSeverities().size > 0 && !activeSeverities().has(s)"
+          (onClick)="toggleSeverity(s)">
+        </p-button>
+      }
+  
+      @if (hasActiveFilters()) {
+        <p-button label="Reset filters" size="small" severity="secondary" [link]="true"
+          (onClick)="resetFilters()">
+        </p-button>
+      }
+    </div>
+  
+    <!-- List -->
+    <div class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-1.5 pr-1">
+  
+      @for (row of rows(); track row.kind === 'header' ? 'h-' + row.key : row.key) {
+  
+        @if (row.kind === 'header') {
+          <div class="sticky top-0 z-10 flex items-center gap-2 py-1.5 mt-1 backdrop-blur
+                      text-[11px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">
+            <span>{{ row.label }}</span>
+            <span class="font-mono font-normal">{{ row.count }}</span>
+            <span class="flex-1 h-px bg-[var(--theme-color-border)]"></span>
+          </div>
+        } @else {
+          <div class="group flex flex-col gap-0.5 px-3 py-2 rounded-lg border border-[var(--theme-color-border)]">
+  
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-1.5 rounded-full shrink-0"
+                [style.background-color]="severityStyle(row.entry.severity)"></span>
+  
+              <span class="text-sm font-medium text-gray-900 dark:text-white flex-1 truncate"
+                [title]="row.entry.title">
+                {{ row.entry.title }}
+              </span>
+  
+              @if (row.count > 1) {
+                <p-tag
+                  [value]="'×' + row.count"
+                  [rounded]="true"
+                  severity="secondary"
+                  class="shrink-0"
+                  [title]="'First: ' + (row.first | date:'medium') + '\nLast: ' + (row.last | date:'medium')" />
+              }
+  
+              <span class="text-xs text-gray-400 dark:text-gray-500 shrink-0 tabular-nums"
+                [title]="row.last | date:'medium'">
+                {{ row.last | date: (sort() === 'newest' || sort() === 'oldest' ? 'HH:mm:ss' : 'dd MMM, HH:mm:ss') }}
+              </span>
+  
+              <p-button
+                [icon]="copiedId() === row.key ? 'pi pi-check' : 'pi pi-copy'"
+                size="small"
+                severity="secondary"
+                [text]="true"
+                [rounded]="true"
+                title="Copy as JSON"
+                class="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                (onClick)="copy(row)">
+              </p-button>
+            </div>
+  
+            @if (row.entry.description) {
+              <p class="text-xs text-gray-500 dark:text-gray-400 pl-3.5"
+                style="white-space: pre-wrap;"
+                [class.line-clamp-2]="!expanded().has(row.key)">{{ row.entry.description }}</p>
+  
+              @if (isLong(row)) {
+                <p-button
+                  [label]="expanded().has(row.key) ? 'Show less' : 'Show more'"
+                  size="small"
+                  [link]="true"
+                  class="self-start"
+                  (onClick)="toggleExpanded(row.key)">
+                </p-button>
+              }
+            }
+          </div>
+        }
+      }
+  
+      @if (!rows().length) {
+        <div class="flex flex-col items-center gap-2 py-8 text-xs italic text-gray-400 dark:text-gray-500">
+          @if (!totalCount()) {
+            <span>No notifications yet</span>
+          } @else {
+            <span>No notifications match your filters</span>
+            <p-button label="Reset filters" size="small" severity="secondary" [text]="true"
+              (onClick)="resetFilters()">
+            </p-button>
+          }
         </div>
-        <p *ngIf="entry.description" class="text-xs text-gray-500 dark:text-gray-400 pl-3.5"
-            style="white-space: pre-wrap;">
-            {{ entry.description }}
-        </p>
+      }
+  
     </div>
-
-    <div *ngIf="!notificationService.log().length"
-        class="text-xs text-gray-400 dark:text-gray-500 italic text-center py-4">
-        No notifications yet
-    </div>
-
-</div>
+  </div>

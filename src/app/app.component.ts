@@ -23,6 +23,7 @@ import { ShaderBackground } from './components/shader-background/shader-backgrou
 import { EngineConsoleService } from './services/engine/console/engine-console.service';
 import { launchProjectId, windowKind } from './services/system/windows/window-kind';
 import { invoke } from '@tauri-apps/api/core';
+import { EngineService } from './services/data/engine-config/engine.service';
 
 @Component({
   selector: 'app-root',
@@ -34,6 +35,7 @@ export class AppComponent implements OnInit {
 
   private appConfigService = inject(AppConfigService);
   private projectRecordService = inject(ProjectService);
+  private engineService = inject(EngineService);
   private themeService = inject(ThemeService);
 
   private engineBridgeService = inject(EngineBridgeService);
@@ -48,7 +50,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
 
     if (windowKind === 'editor') void this.initEditor();
-    else this.appConfigService.load().subscribe();
+    else this.loadConfigs();
 
     this.shortcuts.listen();
 
@@ -87,6 +89,12 @@ export class AppComponent implements OnInit {
   private async initEditor(): Promise<void> {
     await firstValueFrom(this.appConfigService.load());
   
+    // After appConfig (needs engineProjectPath). Not awaited: a missing engine
+    // config must not block opening the project.
+    this.engineService.load().subscribe({
+      error: err => console.error('[AppComponent] engine config load failed:', err),
+    });
+  
     try {
       if (this.appConfigService.engineProjectPath()) {
         await this.engineIpc.init();          // listeners first
@@ -104,5 +112,14 @@ export class AppComponent implements OnInit {
   
     if (found) this.projectRecordService.setProject(found.project, found.directoryPath);
     else await invoke('close_editor');        // project vanished from the registry
+  }
+
+
+  private loadConfigs(): void {
+    this.appConfigService.load().pipe(
+      switchMap(() => this.engineService.load())
+    ).subscribe({
+      error: err => console.error('[AppComponent] config load failed:', err),
+    });
   }
 }

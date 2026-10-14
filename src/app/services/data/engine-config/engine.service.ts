@@ -10,7 +10,7 @@ export class EngineService {
   private persistence = inject(PersistenceService);
   private appConfigService = inject(AppConfigService);
 
-  private readonly configFileName = '.ossian.engine.json';
+  private readonly configRelativePath = '../Content/ConfigFiles/Core/tree.json';
 
   private readonly _config = signal<EngineConfig | null>(null);
   readonly config = this._config.asReadonly();
@@ -22,8 +22,12 @@ export class EngineService {
 
   load(): Observable<EngineConfig> {
     const engineProjectPath = this.appConfigService.engineProjectPath();
-    if (!engineProjectPath) return EMPTY;
+    if (!engineProjectPath) {
+      console.warn('[EngineService] engineProjectPath is not set; config not loaded.');
+      return EMPTY;
+    }
     const path = this.configPath(engineProjectPath);
+    console.log('[EngineService] loading', path);
     return this.persistence.readAbsolute<EngineConfig>(path).pipe(
       tap(config => this._config.set(config))
     );
@@ -44,6 +48,6 @@ export class EngineService {
   }
 
   private configPath(engineProjectPath: string): string {
-    return `${engineProjectPath}/${this.configFileName}`;
+    return `${engineProjectPath}/${this.configRelativePath}`;
   }
 }

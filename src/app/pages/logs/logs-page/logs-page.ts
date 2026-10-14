@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { NotificationLog } from '../../../components/notification-log/notification-log';
 
 @Component({
   selector: 'app-logs-page',
-  imports: [],
+  imports: [NotificationLog],
   templateUrl: './logs-page.html',
   styleUrl: './logs-page.css',
 })
