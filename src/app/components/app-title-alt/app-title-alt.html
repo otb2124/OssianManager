@@ -31,7 +31,7 @@
         </div>
         <div class="flex gap-2">
           <span class="text-gray-400 w-14 shrink-0">Message</span>
-          <span class="select-all">{{ c.message }}</span>
+          <span class="truncate min-w-0 select-all" [title]="c.message">{{ c.message }}</span>
         </div>
         <div class="flex gap-2">
           <span class="text-gray-400 w-14 shrink-0">Author</span>
