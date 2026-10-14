@@ -1,0 +1,77 @@
+<div class="flex flex-col h-full min-h-0 gap-3 p-4">
+
+    <p-iconfield>
+      <p-inputicon class="pi pi-search" />
+      <input
+        pInputText
+        type="text"
+        class="w-full"
+        placeholder="Search libraries by name, publisher or tag..."
+        [value]="query()"
+        (input)="query.set($any($event.target).value)" />
+    </p-iconfield>
+  
+    <p-tabs [value]="activeTab()" (valueChange)="onTabChange($event)" class="flex flex-col flex-1 min-h-0">
+      <p-tablist>
+        <p-tab value="installed">
+          <i class="pi pi-check-circle mr-2 text-xs"></i>Installed ({{ installedItems().length }})
+        </p-tab>
+        <p-tab value="community">
+          <i class="pi pi-globe mr-2 text-xs"></i>Community ({{ communityItems().length }})
+        </p-tab>
+      </p-tablist>
+  
+      <p-tabpanels styleClass="!bg-transparent !px-0 flex-1 min-h-0 overflow-auto">
+        <p-tabpanel value="installed">
+          <ng-container *ngTemplateOutlet="grid; context: { $implicit: installedItems(), empty: 'No installed libraries match.' }" />
+        </p-tabpanel>
+        <p-tabpanel value="community">
+          <ng-container *ngTemplateOutlet="grid; context: { $implicit: communityItems(), empty: 'No libraries match.' }" />
+        </p-tabpanel>
+      </p-tabpanels>
+    </p-tabs>
+  </div>
+  
+  <ng-template #grid let-items let-empty="empty">
+    @if (items.length) {
+      <div class="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-3">
+        @for (lib of items; track lib.id) {
+          <div
+            (click)="open(lib)"
+            class="flex gap-3 p-3 rounded-lg border border-[var(--theme-color-border)] cursor-pointer
+                   transition-colors hover:bg-[var(--theme-color-muted)]">
+  
+            <div class="w-12 h-12 shrink-0 rounded-md flex items-center justify-center text-white"
+                 [style.background]="lib.color">
+              <i [class]="lib.icon + ' text-xl'"></i>
+            </div>
+  
+            <div class="flex flex-col gap-1 min-w-0 flex-1">
+              <div class="flex items-baseline gap-2 min-w-0">
+                <span class="font-semibold text-sm truncate">{{ lib.name }}</span>
+                <span class="text-[11px] text-gray-400 shrink-0">v{{ lib.version }}</span>
+              </div>
+              <span class="text-xs text-gray-400 truncate">{{ lib.publisher }}</span>
+              <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 min-h-[2rem]">{{ lib.summary }}</p>
+  
+              <div class="flex items-center gap-3 pt-1 text-[11px] text-gray-400">
+                <span class="flex items-center gap-1"><i class="pi pi-download text-[10px]"></i>{{ lib.downloads | number }}</span>
+                <span class="flex items-center gap-1"><i class="pi pi-star-fill text-[10px]"></i>{{ lib.rating | number:'1.1-1' }}</span>
+  
+                <span class="ml-auto">
+                  @if (libraries.isInstalled(lib.id)) {
+                    <p-button label="Uninstall" size="small" severity="secondary" [outlined]="true"
+                              (onClick)="toggleInstall(lib, $event)" />
+                  } @else {
+                    <p-button label="Install" size="small" (onClick)="toggleInstall(lib, $event)" />
+                  }
+                </span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="py-8 text-center text-xs italic text-gray-400 dark:text-gray-500">{{ empty }}</div>
+    }
+  </ng-template>

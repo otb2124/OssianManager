@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
+import { LibrariesList } from '../../../components/libraries-list/libraries-list';
 
 @Component({
   selector: 'app-libraries-page',
-  imports: [],
+  imports: [LibrariesList],
   templateUrl: './libraries-page.html',
   styleUrl: './libraries-page.css',
 })

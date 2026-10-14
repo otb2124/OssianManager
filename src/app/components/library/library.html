@@ -1,0 +1,172 @@
+@if (library(); as lib) {
+    <div class="flex flex-col h-full min-h-0">
+  
+      <!-- Header -->
+      <header class="flex flex-col gap-3 p-5 border-b border-[var(--theme-color-border)] shrink-0">
+        <div>
+          <p-button label="Libraries" icon="pi pi-arrow-left" size="small" severity="secondary" [text]="true"
+                    (onClick)="back()" />
+        </div>
+  
+        <div class="flex gap-5">
+          <div class="w-24 h-24 shrink-0 rounded-xl flex items-center justify-center text-white"
+               [style.background]="lib.color">
+            <i [class]="lib.icon + ' text-4xl'"></i>
+          </div>
+  
+          <div class="flex flex-col gap-1.5 min-w-0 flex-1">
+            <div class="flex items-baseline gap-2">
+              <h1 class="text-2xl font-semibold truncate">{{ lib.name }}</h1>
+              <span class="text-xs text-gray-400">v{{ lib.version }}</span>
+              @if (installed()) {
+                <p-tag value="Installed" severity="success" />
+              }
+            </div>
+  
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-400">
+              <span class="flex items-center gap-1"><i class="pi pi-user text-[10px]"></i>{{ lib.publisher }}</span>
+              <span class="flex items-center gap-1"><i class="pi pi-download text-[10px]"></i>{{ lib.downloads | number }}</span>
+              <span class="flex items-center gap-1"><i class="pi pi-star-fill text-[10px]"></i>{{ lib.rating | number:'1.1-1' }}</span>
+              @if (lib.license) {
+                <span class="flex items-center gap-1"><i class="pi pi-file text-[10px]"></i>{{ lib.license }}</span>
+              }
+            </div>
+  
+            <p class="text-sm">{{ lib.summary }}</p>
+  
+            <div class="flex gap-2 pt-1">
+              @if (installed()) {
+                <p-button label="Uninstall" icon="pi pi-trash" severity="secondary" size="small"
+                          (onClick)="toggleInstall()" />
+              } @else {
+                <p-button label="Install" icon="pi pi-download" size="small" (onClick)="toggleInstall()" />
+              }
+            </div>
+          </div>
+        </div>
+      </header>
+  
+      <!-- Tabs -->
+      <p-tabs [value]="activeTab()" (valueChange)="onTabChange($event)" class="flex flex-col flex-1 min-h-0">
+        <p-tablist>
+          <p-tab value="description"><i class="pi pi-file mr-2 text-xs"></i>Description</p-tab>
+          <p-tab value="dependencies">
+            <i class="pi pi-sitemap mr-2 text-xs"></i>Dependencies ({{ dependencies().length }})
+          </p-tab>
+        </p-tablist>
+  
+        <p-tabpanels styleClass="!bg-transparent flex-1 min-h-0 overflow-auto">
+  
+          <!-- Description -->
+          <p-tabpanel value="description">
+            <div class="flex gap-8 items-start">
+              <p class="flex-1 min-w-0 text-sm leading-relaxed whitespace-pre-line">{{ lib.description }}</p>
+  
+              <aside class="w-64 shrink-0 flex flex-col gap-4 text-xs">
+                <div class="flex flex-col gap-1.5">
+                  <span class="font-semibold uppercase tracking-wide text-gray-400">More info</span>
+                  <div class="flex justify-between gap-2"><span class="text-gray-400">Id</span><span class="font-mono truncate">{{ lib.id }}</span></div>
+                  <div class="flex justify-between gap-2"><span class="text-gray-400">Publisher</span><span class="truncate">{{ lib.publisher }}</span></div>
+                  <div class="flex justify-between gap-2"><span class="text-gray-400">Version</span><span>{{ lib.version }}</span></div>
+                  <div class="flex justify-between gap-2"><span class="text-gray-400">Updated</span><span>{{ lib.updatedAt | date:'mediumDate' }}</span></div>
+                  @if (lib.license) {
+                    <div class="flex justify-between gap-2"><span class="text-gray-400">License</span><span>{{ lib.license }}</span></div>
+                  }
+                  @if (lib.repository) {
+                    <div class="flex justify-between gap-2"><span class="text-gray-400">Repository</span><span class="truncate" [title]="lib.repository">{{ lib.repository }}</span></div>
+                  }
+                </div>
+  
+                @if (lib.tags.length) {
+                  <div class="flex flex-col gap-1.5">
+                    <span class="font-semibold uppercase tracking-wide text-gray-400">Tags</span>
+                    <div class="flex flex-wrap gap-1.5">
+                      @for (tag of lib.tags; track tag) {
+                        <p-tag [value]="tag" severity="secondary" [rounded]="true" styleClass="text-xs" />
+                      }
+                    </div>
+                  </div>
+                }
+              </aside>
+            </div>
+          </p-tabpanel>
+  
+          <!-- Dependencies -->
+          <p-tabpanel value="dependencies">
+            <div class="flex flex-col gap-6">
+  
+              <section class="flex flex-col gap-2">
+                <span class="text-xs font-semibold uppercase tracking-wide text-gray-400">Depends on</span>
+  
+                @for (item of dependencies(); track item.dependency.id) {
+                  <div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-[var(--theme-color-border)]">
+                    @if (item.library; as dep) {
+                      <div class="w-8 h-8 shrink-0 rounded-md flex items-center justify-center text-white"
+                           [style.background]="dep.color">
+                        <i [class]="dep.icon + ' text-sm'"></i>
+                      </div>
+                      <a (click)="openLibrary(dep.id)"
+                         class="text-sm font-medium cursor-pointer hover:underline">{{ dep.name }}</a>
+                    } @else {
+                      <div class="w-8 h-8 shrink-0 rounded-md flex items-center justify-center bg-neutral-700 text-white">
+                        <i class="pi pi-question text-sm"></i>
+                      </div>
+                      <span class="text-sm font-medium font-mono">{{ item.dependency.id }}</span>
+                    }
+  
+                    <span class="text-xs text-gray-400 font-mono">{{ item.dependency.version }}</span>
+  
+                    <span class="ml-auto flex items-center gap-1.5">
+                      @if (item.dependency.optional) {
+                        <p-tag value="Optional" severity="secondary" />
+                      }
+                      @if (!item.library) {
+                        <p-tag value="Not in catalog" severity="danger" />
+                      } @else if (item.installed) {
+                        <p-tag value="Installed" severity="success" />
+                      } @else {
+                        <p-tag value="Not installed" severity="warn" />
+                      }
+                    </span>
+                  </div>
+                } @empty {
+                  <div class="py-4 text-xs italic text-gray-400 dark:text-gray-500">
+                    This library has no dependencies.
+                  </div>
+                }
+              </section>
+  
+              <section class="flex flex-col gap-2">
+                <span class="text-xs font-semibold uppercase tracking-wide text-gray-400">Used by (installed)</span>
+  
+                @for (dep of dependents(); track dep.id) {
+                  <div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-[var(--theme-color-border)]">
+                    <div class="w-8 h-8 shrink-0 rounded-md flex items-center justify-center text-white"
+                         [style.background]="dep.color">
+                      <i [class]="dep.icon + ' text-sm'"></i>
+                    </div>
+                    <a (click)="openLibrary(dep.id)"
+                       class="text-sm font-medium cursor-pointer hover:underline">{{ dep.name }}</a>
+                    <span class="text-xs text-gray-400">v{{ dep.version }}</span>
+                  </div>
+                } @empty {
+                  <div class="py-4 text-xs italic text-gray-400 dark:text-gray-500">
+                    No installed library depends on this one.
+                  </div>
+                }
+              </section>
+  
+            </div>
+          </p-tabpanel>
+  
+        </p-tabpanels>
+      </p-tabs>
+    </div>
+  } @else {
+    <div class="flex flex-col items-center justify-center gap-3 h-full text-xs italic text-gray-400 dark:text-gray-500">
+      <i class="pi pi-question-circle text-3xl"></i>
+      <span>Library not found.</span>
+      <p-button label="Back to libraries" icon="pi pi-arrow-left" size="small" severity="secondary" [text]="true"
+                (onClick)="back()" />
+    </div>
+  }

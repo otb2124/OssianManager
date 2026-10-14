@@ -302,31 +302,15 @@ const allRoutes: RouteChild[] =
         displayBreadcrumb: true,
         displayModule: true,
         navigatesModule: true,
-        displaySidebar: true,
-        children:
-        [
-          {
-            path: '',
-            redirectTo: 'browse',
-            pathMatch: 'full'
-          },
-          {
-            path: 'browse',
-            title: 'Browse',
-            icon: 'pi pi-search',
-            displayBreadcrumb: true,
-            displayModule: true,
-            loadComponent: () => import('./pages/libraries/libraries-page/libraries-page.js').then(m => m.LibrariesPage),
-          },
-          {
-            path: 'publish',
-            title: 'Publish',
-            icon: 'pi pi-cloud-upload',
-            displayBreadcrumb: true,
-            displayModule: true,
-            loadComponent: () => import('./pages/libraries/libraries-page/libraries-page.js').then(m => m.LibrariesPage),
-          },
-        ]
+        loadComponent: () => import('./pages/libraries/libraries-page/libraries-page.js').then(m => m.LibrariesPage),
+      },
+      {
+        path: 'library/:id',
+        title: 'Library',
+        displayBreadcrumb: false,
+        displayModule: false,
+        navigatesModule: true,
+        loadComponent: () => import('./pages/libraries/library-page/library-page.js').then(m => m.LibraryPage),
       },
       {
         path: 'logs',
