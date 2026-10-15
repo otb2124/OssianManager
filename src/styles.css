@@ -1,2 +1,21 @@
 @import "tailwindcss";
 @import "tailwindcss-primeui";
+@import "dockview-core/dist/styles/dockview.css";
+
+.dockview-theme-abyss {
+    /* panel content area */
+    --dv-group-view-background-color: transparent;
+  
+    /* tab strip */
+    --dv-tabs-and-actions-container-background-color: transparent;
+    --dv-activegroup-visiblepanel-tab-background-color: var(--theme-color-border);
+    --dv-activegroup-hiddenpanel-tab-background-color: transparent;
+    --dv-inactivegroup-visiblepanel-tab-background-color: var(--theme-color-muted);
+    --dv-inactivegroup-hiddenpanel-tab-background-color: transparent;
+  
+    /* splitters and borders, matching the rest of the app */
+    --dv-separator-border: var(--theme-color-border);
+    --dv-paneview-active-outline-color: var(--theme-color);
+    --dv-sash-color: var(--theme-color-border);
+    --dv-active-sash-color: var(--theme-color);
+  }

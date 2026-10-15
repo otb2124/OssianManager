@@ -1,27 +1,28 @@
 {
-  "version": "v.0.2",
+  "version": "v.0.7",
   "versionTags": [
     "dev_start"
   ],
   "appTitle": "OssianManager",
   "settings": {
-    "themeColor": "#eb1e92"
+    "themeColor": "#8800ff",
+    "backgroundPreset": "cosmos",
+    "themeFont": "roboto"
   },
   "engineProjectPath": "./OssianForge\\OssianForge.exe",
   "windowTabs": {
     "launcher": {
       "openTabs": [
-        "/file/projects/recents"
+        "/file/projects/recents",
+        "/file/projects/my-projects"
       ],
       "activeTab": "/file/projects/recents"
     },
     "editor": {
       "openTabs": [
-        "/tools/settings/app",
-        "/project/scenes/scene-management",
-        "/scene01"
+        "/project/scenes"
       ],
-      "activeTab": "/scene01"
+      "activeTab": "/project/scenes"
     }
   }
 }

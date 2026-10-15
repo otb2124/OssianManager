@@ -20,12 +20,13 @@ use winapi::um::winnt::{
 };
 #[cfg(target_os = "windows")]
 use winapi::um::winuser::{
-    ClientToScreen, EnumWindows, GetWindowLongPtrA, GetWindowRect, GetWindowTextW,
-    GetWindowThreadProcessId, IsWindowVisible, SetWindowLongPtrA, SetWindowPos, ShowWindow,
-    GWL_EXSTYLE, GWL_STYLE, GWLP_HWNDPARENT, HWND_TOP, SW_HIDE, SW_SHOW, SWP_FRAMECHANGED,
-    SWP_HIDEWINDOW, SWP_NOACTIVATE, SWP_NOMOVE, SWP_NOSIZE, SWP_SHOWWINDOW, WS_CAPTION,
-    WS_EX_LAYERED, WS_EX_TRANSPARENT, WS_MAXIMIZEBOX, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU,
-    WS_THICKFRAME, WS_VISIBLE,
+    ClientToScreen, EnumWindows, GetForegroundWindow, GetWindowLongPtrA, GetWindowRect,
+    GetWindowTextW, GetWindowThreadProcessId, IsWindowVisible, SetForegroundWindow,
+    SetWindowLongPtrA, SetWindowPos, ShowWindow, GWL_EXSTYLE, GWL_STYLE, GWLP_HWNDPARENT,
+    HWND_TOP, SW_HIDE, SW_SHOW, SW_SHOWNA, SWP_FRAMECHANGED, SWP_HIDEWINDOW, SWP_NOACTIVATE,
+    SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, SWP_SHOWWINDOW, WS_CAPTION, WS_EX_LAYERED,
+    WS_EX_TRANSPARENT, WS_MAXIMIZEBOX, WS_MINIMIZEBOX, WS_POPUP, WS_SYSMENU, WS_THICKFRAME,
+    WS_VISIBLE,
 };
 
 static ENGINE_HWND: AtomicPtr<std::ffi::c_void> = AtomicPtr::new(std::ptr::null_mut());
@@ -144,7 +145,7 @@ pub fn apply_bounds(scale_factor: f64) {
                 && APPLIED_W.load(Ordering::SeqCst) == scaled_w
                 && APPLIED_H.load(Ordering::SeqCst) == scaled_h
             {
-                ShowWindow(hwnd, SW_SHOW);
+                ShowWindow(hwnd, SW_SHOWNA); // was SW_SHOW, which activates the window
                 return;
             }
 
@@ -243,10 +244,11 @@ pub fn spawn_engine_process(
     {
         let tauri_hwnd = window.hwnd().map_err(|e| e.to_string())?.0;
         let tauri_hwnd_usize = tauri_hwnd as usize;
+        let thread_window = window.clone();
 
         thread::spawn(move || {
             let start = Instant::now();
-            let timeout = Duration::from_secs(10);
+            let timeout = Duration::from_secs(60); // engine load (Roslyn etc.) can be slow
             let parent_hwnd = tauri_hwnd_usize as HWND;
 
             while start.elapsed() < timeout {
@@ -279,10 +281,36 @@ pub fn spawn_engine_process(
                         SetWindowLongPtrA(child_hwnd, GWL_EXSTYLE, new_exstyle);
 
                         SetWindowLongPtrA(child_hwnd, GWLP_HWNDPARENT, parent_hwnd as isize);
+
+                        // Apply the style change and hide, without activating.
+                        SetWindowPos(
+                            child_hwnd,
+                            std::ptr::null_mut(),
+                            0, 0, 0, 0,
+                            SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER
+                                | SWP_NOACTIVATE | SWP_HIDEWINDOW,
+                        );
                         ENGINE_HWND.store(child_hwnd as *mut _, Ordering::SeqCst);
 
-                        ShowWindow(child_hwnd, SW_HIDE);
-                        println!("[Rust] C# Engine ready (background idle)");
+                        // The engine grabs foreground while creating its window: give it back.
+                        let fg = GetForegroundWindow();
+                        if !fg.is_null() {
+                            let mut fg_pid = 0;
+                            GetWindowThreadProcessId(fg, &mut fg_pid);
+                            if fg_pid == pid {
+                                SetForegroundWindow(parent_hwnd);
+                            }
+                        }
+
+                        // The viewport may have asked to be visible while the engine was
+                        // still loading. Apply that now instead of waiting for a tab switch.
+                        APPLIED_SCREEN_X.store(-1, Ordering::SeqCst);
+                        APPLIED_SCREEN_Y.store(-1, Ordering::SeqCst);
+                        APPLIED_W.store(-1, Ordering::SeqCst);
+                        APPLIED_H.store(-1, Ordering::SeqCst);
+                        apply_bounds(thread_window.scale_factor().unwrap_or(1.0));
+
+                        println!("[Rust] C# Engine ready");
                         break;
                     }
                 }

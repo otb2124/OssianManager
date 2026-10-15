@@ -12,12 +12,26 @@ export class Viewport3D implements AfterViewInit, OnDestroy {
   private engineBridgeService = inject(EngineBridgeService);
   private resizeObserver?: ResizeObserver;
 
+  private raf = 0;
+  private lastKey = '';
+  
+  private readonly track = () => {
+    const el = this.container?.nativeElement;
+    if (el) {
+      const r = el.getBoundingClientRect();
+      const key = `${r.left}|${r.top}|${r.width}|${r.height}`;
+      if (key !== this.lastKey) { this.lastKey = key; this.updateBounds(); }
+    }
+    this.raf = requestAnimationFrame(this.track);
+  };
+
   async ngAfterViewInit(): Promise<void> {
     console.log('[Viewport3D] Component mounted. Enabling visibility...');
     
     // 1. Force visibility true first so Rust knows to show the HWND
     await this.engineBridgeService.setVisibility(true);
 
+    this.raf = requestAnimationFrame(this.track);
     // 2. Attach resize tracking once DOM container exists
     if (this.container?.nativeElement) {
       this.resizeObserver = new ResizeObserver(() => this.updateBounds());
@@ -35,6 +49,7 @@ export class Viewport3D implements AfterViewInit, OnDestroy {
   async ngOnDestroy(): Promise<void> {
     console.log('[Viewport3D] Component destroyed. Hiding engine...');
     this.resizeObserver?.disconnect();
+    cancelAnimationFrame(this.raf);
     await this.engineBridgeService.setVisibility(false);
   }
 

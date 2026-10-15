@@ -43,6 +43,7 @@
     "@tauri-apps/plugin-fs": "^2.5.0",
     "@tauri-apps/plugin-opener": "^2",
     "codemirror": "^6.0.2",
+    "dockview-core": "^4.13.1",
     "postcss": "^8.5.8",
     "primeicons": "^7.0.0",
     "primeng": "^20.4.0",

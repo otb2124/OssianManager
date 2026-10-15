@@ -1,0 +1,141 @@
+import {
+  AfterViewInit, ApplicationRef, Component, ComponentRef, ElementRef, EnvironmentInjector,
+  OnDestroy, Type, createComponent, inject, input, output, viewChild,
+} from '@angular/core';
+import {
+  AddPanelOptions, DockviewApi, GroupPanelPartInitParameters, IContentRenderer, createDockview,
+  themeAbyss,
+} from 'dockview-core';
+
+export interface DockPanelDef {
+  id: string;
+  title: string;
+  component: Type<unknown>;
+  /** Plain data only (it is serialized with the layout). Applied via setInput. */
+  inputs?: Record<string, unknown>;
+  position?: AddPanelOptions['position'];
+  initialWidth?: number;
+  initialHeight?: number;
+  /** 'always' keeps the component in the DOM while its tab is hidden. */
+  renderer?: 'always' | 'onlyWhenVisible';
+}
+
+/** Hosts any Angular component inside a dockview panel. */
+class AngularPanelRenderer implements IContentRenderer {
+  readonly element = document.createElement('div');
+  private ref?: ComponentRef<unknown>;
+
+  constructor(
+    private readonly type: Type<unknown>,
+    private readonly injector: EnvironmentInjector,
+    private readonly appRef: ApplicationRef,
+  ) {
+    this.element.style.cssText = 'display:block;height:100%;width:100%;overflow:hidden;';
+  }
+
+  init(parameters: GroupPanelPartInitParameters): void {
+    this.ref = createComponent(this.type, {
+      environmentInjector: this.injector,
+      hostElement: this.element,
+    });
+    for (const [key, value] of Object.entries(parameters.params ?? {})) {
+      this.ref.setInput(key, value);
+    }
+    this.appRef.attachView(this.ref.hostView);
+  }
+
+  dispose(): void {
+    if (!this.ref) return;
+    this.appRef.detachView(this.ref.hostView);
+    this.ref.destroy();
+    this.ref = undefined;
+  }
+}
+
+@Component({
+  selector: 'app-dock-grid',
+  standalone: true,
+  template: `<div #host class="dockview-theme-abyss h-full w-full"></div>`,
+  host: { class: 'block h-full w-full' },
+})
+export class DockGrid implements AfterViewInit, OnDestroy {
+  readonly panels = input.required<DockPanelDef[]>();
+  /** When set, the layout is saved to localStorage under this key and restored on start. */
+  readonly layoutKey = input<string | null>(null);
+  readonly ready = output<DockviewApi>();
+
+  private readonly host = viewChild.required<ElementRef<HTMLElement>>('host');
+  private readonly injector = inject(EnvironmentInjector);
+  private readonly appRef = inject(ApplicationRef);
+
+  private api?: DockviewApi;
+  private saveTimer?: ReturnType<typeof setTimeout>;
+  private readonly subs: { dispose(): void }[] = [];
+
+  ngAfterViewInit(): void {
+    this.api = createDockview(this.host().nativeElement, {
+      theme: themeAbyss,
+      disableFloatingGroups: true, // see the note on the native viewport below
+      createComponent: ({ name }) => {
+        const def = this.panels().find(p => p.id === name);
+        if (!def) throw new Error(`[DockGrid] Unknown panel "${name}"`);
+        return new AngularPanelRenderer(def.component, this.injector, this.appRef);
+      },
+    });
+
+    if (!this.restore()) this.buildDefault();
+
+    this.subs.push(this.api.onDidLayoutChange(() => this.scheduleSave()));
+    this.ready.emit(this.api);
+  }
+
+  /** Throws away the saved layout and rebuilds the default one. */
+  resetLayout(): void {
+    const key = this.layoutKey();
+    if (key) localStorage.removeItem(key);
+    this.api?.clear();
+    this.buildDefault();
+  }
+
+  private buildDefault(): void {
+    for (const def of this.panels()) {
+      this.api!.addPanel({
+        id: def.id,
+        component: def.id,
+        title: def.title,
+        params: def.inputs,
+        position: def.position,
+        initialWidth: def.initialWidth,
+        initialHeight: def.initialHeight,
+        renderer: def.renderer,
+      });
+    }
+  }
+
+  private restore(): boolean {
+    const key = this.layoutKey();
+    const saved = key ? localStorage.getItem(key) : null;
+    if (!saved) return false;
+    try {
+      this.api!.fromJSON(JSON.parse(saved));
+      return true;
+    } catch (err) {
+      console.warn('[DockGrid] Saved layout is invalid, using the default.', err);
+      this.api!.clear();
+      return false;
+    }
+  }
+
+  private scheduleSave(): void {
+    const key = this.layoutKey();
+    if (!key || !this.api) return;
+    clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(() => localStorage.setItem(key, JSON.stringify(this.api!.toJSON())), 300);
+  }
+
+  ngOnDestroy(): void {
+    clearTimeout(this.saveTimer);
+    this.subs.forEach(s => s.dispose());
+    this.api?.dispose();
+  }
+}
