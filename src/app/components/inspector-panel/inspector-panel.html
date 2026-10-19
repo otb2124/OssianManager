@@ -6,16 +6,9 @@
     <div class="text-gray-400 dark:text-gray-500 italic">No object selected</div>
   } @else if (node(); as n) {
 
-    <div class="flex items-center gap-2 pb-2 border-b border-[var(--theme-color-border)]">
+    <div class="flex items-center gap-2 pb-2">
       <i class="pi pi-box shrink-0"></i>
       <span class="font-medium truncate flex-1">{{ n.name || n.id }}</span>
-      <p-button
-        icon="pi pi-refresh"
-        (onClick)="reload()"
-        severity="secondary"
-        size="small"
-        [text]="true"
-        styleClass="!p-1" />
     </div>
 
     <app-field-list [fields]="nodeFields" [target]="nodeTarget"></app-field-list>

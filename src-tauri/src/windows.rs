@@ -17,6 +17,7 @@ pub async fn open_editor(app: AppHandle, project_id: String) -> Result<(), Strin
         .title("Ossian Manager")
         .inner_size(1600.0, 900.0)
         .maximized(true)
+        .disable_drag_drop_handler()   // lets dockview's HTML5 tab dragging work on Windows
         .initialization_script(&format!("window.__OSSIAN_PROJECT_ID__ = {id_js};"))
         .build()
         .map_err(|e| e.to_string())?;

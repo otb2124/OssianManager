@@ -1,6 +1,6 @@
 import {
   AfterViewInit, ApplicationRef, Component, ComponentRef, ElementRef, EnvironmentInjector,
-  OnDestroy, Type, createComponent, inject, input, output, viewChild,
+  OnDestroy, Type, ViewEncapsulation, createComponent, inject, input, output, viewChild,
 } from '@angular/core';
 import {
   AddPanelOptions, DockviewApi, GroupPanelPartInitParameters, IContentRenderer, createDockview,
@@ -18,6 +18,7 @@ export interface DockPanelDef {
   initialHeight?: number;
   /** 'always' keeps the component in the DOM while its tab is hidden. */
   renderer?: 'always' | 'onlyWhenVisible';
+  inactive?: boolean;
 }
 
 /** Hosts any Angular component inside a dockview panel. */
@@ -55,7 +56,9 @@ class AngularPanelRenderer implements IContentRenderer {
 @Component({
   selector: 'app-dock-grid',
   standalone: true,
-  template: `<div #host class="dockview-theme-abyss h-full w-full"></div>`,
+  templateUrl: './dock-grid.html',
+  styleUrl: './dock-grid.css',
+  encapsulation: ViewEncapsulation.None,
   host: { class: 'block h-full w-full' },
 })
 export class DockGrid implements AfterViewInit, OnDestroy {
@@ -108,6 +111,7 @@ export class DockGrid implements AfterViewInit, OnDestroy {
         initialWidth: def.initialWidth,
         initialHeight: def.initialHeight,
         renderer: def.renderer,
+        inactive: def.inactive,
       });
     }
   }

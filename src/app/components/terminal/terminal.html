@@ -1,20 +1,5 @@
 <!-- terminal-panel.html -->
 <div class="flex flex-col h-full min-h-0 bg-neutral-900 text-xs">
-
-    @if (!showInput()) {
-      <!-- Console mode: read-only, so it needs its own clear button -->
-      <div class="flex items-center justify-between px-2 py-1 border-b border-[var(--theme-color-border)] shrink-0">
-        <span class="text-gray-400 select-none">Engine console</span>
-        <p-button
-          icon="pi pi-trash"
-          (onClick)="clear()"
-          severity="secondary"
-          size="small"
-          [text]="true"
-          styleClass="!p-1"
-          title="Clear" />
-      </div>
-    }
   
     <div
       #output
@@ -31,7 +16,7 @@
     </div>
   
     @if (showInput()) {
-      <div class="flex items-center gap-2 px-2 py-1.5 border-t border-[var(--theme-color-border)] shrink-0 font-mono">
+      <div class="flex items-center gap-2 px-2 py-1.5 shrink-0 font-mono">
         <span class="text-[var(--theme-color)] select-none">&gt;</span>
         <input
           #prompt

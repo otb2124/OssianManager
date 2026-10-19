@@ -2,7 +2,7 @@
     <div class="flex flex-col h-full min-h-0">
   
       <!-- Header -->
-      <header class="flex flex-col gap-3 p-5 border-b border-[var(--theme-color-border)] shrink-0">
+      <header class="flex flex-col gap-3 p-5 shrink-0">
         <div>
           <p-button label="Libraries" icon="pi pi-arrow-left" size="small" severity="secondary" [text]="true"
                     (onClick)="back()" />
@@ -99,7 +99,7 @@
                 <span class="text-xs font-semibold uppercase tracking-wide text-gray-400">Depends on</span>
   
                 @for (item of dependencies(); track item.dependency.id) {
-                  <div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-[var(--theme-color-border)]">
+                  <div class="flex items-center gap-3 px-3 py-2 rounded-lg">
                     @if (item.library; as dep) {
                       <div class="w-8 h-8 shrink-0 rounded-md flex items-center justify-center text-white"
                            [style.background]="dep.color">
@@ -140,7 +140,7 @@
                 <span class="text-xs font-semibold uppercase tracking-wide text-gray-400">Used by (installed)</span>
   
                 @for (dep of dependents(); track dep.id) {
-                  <div class="flex items-center gap-3 px-3 py-2 rounded-lg border border-[var(--theme-color-border)]">
+                  <div class="flex items-center gap-3 px-3 py-2 rounded-lg">
                     <div class="w-8 h-8 shrink-0 rounded-md flex items-center justify-center text-white"
                          [style.background]="dep.color">
                       <i [class]="dep.icon + ' text-sm'"></i>

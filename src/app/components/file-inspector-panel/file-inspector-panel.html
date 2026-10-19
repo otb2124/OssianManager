@@ -4,7 +4,7 @@
   @if (fsEntry(); as entry) {
 
     <!-- Header -->
-    <div class="flex items-center gap-2 pb-2 border-b border-[var(--theme-color-border)]">
+    <div class="flex items-center gap-2 pb-2">
       <i [class]="(kind()?.icon ?? 'pi pi-file') + ' shrink-0'"></i>
 
       @if (renaming()) {
@@ -19,9 +19,6 @@
       } @else {
         <span class="font-medium truncate flex-1" [title]="entry.name">{{ entry.name }}</span>
       }
-
-      <p-button icon="pi pi-refresh" (onClick)="reload()" severity="secondary" size="small"
-                [text]="true" styleClass="!p-1" />
     </div>
 
     <!-- Actions -->
@@ -51,7 +48,7 @@
     @if (previewUrl(); as url) {
       <div class="flex flex-col gap-1.5">
         <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Preview</span>
-        <div class="flex items-center justify-center p-2 rounded border border-[var(--theme-color-border)]"
+        <div class="flex items-center justify-center p-2 rounded"
              style="background: repeating-conic-gradient(#2a2a2e 0% 25%, #1f1f24 0% 50%) 50% / 16px 16px">
           <img [src]="url" [alt]="entry.name" class="max-h-48 max-w-full object-contain" />
         </div>
@@ -126,7 +123,7 @@
   } @else if (resourceView(); as view) {
 
     <!-- Resource header -->
-    <div class="flex items-center gap-2 pb-2 border-b border-[var(--theme-color-border)]">
+    <div class="flex items-center gap-2 pb-2 border-b">
       <i [class]="view.icon + ' shrink-0'"></i>
       <span class="font-medium truncate flex-1 font-mono" [title]="view.resource.id">{{ view.resource.id }}</span>
       <p-tag [value]="view.type || 'unknown'" severity="secondary" [rounded]="true" styleClass="text-xs" />
@@ -151,7 +148,7 @@
       <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Data ({{ view.items.length }})</span>
 
       @for (item of view.items; track $index) {
-        <div class="flex items-center gap-2 px-2 py-1 rounded border border-[var(--theme-color-border)]">
+        <div class="flex items-center gap-2 px-2 py-1 rounded">
           @switch (item.kind) {
 
             @case ('ref') {
@@ -203,7 +200,7 @@
       <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Used by ({{ view.usedBy.length }})</span>
 
       @for (user of view.usedBy; track user.id) {
-        <div class="flex items-center gap-2 px-2 py-1 rounded border border-[var(--theme-color-border)]">
+        <div class="flex items-center gap-2 px-2 py-1 rounded">
           <i class="pi pi-link text-[10px] shrink-0"></i>
           <a class="font-mono truncate cursor-pointer hover:underline" [title]="user.id"
              (click)="openResource(user)">{{ user.id }}</a>

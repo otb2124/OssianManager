@@ -3,7 +3,7 @@
     <div class="grid gap-x-2" style="grid-template-columns: 1rem 1fr auto;">
       @for (item of resolvedItems(); track item.actionId) {
         @if (item.separator) {
-          <div class="col-span-3 border-t border-[var(--theme-color-border)] my-1"></div>
+          <div class="col-span-3 my-1 border-t border-[var(--theme-color-border)]"></div>
         } @else {
           <div
             (click)="onItemSelect(item); ctxPop.hide()"

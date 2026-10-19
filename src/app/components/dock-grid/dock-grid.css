@@ -1,0 +1,24 @@
+.dockview-theme-abyss {
+    /* panel content area */
+    --dv-group-view-background-color: transparent;
+  
+    /* tab strip */
+    --dv-tabs-and-actions-container-background-color: transparent;
+    --dv-activegroup-visiblepanel-tab-background-color: transparent;
+    --dv-activegroup-hiddenpanel-tab-background-color: transparent;
+    --dv-inactivegroup-visiblepanel-tab-background-color: transparent;
+    --dv-inactivegroup-hiddenpanel-tab-background-color: transparent;
+  
+    /* all borders / dividers transparent */
+    --dv-tab-divider-color: transparent;
+    --dv-paneview-header-border-color: transparent;
+    --dv-separator-border: transparent;
+    --dv-paneview-active-outline-color: transparent;
+    --dv-sash-color: transparent;
+    --dv-active-sash-color: transparent;
+    --dv-drag-over-border-color: transparent;
+  }
+  
+  .dockview-theme-abyss .dv-tab.dv-active-tab {
+    border-bottom: 2px solid var(--theme-color);
+  }
