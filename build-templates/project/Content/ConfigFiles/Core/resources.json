@@ -1,0 +1,127 @@
+[
+  {
+    "id": "configfile.devices",
+    "data": [ "ConfigFiles/Core/devices.json" ],
+    "type": "configfile.devices"
+  },
+  {
+    "id": "configfile.modes",
+    "data": [ "ConfigFiles/Core/modes.json" ],
+    "type": "configfile.modes"
+  },
+  {
+    "id": "configfile.scene.main",
+    "data": [ "ConfigFiles/Scenes/main.json" ],
+    "type": "configfile.scene"
+  },
+  {
+    "id": "configfile.scene.gizmo",
+    "data": [ "ConfigFiles/Scenes/gizmo.json" ],
+    "type": "configfile.scene"
+  },
+  {
+    "id": "configfile.scene.freeCamera",
+    "data": [ "ConfigFiles/Scenes/freeCamera.json" ],
+    "type": "configfile.scene"
+  },
+  {
+    "id": "configfile.tree",
+    "data": [ "ConfigFiles/Core/tree.json" ],
+    "type": "configfile.tree"
+  },
+  {
+    "id": "configfile.actions.systemActions",
+    "data": [ "ConfigFiles/Actions/systemActions.json" ],
+    "type": "configfile.actions"
+  },
+  {
+    "id": "configfile.actions.transform",
+    "data": [ "ConfigFiles/Actions/transformActions.json" ],
+    "type": "configfile.actions"
+  },
+  {
+    "id": "configfile.inputKeys.myInputKeys",
+    "data": [ "ConfigFiles/InputKeys/myInputKeys.json" ],
+    "type": "configfile.inputKeys"
+  },
+  {
+    "id": "configfile.pronouns.myPronouns",
+    "data": [ "ConfigFiles/Pronouns/myPronouns.json" ],
+    "type": "configfile.pronouns"
+  },
+  {
+    "id": "configfile.statemachine.freeCamera",
+    "data": [ "ConfigFiles/StateMachines/freeCameraStateMachine.json" ],
+    "type": "configfile.statemachine"
+  },
+  {
+    "id": "configfile.inputAxis.myInputAxis",
+    "data": [ "ConfigFiles/InputAxis/myInputAxis.json" ],
+    "type": "configfile.inputAxes"
+  },
+  {
+    "id": "configfile.font.roboto",
+    "data": [ "ConfigFiles/Fonts/roboto.json" ],
+    "type": "configfile.font"
+  },
+  {
+    "id": "script.packs.ossian.system.editmode.EditModeScript",
+    "data": [ "ScriptFiles/Packs/Ossian/System/EditMode/EditModeScript.cs" ],
+    "type": "scriptfile"
+  },
+  {
+    "id": "shader.basic",
+    "data": [ "shaderfile.basic.vert", "shaderfile.basic.frag" ],
+    "type": "basicshader"
+  },
+  {
+    "id": "shader.unlit",
+    "data": [ "shaderfile.basic.vert", "shaderfile.unlit.frag" ],
+    "type": "basicshader"
+  },
+  {
+    "id": "shader.wireframe",
+    "data": [ "shaderfile.basic.vert", "shaderfile.wireframe.frag" ],
+    "type": "wireframeshader"
+  },
+  {
+    "id": "shader.skybox",
+    "data": [ "shaderfile.skybox.vert", "shaderfile.skybox.frag" ],
+    "type": "skyboxshader"
+  },
+  {
+    "id": "shader.post",
+    "data": [ "shaderfile.post.vert", "shaderfile.post.frag" ],
+    "type": "shader"
+  },
+  {
+    "id": "shader.sdf",
+    "data": [ "shaderfile.sdf.vert", "shaderfile.sdf.frag" ],
+    "type": "sdfshader"
+  },
+  {
+    "id": "mesh.cube",
+    "data": [ "fastmesh.cube" ],
+    "type": "mesh"
+  },
+  {
+    "id": "texturefile.brick.d",
+    "data": [ "TextureFiles/3d/brick_d.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.brick.n",
+    "data": [ "TextureFiles/3d/brick_n.jpg" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texturefile.font.roboto",
+    "data": [ "TextureFiles/Fonts/roboto.png" ],
+    "type": "texturefile"
+  },
+  {
+    "id": "texture.brick",
+    "data": [ "texturefile.brick.d", "texturefile.brick.n" ],
+    "type": "texture"
+  }
+]

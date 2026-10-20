@@ -1,0 +1,31 @@
+﻿{
+  "currentMode": "edit",
+  "modes": [
+    {
+      "id": "edit",
+      "actions": {
+        "OnEnter": [
+          "action.systemActions.setWindowVisibleTrue",
+          "action.systemActions.addControlPropertyNoWriteToAll"
+        ]
+      }
+    },
+    {
+      "id": "spectator",
+      "actions": {
+        "OnEnter": [
+          "action.systemActions.setWindowVisibleTrue"
+        ]
+      }
+    },
+    {
+      "id": "render",
+      "actions": {
+        "OnEnter": [
+          "action.systemActions.setWindowVisibleTrue"
+        ]
+      }
+    }
+  ]
+
+}
