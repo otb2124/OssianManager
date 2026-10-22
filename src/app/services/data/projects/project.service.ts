@@ -1,5 +1,5 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
-import { forkJoin, map, Observable, switchMap, of, catchError, tap, filter, take } from 'rxjs';
+import { forkJoin, map, Observable, switchMap, of, catchError, tap, filter, take, shareReplay } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { PersistenceService } from '../../persistence/persistence.service';
 import { AppConfigService } from '../app-config/app-config.service';
@@ -7,6 +7,7 @@ import { HydratedProjectRecord, ProjectRecord, ProjectRecordTag, ProjectRegistry
 import { ProjectConfig, ProjectData } from '../../../model/project-config.model';
 import { NotificationService } from '../../notifications/notification.service';
 import { UserTagService } from '../user-tags/user-tag.service';
+import { resolveProjectPath } from '../../utils/path.util';
 
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
@@ -32,8 +33,8 @@ export class ProjectService {
   readonly projectId = computed(() => this._currentProject()?.id ?? null);
   readonly projectName = computed(() => this._currentProject()?.title ?? null);
   readonly hasConfig = computed(() => this._currentConfig() !== null);
-  readonly resDirectory = computed(() => this._currentConfig()?.resDirectory ?? null);
-  readonly targetDirectory = computed(() => this._currentConfig()?.targetDirectory ?? null);
+  readonly resDirectory = computed(() => this.resolveDir(this._currentConfig()?.resDirectory));
+  readonly targetDirectory = computed(() => this.resolveDir(this._currentConfig()?.targetDirectory));
 
   readonly projectData = computed(() => this._currentConfig()?.data ?? null);
   
@@ -43,12 +44,18 @@ export class ProjectService {
 
   // ─── State actions ────────────────────────────────────────────────────────
 
-  setProject(project: HydratedProjectRecord, directoryPath: string): void {
+  setProject(project: HydratedProjectRecord, directoryPath: string): Observable<ProjectConfig> {
     this._currentProject.set(project);
     this._currentDirectoryPath.set(directoryPath);
     this.appConfigService.update({ currentProjectId: project.id }).subscribe();
-    this.loadConfig(project, directoryPath).subscribe();
+  
+    const config$ = this.loadConfig(project, directoryPath).pipe(shareReplay(1));
+    config$.subscribe({
+      error: err => this.notifications.error('Could not load the project config', String(err)),
+    });
+  
     this.notifications.info(`Project opened`, project.title);
+    return config$;
   }
 
   updateCurrentProject(partial: Partial<HydratedProjectRecord>): void {
@@ -260,5 +267,10 @@ export class ProjectService {
 
   private configPath(directoryPath: string): string {
     return `${directoryPath}/${this.configFileName}`;
+  }
+
+  private resolveDir(path: string | undefined): string | null {
+    const projectDir = this._currentDirectoryPath();
+    return projectDir && path ? resolveProjectPath(projectDir, path) : null;
   }
 }

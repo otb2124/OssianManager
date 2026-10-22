@@ -1,16 +1,20 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { EMPTY, Observable, tap } from 'rxjs';
 import { AppConfigService } from '../app-config/app-config.service';
+import { ProjectService } from '../projects/project.service';
 import { EngineConfig } from '../../../model/engine-config.model';
 import { PersistenceService } from '../../persistence/persistence.service';
+import { joinPath } from '../../utils/path.util';
 
 @Injectable({ providedIn: 'root' })
 export class EngineService {
 
   private persistence = inject(PersistenceService);
   private appConfigService = inject(AppConfigService);
+  private projectService = inject(ProjectService);
 
-  private readonly configRelativePath = '../Content/ConfigFiles/Core/tree.json';
+  /** No project open (launcher): the engine's own Content folder. */
+  private readonly fallbackRelativePath = '../Content/ConfigFiles/Core/tree.json';
 
   private readonly _config = signal<EngineConfig | null>(null);
   readonly config = this._config.asReadonly();
@@ -21,12 +25,11 @@ export class EngineService {
   readonly executablePath = computed(() => this._config()?.executablePath ?? null);
 
   load(): Observable<EngineConfig> {
-    const engineProjectPath = this.appConfigService.engineProjectPath();
-    if (!engineProjectPath) {
-      console.warn('[EngineService] engineProjectPath is not set; config not loaded.');
+    const path = this.configPath();
+    if (!path) {
+      console.warn('[EngineService] No engine path or open project; config not loaded.');
       return EMPTY;
     }
-    const path = this.configPath(engineProjectPath);
     console.log('[EngineService] loading', path);
     return this.persistence.readAbsolute<EngineConfig>(path).pipe(
       tap(config => this._config.set(config))
@@ -35,10 +38,10 @@ export class EngineService {
 
   update(partial: Partial<EngineConfig>): Observable<void> {
     const current = this._config();
-    const engineProjectPath = this.appConfigService.engineProjectPath();
-    if (!current || !engineProjectPath) return EMPTY;
+    const path = this.configPath();
+    if (!current || !path) return EMPTY;
     const updated = { ...current, ...partial };
-    return this.persistence.writeAbsolute(this.configPath(engineProjectPath), updated).pipe(
+    return this.persistence.writeAbsolute(path, updated).pipe(
       tap(() => this._config.set(updated))
     );
   }
@@ -47,7 +50,12 @@ export class EngineService {
     this._config.set(null);
   }
 
-  private configPath(engineProjectPath: string): string {
-    return `${engineProjectPath}/${this.configRelativePath}`;
+  /** The open project's tree.json, else the engine's own. */
+  private configPath(): string | null {
+    const content = this.projectService.resDirectory();
+    if (content) return joinPath(content, 'ConfigFiles', 'Core', 'tree.json');
+
+    const enginePath = this.appConfigService.engineProjectPath();
+    return enginePath ? `${enginePath}/${this.fallbackRelativePath}` : null;
   }
 }

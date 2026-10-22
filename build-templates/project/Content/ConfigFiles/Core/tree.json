@@ -4,14 +4,6 @@
     "name": "Tree",
     "properties": [
       {
-        "type": "ActionProperty",
-        "data": [
-          {
-            "OnStart": [ "action.myActions.printHi" ]
-          }
-        ]
-      },
-      {
         "type": "ScriptProperty",
         "data": [ "script.packs.ossian.system.editmode.EditModeScript" ]
       }

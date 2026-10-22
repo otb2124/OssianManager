@@ -1,34 +1,37 @@
 <#
 .SYNOPSIS
-  Builds OssianManager (Angular + Tauri) and the OssianForge engine (C#) and
-  assembles an output folder for the chosen configuration:
+  Builds OssianManager (Angular + Tauri) and assembles an output folder for the
+  chosen configuration. The OssianForge engine is NOT built here: an already
+  built engine folder (e.g. from Visual Studio) is copied as-is.
 
     <OUT_DIR>/<release|debug>/
       ossian-manager.exe
       .ossian/                 (copied from the clean template)
-      <ENGINE_FOLDER_NAME>/    (dotnet publish output; contains the engine exe)
+      <ENGINE_FOLDER_NAME>/    (copy of ENGINE_DIST; contains the engine exe)
 
   Release: no dev console, no webview devtools.
-  Debug:   webview devtools + terminal console (debug_assertions in Rust),
-           engine published with the Debug configuration.
+  Debug:   webview devtools + terminal console (debug_assertions in Rust).
 
   Settings come from .env (next to this script). Command-line parameters
   override .env, and .env overrides the built-in defaults.
 
+  ENGINE_DIST may contain {config}, which is replaced with Debug or Release,
+  e.g. ENGINE_DIST=C:\path\OssianForge\bin\{config}\net8.0
+
 .EXAMPLE
   .\build.ps1 -Configuration Release
   .\build.ps1 -Configuration Debug -SkipEngine
+  .\build.ps1 -Configuration Debug -EngineDist C:\path\OssianForge\bin\Debug\net8.0
 #>
 [CmdletBinding()]
 param(
     [ValidateSet('Release', 'Debug')]
     [string] $Configuration = 'Release',
 
-    [string] $EngineProject,
+    [string] $EngineDist,
     [string] $OutDir,
     [string] $EngineFolderName,
     [string] $EngineExeName,
-    [string] $Runtime,
     [string] $EnvFile,
     [switch] $SkipManager,
     [switch] $SkipEngine
@@ -68,23 +71,24 @@ function Pick([string] $Param, [string] $Key, [string] $Default) {
     return $Default
 }
 
-$EngineProject    = Pick $EngineProject    'ENGINE_PROJECT'      ''
+$EngineDist       = Pick $EngineDist       'ENGINE_DIST'         ''
 $OutDir           = Pick $OutDir           'OUT_DIR'             'artifacts'
 $EngineFolderName = Pick $EngineFolderName 'ENGINE_FOLDER_NAME'  'OssianForge'
 $EngineExeName    = Pick $EngineExeName    'ENGINE_EXE_NAME'     'OssianForge.exe'
-$Runtime          = Pick $Runtime          'DOTNET_RUNTIME'      'win-x64'
-$selfContained    = (Pick '' 'SELF_CONTAINED' 'false').ToLower()
 $keepUserTags     = (Pick '' 'KEEP_USER_TAGS' 'true').ToLower() -eq 'true'
 $ossianTemplate   = Pick '' 'OSSIAN_TEMPLATE' 'release-template\.ossian'
 
 # relative paths in .env resolve against the script folder
 if (-not [IO.Path]::IsPathRooted($OutDir))         { $OutDir         = Join-Path $repoRoot $OutDir }
 if (-not [IO.Path]::IsPathRooted($ossianTemplate)) { $ossianTemplate = Join-Path $repoRoot $ossianTemplate }
-if ($EngineProject -and -not [IO.Path]::IsPathRooted($EngineProject)) {
-    $EngineProject = Join-Path $repoRoot $EngineProject
+
+# {config} in ENGINE_DIST becomes Debug/Release, so one .env line works for both builds
+if ($EngineDist) { $EngineDist = $EngineDist.Replace('{config}', $Configuration) }
+if ($EngineDist -and -not [IO.Path]::IsPathRooted($EngineDist)) {
+    $EngineDist = Join-Path $repoRoot $EngineDist
 }
-if (-not $SkipEngine -and -not $EngineProject) {
-    throw "ENGINE_PROJECT is not set. Put it in .env or pass -EngineProject (or use -SkipEngine)."
+if (-not $SkipEngine -and -not $EngineDist) {
+    throw "ENGINE_DIST is not set. Put it in .env or pass -EngineDist (or use -SkipEngine)."
 }
 
 # Windows PowerShell 5.1's `Set-Content -Encoding UTF8` adds a BOM, which breaks JSON.parse in the app
@@ -105,6 +109,13 @@ $outRoot   = Join-Path $OutDir $cfgFolder
 $engineOut = Join-Path $outRoot $EngineFolderName
 
 Write-Host "Configuration: $Configuration  ->  $outRoot" -ForegroundColor Yellow
+
+# --- check the engine dist before touching anything ------------------------------
+if (-not $SkipEngine) {
+    if (-not (Test-Path (Join-Path $EngineDist $EngineExeName))) {
+        throw "Engine exe '$EngineExeName' not found in $EngineDist - build the engine in Visual Studio first (check ENGINE_DIST / ENGINE_EXE_NAME)"
+    }
+}
 
 # --- clean output (this configuration only) ------------------------------------
 # a running build (manager or engine) locks its exe and blocks the clean-up -> stop anything running from the output folder
@@ -141,13 +152,13 @@ if (-not $SkipManager) {
     Copy-Item $managerExe $outRoot
 }
 
-# --- 2. engine -----------------------------------------------------------------
+# --- 2. engine (copy the already built dist, no dotnet build/publish) ----------
 if (-not $SkipEngine) {
-    Invoke-Step "dotnet publish engine ($Configuration)" {
-        dotnet publish $EngineProject -c $Configuration -r $Runtime --self-contained $selfContained -o $engineOut
-    }
+    Write-Host "`n=== engine (copy prebuilt from $EngineDist) ===" -ForegroundColor Cyan
+    New-Item -ItemType Directory -Path $engineOut -Force | Out-Null
+    Copy-Item (Join-Path $EngineDist '*') $engineOut -Recurse -Force
     if (-not (Test-Path (Join-Path $engineOut $EngineExeName))) {
-        throw "Engine exe '$EngineExeName' not found in $engineOut - check AssemblyName / ENGINE_EXE_NAME"
+        throw "Engine exe '$EngineExeName' missing in $engineOut after copy"
     }
 }
 

@@ -178,7 +178,7 @@ pub fn spawn_engine_process(
     let mut path = PathBuf::from(&exe_path);
 
     if path.is_dir() {
-        path = path.join("OssianEngine.exe"); 
+        path = path.join("OssianForge.exe");
     }
 
     if !path.exists() || !path.is_file() {

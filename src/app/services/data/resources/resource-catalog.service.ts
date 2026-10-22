@@ -1,15 +1,19 @@
 import { Injectable, computed, effect, inject, signal, untracked } from '@angular/core';
 import { PersistenceService } from '../../persistence/persistence.service';
 import { AppConfigService } from '../app-config/app-config.service';
+import { ProjectService } from '../projects/project.service';
 import { ResourceEntry } from '../../../model/resource.model';
+import { joinPath } from '../../utils/path.util';
 
 @Injectable({ providedIn: 'root' })
 export class ResourceCatalogService {
 
   private readonly persistence = inject(PersistenceService);
   private readonly appConfig = inject(AppConfigService);
+  private readonly project = inject(ProjectService);
 
-  private readonly contentRelative = '../Content';
+  /** No project open: the engine's own Content folder. */
+  private readonly fallbackContentRelative = '../Content';
   private readonly resourcesFile = 'ConfigFiles/Core/resources.json';
 
   private readonly _entries = signal<ResourceEntry[]>([]);
@@ -37,8 +41,9 @@ export class ResourceCatalogService {
 
   constructor() {
     effect(() => {
-      const enginePath = this.appConfig.engineProjectPath();
-      untracked(() => this.load(enginePath));
+      this.project.resDirectory();          // reload when the project (or its content folder) changes
+      this.appConfig.engineProjectPath();
+      untracked(() => this.load());
     });
   }
 
@@ -52,22 +57,32 @@ export class ResourceCatalogService {
 
   /** Absolute path of a file referenced from resources.json (paths there are relative to Content/). */
   contentPath(relative: string): string | null {
-    const enginePath = this.appConfig.engineProjectPath();
-    return enginePath ? `${enginePath}/${this.contentRelative}/${relative}` : null;
+    const root = this.contentRoot();
+    return root ? joinPath(root, relative) : null;
   }
 
   reload(): void {
-    this.load(this.appConfig.engineProjectPath());
+    this.load();
   }
 
-  private load(enginePath: string | null): void {
-    if (!enginePath) {
+  /** The open project's content folder, else the engine's own. */
+  private contentRoot(): string | null {
+    const projectContent = this.project.resDirectory();
+    if (projectContent) return projectContent;
+
+    const enginePath = this.appConfig.engineProjectPath();
+    return enginePath ? `${enginePath}/${this.fallbackContentRelative}` : null;
+  }
+
+  private load(): void {
+    const root = this.contentRoot();
+    if (!root) {
       this._entries.set([]);
       this._error.set(null);
       return;
     }
-    const path = `${enginePath}/${this.contentRelative}/${this.resourcesFile}`;
-    this.persistence.readAbsolute<ResourceEntry[]>(path).subscribe({
+
+    this.persistence.readAbsolute<ResourceEntry[]>(joinPath(root, this.resourcesFile)).subscribe({
       next: list => {
         this._entries.set(Array.isArray(list) ? list : []);
         this._error.set(null);

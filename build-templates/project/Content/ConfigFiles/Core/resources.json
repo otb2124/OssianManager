@@ -70,6 +70,56 @@
     "type": "scriptfile"
   },
   {
+    "id": "shaderfile.basic.vert",
+    "data": [ "ShaderFiles/basic.vert" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.basic.frag",
+    "data": [ "ShaderFiles/basic.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.unlit.frag",
+    "data": [ "ShaderFiles/unlit.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.wireframe.frag",
+    "data": [ "ShaderFiles/wireframe.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.skybox.vert",
+    "data": [ "ShaderFiles/skybox.vert" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.skybox.frag",
+    "data": [ "ShaderFiles/skybox.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.post.vert",
+    "data": [ "ShaderFiles/post.vert" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.post.frag",
+    "data": [ "ShaderFiles/post.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.sdf.frag",
+    "data": [ "ShaderFiles/sdf.frag" ],
+    "type": "shaderfile"
+  },
+  {
+    "id": "shaderfile.sdf.vert",
+    "data": [ "ShaderFiles/sdf.vert" ],
+    "type": "shaderfile"
+  },
+  {
     "id": "shader.basic",
     "data": [ "shaderfile.basic.vert", "shaderfile.basic.frag" ],
     "type": "basicshader"
@@ -100,8 +150,38 @@
     "type": "sdfshader"
   },
   {
+    "id": "meshfile.gizmo.position",
+    "data": [ "MeshFiles/position_gizmo.fbx" ],
+    "type": "meshfile"
+  },
+  {
+    "id": "meshfile.gizmo.rotate",
+    "data": [ "MeshFiles/rotate_gizmo.fbx" ],
+    "type": "meshfile"
+  },
+  {
+    "id": "meshfile.gizmo.scale",
+    "data": [ "MeshFiles/scale_gizmo.fbx" ],
+    "type": "meshfile"
+  },
+  {
     "id": "mesh.cube",
     "data": [ "fastmesh.cube" ],
+    "type": "mesh"
+  },
+  {
+    "id": "mesh.gizmo.position",
+    "data": [ "meshfile.gizmo.position" ],
+    "type": "mesh"
+  },
+  {
+    "id": "mesh.gizmo.rotate",
+    "data": [ "meshfile.gizmo.rotate" ],
+    "type": "mesh"
+  },
+  {
+    "id": "mesh.gizmo.scale",
+    "data": [ "meshfile.gizmo.scale" ],
     "type": "mesh"
   },
   {

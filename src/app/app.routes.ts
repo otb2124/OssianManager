@@ -610,24 +610,35 @@ const allRoutes: RouteChild[] =
         path: 'action-build-n-run',
         title: 'Build&Run',
         displayModule: true,
+        actions: [{ id: 'build_and_run', shortcut: { key: 'F5' } }],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-build',
         title: 'Build',
         displayModule: true,
+        actions: [{ id: 'build_project', shortcut: { key: 'b', ctrl: true, shift: true } }],
+        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+      },
+      {
+        path: 'action-cook',
+        title: 'Cook Content',
+        displayModule: true,
+        actions: [{ id: 'cook_content' }],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-run',
         title: 'Run',
         displayModule: true,
+        actions: [{ id: 'run_project', shortcut: { key: 'F5', ctrl: true } }],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-clear',
         title: 'Clear',
         displayModule: true,
+        actions: [{ id: 'clean_project' }],
         loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
       }
     ]

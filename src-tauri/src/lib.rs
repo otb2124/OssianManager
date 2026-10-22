@@ -3,6 +3,7 @@ mod engine_link;
 mod engine_console;
 mod windows;
 mod entry_info;
+mod tools;
 
 use tauri::Manager;
 use std::fs;
@@ -246,13 +247,23 @@ pub fn run() {
             entry_info::hash_file,
             entry_info::read_file_bytes,
 
-            // Engine Host Module Commands
+            // Engine host
             spawn_engine_process,
             update_viewport_bounds,
             set_engine_visibility,
             engine_link::engine_request,
             engine_console::engine_console_write,
-            windows::open_editor
+
+            // Windows
+            windows::open_editor,
+            windows::close_editor,
+
+            // Cooker / Builder
+            tools::ossian_tools_layout,
+            tools::run_ossian_tool,
+            tools::cancel_ossian_tool,
+            tools::ensure_directory,
+            tools::launch_game
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

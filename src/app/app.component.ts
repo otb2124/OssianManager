@@ -24,6 +24,9 @@ import { EngineConsoleService } from './services/engine/console/engine-console.s
 import { launchProjectId, windowKind } from './services/system/windows/window-kind';
 import { invoke } from '@tauri-apps/api/core';
 import { EngineService } from './services/data/engine-config/engine.service';
+import { OssianPipelineService } from './services/data/tools/ossian-pipeline/ossian-pipeline.service';
+import { ActionRegistryService } from './services/system/action-registry.service';
+import { NotificationService } from './services/notifications/notification.service';
 
 @Component({
   selector: 'app-root',
@@ -42,6 +45,10 @@ export class AppComponent implements OnInit {
   private engineConsole = inject(EngineConsoleService);
   private engineIpc = inject(EngineIpcService);
 
+  private pipeline = inject(OssianPipelineService);
+  private actions = inject(ActionRegistryService);
+  private notifications = inject(NotificationService);
+
   private readonly shortcuts = inject(KeyShortcutService);
   private readonly contextMenus = inject(ContextMenuService);
 
@@ -49,8 +56,12 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
 
-    if (windowKind === 'editor') void this.initEditor();
-    else this.loadConfigs();
+    if (windowKind === 'editor') {
+      void this.initEditor();
+      this.registerBuildActions();
+    } else {
+      this.loadConfigs();
+    }
 
     this.shortcuts.listen();
 
@@ -89,29 +100,56 @@ export class AppComponent implements OnInit {
   private async initEditor(): Promise<void> {
     await firstValueFrom(this.appConfigService.load());
   
-    // After appConfig (needs engineProjectPath). Not awaited: a missing engine
-    // config must not block opening the project.
+    // 1. Project first: its content folder decides what the engine loads.
+    let found: Awaited<ReturnType<typeof this.findLaunchProject>>;
+    try {
+      found = await this.findLaunchProject();
+    } catch (err) {
+      console.error('[Editor] project lookup failed:', err);
+      this.notifications.error('Could not read the project list', String(err));
+    }
+  
+    if (!found) {
+      await invoke('close_editor');   // project vanished from the registry
+      return;
+    }
+  
+    await firstValueFrom(this.projectRecordService.setProject(found.project, found.directoryPath));
+  
+    // tree.json of the PROJECT (not awaited: a missing config must not block opening the project).
     this.engineService.load().subscribe({
       error: err => console.error('[AppComponent] engine config load failed:', err),
     });
   
+    if (!this.appConfigService.engineProjectPath()) return;
+  
     try {
-      if (this.appConfigService.engineProjectPath()) {
-        await this.engineIpc.init();          // listeners first
-        await this.engineConsole.init();
-        await this.engineBridgeService.spawnEngine();
-        this.engineBridgeService.load().subscribe();
-      }
+      // 2. Ossian.ini -> project content. The engine reads it once, so this MUST precede the spawn.
+      await this.pipeline.syncEngine();
+  
+      // 3. Listeners, then the engine.
+      await this.engineIpc.init();
+      await this.engineConsole.init();
+      await this.engineBridgeService.spawnEngine();
+      this.engineBridgeService.load().subscribe();
     } catch (err) {
       console.error('[Editor] engine init failed:', err);
+      this.notifications.error('Could not start the engine for this project', String(err));
     }
+  }
   
-    const found = launchProjectId
-      ? await firstValueFrom(this.projectRecordService.getById(launchProjectId))
+  private async findLaunchProject() {
+    return launchProjectId
+      ? firstValueFrom(this.projectRecordService.getById(launchProjectId))
       : undefined;
+  }
   
-    if (found) this.projectRecordService.setProject(found.project, found.directoryPath);
-    else await invoke('close_editor');        // project vanished from the registry
+  private registerBuildActions(): void {
+    this.actions.register('build_project', () => void this.pipeline.build());
+    this.actions.register('build_and_run', () => void this.pipeline.buildAndRun());
+    this.actions.register('run_project', () => void this.pipeline.run());
+    this.actions.register('clean_project', () => void this.pipeline.cleanBuild());
+    this.actions.register('cook_content', () => void this.pipeline.cook());
   }
 
 
