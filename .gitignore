@@ -73,3 +73,6 @@ src-tauri/src-tauri.log
 /release
 /src-tauri/.ossian
 /artifacts
+
+
+reorg.mjs
