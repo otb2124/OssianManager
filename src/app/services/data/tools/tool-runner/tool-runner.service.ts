@@ -3,34 +3,38 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { OssianToolsService } from '../ossian-tools/ossian-tools.service';
 
-export type OssianToolName = 'cooker' | 'builder';
+/** First argument of OssianTools.exe. `clean` takes its target ('cache' | 'build') as the first extra argument. */
+export type OssianToolCommand = 'cook' | 'build' | 'clean';
 
 export interface ToolRunOptions {
   title: string;
-  /** Working directory. Tools look for Cook.ini / Build.ini from here upwards. */
+  /** Working directory. OssianTools looks for Tools.ini from here upwards (then from its own folder). */
   cwd?: string;
 }
 
-/** Live state of the running tool, for a progress UI. */
+/** Live state of the running command, for a progress UI. */
 export interface ToolRunStatus {
   runId: number;
-  tool: OssianToolName;
+  command: OssianToolCommand;
   title: string;
   stage: string | null;
   stageIndex: number;
   stageTotal: number;
-  /** Cooker asset progress. */
+  /** Cook asset progress (also while `build` cooks in-process). */
   done: number;
   total: number;
 }
 
 export interface ToolRunResult {
   runId: number;
-  tool: OssianToolName;
+  command: OssianToolCommand;
   code: number;
   ok: boolean;
   cancelled: boolean;
-  /** The tool's own {"event":"done"} summary (builder: game/exe/pak/zip...; cooker: pack/assets/...). */
+  /**
+   * The command's own {"event":"done"} summary (build: game/exe/pak/zip...; cook: pack/assets/...).
+   * When `build` cooks, the cook's summary arrives as "cook-done" and is not stored here.
+   */
   done: Record<string, unknown> | null;
   warnings: string[];
   errors: string[];
@@ -47,8 +51,8 @@ const str = (v: unknown): string => (typeof v === 'string' ? v : v == null ? '' 
 const num = (v: unknown): number => (typeof v === 'number' ? v : Number(v) || 0);
 
 /**
- * Runs OssianCooker / OssianBuilder through tools.rs and turns their --json output into a result.
- * One run at a time: both tools write into the same target folder.
+ * Runs OssianTools.exe through tools.rs and turns its --json output into a result.
+ * One run at a time: cook and build write into the same target folder.
  */
 @Injectable({ providedIn: 'root' })
 export class ToolRunnerService {
@@ -62,23 +66,27 @@ export class ToolRunnerService {
   readonly status = this._status.asReadonly();
   readonly running = computed(() => this._status() !== null);
 
-  async run(tool: OssianToolName, args: string[], options: ToolRunOptions): Promise<ToolRunResult> {
+  /** Runs `OssianTools <command> <args...>`. `args` must already contain --json. */
+  async run(command: OssianToolCommand, args: string[], options: ToolRunOptions): Promise<ToolRunResult> {
     if (this._status()) throw new Error('Another build step is still running.');
 
     const runId = this.nextRunId++;
     this._status.set({
-      runId, tool, title: options.title,
+      runId, command, title: options.title,
       stage: null, stageIndex: 0, stageTotal: 0, done: 0, total: 0,
     });
 
     const result: ToolRunResult = {
-      runId, tool, code: -1, ok: false, cancelled: false, done: null, warnings: [], errors: [],
+      runId, command, code: -1, ok: false, cancelled: false, done: null, warnings: [], errors: [],
     };
 
     let unlisten: (() => void) | undefined;
     try {
       const layout = await this.tools.resolve();
       if (!layout) throw new Error('The engine was not found. Check the engine path in Tools > Settings > Engine.');
+      if (!layout.toolsExe) {
+        throw new Error(`OssianTools was not found next to the engine (${layout.engineDir}\\OssianTools).`);
+      }
 
       let signalExit!: (code: number) => void;
       const exited = new Promise<number>(resolve => (signalExit = resolve));
@@ -95,8 +103,7 @@ export class ToolRunnerService {
       await invoke('run_ossian_tool', {
         runId,
         enginePath: layout.engineExe,
-        tool,
-        args,
+        args: [command, ...args],
         cwd: options.cwd ?? null,
       });
 
@@ -111,7 +118,7 @@ export class ToolRunnerService {
     }
   }
 
-  /** Kills the running tool and its children. */
+  /** Kills the running command. */
   async cancel(): Promise<boolean> {
     const current = this._status();
     if (!current) return false;
@@ -128,7 +135,7 @@ export class ToolRunnerService {
     }
 
     if (!evt) {
-      // Plain stderr is what the tools print for bad arguments or a crash before logging starts.
+      // Plain stderr is what the tool prints for bad arguments or a crash before logging starts.
       if (isStderr) result.errors.push(line);
       return;
     }

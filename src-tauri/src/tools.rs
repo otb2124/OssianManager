@@ -1,21 +1,21 @@
-//! Side tools of the engine: OssianCooker and OssianBuilder (Windows, like engine_host.rs).
+//! Side tool of the engine: OssianTools (cook, build, ...) (Windows, like engine_host.rs).
 //!
 //! Expected layout (the engine's normal build output):
 //!   <engine dir>\OssianForge.exe
 //!   <engine dir>\Ossian.ini
-//!   <engine dir>\OssianCooker\OssianCooker.exe
-//!   <engine dir>\OssianBuilder\OssianBuilder.exe
+//!   <engine dir>\OssianTools\OssianTools.exe
 //!
 //! Commands:
-//!   ossian_tools_layout(enginePath)                      -> where everything is (absolute paths)
-//!   run_ossian_tool(runId, enginePath, tool, args, cwd)  -> starts "cooker" | "builder"
-//!   cancel_ossian_tool(runId)                            -> kills the tool and its children
-//!   ensure_directory(path)                               -> create_dir_all
+//!   ossian_tools_layout(enginePath)                -> where everything is (absolute paths)
+//!   run_ossian_tool(runId, enginePath, args, cwd)  -> starts OssianTools.exe with `args`
+//!                                                     (args[0] is the subcommand: cook | build | clean | list | verify)
+//!   cancel_ossian_tool(runId)                      -> kills the tool and its children
+//!   ensure_directory(path)                         -> create_dir_all
 //!
 //! Output is streamed to the webview as `tool://event`:
 //!   { "runId": 1, "type": "stdout" | "stderr", "line": "..." }
 //!   { "runId": 1, "type": "exit", "code": 0 }
-//! The tools are started with --json by the Angular side, so stdout lines are JSON events.
+//! The Angular side starts the tool with --json, so stdout lines are JSON events.
 
 use std::io::{BufRead, BufReader, Read};
 use std::path::{Path, PathBuf};
@@ -30,6 +30,8 @@ use tauri::{AppHandle, Emitter};
 
 const ENGINE_EXE: &str = "OssianForge.exe";
 const INI_NAME: &str = "Ossian.ini";
+const TOOLS_FOLDER: &str = "OssianTools";
+const TOOLS_EXE: &str = "OssianTools.exe";
 
 #[cfg(windows)]
 const CREATE_NO_WINDOW: u32 = 0x0800_0000;
@@ -43,8 +45,7 @@ pub struct ToolsLayout {
     engine_dir: String,
     engine_exe: String,
     ossian_ini: String,
-    cooker_exe: Option<String>,
-    builder_exe: Option<String>,
+    tools_exe: Option<String>,
 }
 
 // ── layout ─────────────────────────────────────────────────────────────────
@@ -81,8 +82,8 @@ fn resolve_engine(engine_path: &str) -> Result<(PathBuf, PathBuf), String> {
     }
 }
 
-fn tool_exe(engine_dir: &Path, folder: &str, exe: &str) -> Option<PathBuf> {
-    let p = engine_dir.join(folder).join(exe);
+fn tools_exe(engine_dir: &Path) -> Option<PathBuf> {
+    let p = engine_dir.join(TOOLS_FOLDER).join(TOOLS_EXE);
     p.is_file().then_some(p)
 }
 
@@ -95,8 +96,7 @@ pub fn ossian_tools_layout(engine_path: String) -> Result<ToolsLayout, String> {
     let (dir, exe) = resolve_engine(&engine_path)?;
     Ok(ToolsLayout {
         ossian_ini: s(&dir.join(INI_NAME)),
-        cooker_exe: tool_exe(&dir, "OssianCooker", "OssianCooker.exe").map(|p| s(&p)),
-        builder_exe: tool_exe(&dir, "OssianBuilder", "OssianBuilder.exe").map(|p| s(&p)),
+        tools_exe: tools_exe(&dir).map(|p| s(&p)),
         engine_dir: s(&dir),
         engine_exe: s(&exe),
     })
@@ -114,19 +114,14 @@ pub fn run_ossian_tool(
     app: AppHandle,
     run_id: u64,
     engine_path: String,
-    tool: String,
     args: Vec<String>,
     cwd: Option<String>,
 ) -> Result<(), String> {
     let (dir, _) = resolve_engine(&engine_path)?;
 
-    // Only the two known tools can be started from the webview, never an arbitrary exe.
-    let found = match tool.as_str() {
-        "cooker" => tool_exe(&dir, "OssianCooker", "OssianCooker.exe"),
-        "builder" => tool_exe(&dir, "OssianBuilder", "OssianBuilder.exe"),
-        other => return Err(format!("Unknown tool '{}'", other)),
-    };
-    let exe = found.ok_or_else(|| format!("{} was not found under {}", tool, dir.display()))?;
+    // Only OssianTools next to the engine can be started from the webview, never an arbitrary exe.
+    let exe = tools_exe(&dir)
+        .ok_or_else(|| format!("{} was not found under {}", TOOLS_EXE, dir.join(TOOLS_FOLDER).display()))?;
 
     let work_dir = match cwd {
         Some(c) => PathBuf::from(c),
@@ -213,7 +208,7 @@ fn pump<R: Read + Send + 'static>(
     })
 }
 
-/// Kills the tool and everything it started (the builder runs the cooker as a child process).
+/// Kills the tool and any process tree it started (taskkill /T).
 #[tauri::command]
 pub fn cancel_ossian_tool(run_id: u64) -> bool {
     let child = RUNS
@@ -244,7 +239,7 @@ pub fn cancel_ossian_tool(run_id: u64) -> bool {
 }
 
 
-/// Starts a built game (the exe OssianBuilder reported). Not tracked: the game outlives the manager.
+/// Starts a built game (the exe OssianTools reported). Not tracked: the game outlives the manager.
 #[tauri::command]
 pub fn launch_game(exe_path: String) -> Result<(), String> {
     let exe = PathBuf::from(&exe_path);

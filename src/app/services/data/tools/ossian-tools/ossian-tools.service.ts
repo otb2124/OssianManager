@@ -2,16 +2,14 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { invoke } from '@tauri-apps/api/core';
 import { AppConfigService } from '../../app-config/app-config.service';
 
-/** Absolute paths of the engine and its side tools, resolved by Rust (tools.rs). */
+/** Absolute paths of the engine and its side tool, resolved by Rust (tools.rs). */
 export interface ToolsLayout {
   engineDir: string;
   engineExe: string;
   /** <engineDir>\Ossian.ini: what the engine reads at startup (cwd = exe folder when spawned). */
   ossianIni: string;
-  /** null when <engineDir>\OssianCooker\OssianCooker.exe does not exist. */
-  cookerExe: string | null;
-  /** null when <engineDir>\OssianBuilder\OssianBuilder.exe does not exist. */
-  builderExe: string | null;
+  /** null when <engineDir>\OssianTools\OssianTools.exe does not exist. */
+  toolsExe: string | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -20,8 +18,7 @@ export class OssianToolsService {
 
   private readonly _layout = signal<ToolsLayout | null>(null);
   readonly layout = this._layout.asReadonly();
-  readonly hasCooker = computed(() => !!this._layout()?.cookerExe);
-  readonly hasBuilder = computed(() => !!this._layout()?.builderExe);
+  readonly hasTools = computed(() => !!this._layout()?.toolsExe);
 
   /** Re-reads the layout from disk (the engine folder may have been rebuilt). Null when it cannot be found. */
   async resolve(): Promise<ToolsLayout | null> {

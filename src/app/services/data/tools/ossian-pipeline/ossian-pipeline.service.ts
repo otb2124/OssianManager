@@ -11,9 +11,11 @@ import { ToolRunnerService, ToolRunResult } from '../tool-runner/tool-runner.ser
 
 const MANIFEST = 'ConfigFiles/Core/resources.json';
 const PAK_NAME = 'Content.pak';
+/** A Tools.ini in the project folder owns the app identity (name, icon, redist...) for `build`. */
+const TOOLS_INI = 'Tools.ini';
 
 export interface BuildRequest {
-  /** Defaults to the project title (ignored when the project has its own Build.ini). */
+  /** Defaults to the project title (ignored when the project has its own Tools.ini). */
   name?: string;
   version?: string;
   company?: string;
@@ -42,10 +44,11 @@ const fmtBytes = (bytes: number): string =>
 const baseName = (path: string): string => path.replace(/^.*[\\/]/, '');
 
 /**
- * Connects the open Ossian project to the engine's side tools:
- *  - Ossian.ini  -> the engine reads the project's Content folder (raw mode)
- *  - OssianCooker  -> <target>\Content.pak
- *  - OssianBuilder -> <target>\<exe name>\ (engine + pak + branded exe)
+ * Connects the open Ossian project to the engine's side tool:
+ *  - Ossian.ini                -> the engine reads the project's Content folder (raw mode)
+ *  - OssianTools cook          -> <target>\Content.pak
+ *  - OssianTools build         -> <target>\<exe name>\ (engine + pak + branded exe; cooks in-process)
+ *  - OssianTools clean build   -> removes <target>\<exe name>\
  * Folders come from the project's .ossian.project.json (resDirectory / targetDirectory).
  */
 @Injectable({ providedIn: 'root' })
@@ -57,7 +60,7 @@ export class OssianPipelineService {
   private readonly ossianIni = inject(OssianIniService);
   private readonly runner = inject(ToolRunnerService);
 
-  /** Live progress of the running tool (null when idle). */
+  /** Live progress of the running command (null when idle). */
   readonly status = this.runner.status;
   readonly busy = this.runner.running;
 
@@ -79,17 +82,16 @@ export class OssianPipelineService {
     console.log(`[Pipeline] ${layout.ossianIni} ${changed ? 'updated' : 'already up to date'} -> ${contentDir}`);
   }
 
-  // ── cooker ───────────────────────────────────────────────────────────────
+  // ── cook ─────────────────────────────────────────────────────────────────
 
   async cook(): Promise<ToolRunResult | null> {
     return this.execute('Cook content', async () => {
       const { projectDir, contentDir, targetDir } = this.paths();
       await this.assertContent(contentDir);
-      const layout = await this.requireTool('cooker');
+      const layout = await this.requireTools();
       await this.ensureDir(targetDir);
 
-      return this.runner.run('cooker', [
-        'cook',
+      return this.runner.run('cook', [
         '--content', contentDir,
         '--out', joinPath(targetDir, PAK_NAME),
         '--manifest', MANIFEST,
@@ -105,26 +107,31 @@ export class OssianPipelineService {
     });
   }
 
-  // ── builder ──────────────────────────────────────────────────────────────
+  // ── build ────────────────────────────────────────────────────────────────
 
   async build(request: BuildRequest = {}): Promise<ToolRunResult | null> {
     return this.execute('Build', async () => {
       const { projectDir, contentDir, targetDir, record } = this.paths();
       await this.assertContent(contentDir);
-      await this.requireTool('builder');
+      const layout = await this.requireTools();
       await this.ensureDir(targetDir);
 
-      const args = ['build', '--content', contentDir, '--out', targetDir, '--json'];
+      const args = [
+        '--content', contentDir,
+        '--out', targetDir,
+        '--template', layout.engineDir,
+        '--json',
+      ];
 
-      // A Build.ini in the project folder owns the app identity; otherwise it comes from the project record.
-      const projectHasBuildIni = await this.exists(joinPath(projectDir, 'Build.ini'));
-      if (request.name || !projectHasBuildIni) {
+      // A Tools.ini in the project folder owns the app identity; otherwise it comes from the project record.
+      const projectHasToolsIni = await this.exists(joinPath(projectDir, TOOLS_INI));
+      if (request.name || !projectHasToolsIni) {
         args.push('--name', this.clean(request.name ?? record.title));
       }
       if (request.version) args.push('--version', request.version);
       if (request.company) args.push('--company', this.clean(request.company));
       if (request.copyright) args.push('--copyright', this.clean(request.copyright));
-      const description = request.description ?? (projectHasBuildIni ? undefined : record.description);
+      const description = request.description ?? (projectHasToolsIni ? undefined : record.description);
       if (description) args.push('--description', this.clean(description));
       if (request.icon) args.push('--icon', request.icon);
       if (request.noConsole) args.push('--no-console');
@@ -132,7 +139,7 @@ export class OssianPipelineService {
       if (request.force) args.push('--force');
       if (request.allowCookErrors) args.push('--allow-errors');
 
-      const result = await this.runner.run('builder', args, { title: 'Building game', cwd: projectDir });
+      const result = await this.runner.run('build', args, { title: 'Building game', cwd: projectDir });
 
       const done = result.done;
       if (result.ok && done && typeof done['exe'] === 'string') {
@@ -168,14 +175,14 @@ export class OssianPipelineService {
   async cleanBuild(): Promise<ToolRunResult | null> {
     return this.execute('Clean build', async () => {
       const { projectDir, targetDir, record } = this.paths();
-      await this.requireTool('builder');
+      await this.requireTools();
 
       const built = this._lastBuild();
-      const args = ['clean', '--out', targetDir, '--json'];
+      const args = ['build', '--out', targetDir, '--json'];   // `clean build`: the first argument is the target
       if (built) args.push('--exe-name', baseName(built.exe).replace(/\.exe$/i, ''));
       args.push('--name', this.clean(record.title));
 
-      const result = await this.runner.run('builder', args, { title: 'Cleaning build output', cwd: projectDir });
+      const result = await this.runner.run('clean', args, { title: 'Cleaning build output', cwd: projectDir });
       if (result.ok) this._lastBuild.set(null);
       return result;
     }, () => 'Build output removed');
@@ -201,13 +208,11 @@ export class OssianPipelineService {
     return { projectDir, contentDir, targetDir, record };
   }
 
-  private async requireTool(kind: 'cooker' | 'builder') {
+  private async requireTools() {
     const layout = await this.tools.resolve();   // re-read: the engine folder may have been rebuilt
     if (!layout) throw new Error('The engine was not found. Check the engine path in Tools > Settings > Engine.');
-
-    const exe = kind === 'cooker' ? layout.cookerExe : layout.builderExe;
-    if (!exe) {
-      throw new Error(`Ossian${kind === 'cooker' ? 'Cooker' : 'Builder'} was not found next to the engine (${layout.engineDir}).`);
+    if (!layout.toolsExe) {
+      throw new Error(`OssianTools was not found next to the engine (${layout.engineDir}\\OssianTools).`);
     }
     return layout;
   }
@@ -239,7 +244,7 @@ export class OssianPipelineService {
     return invoke<void>('ensure_directory', { path });
   }
 
-  /** The builder rejects double quotes in names and a single quoted ini value can't hold them. */
+  /** The tool rejects double quotes in names and a single quoted ini value can't hold them. */
   private clean(text: string): string {
     return text.replace(/"/g, "'").trim();
   }
