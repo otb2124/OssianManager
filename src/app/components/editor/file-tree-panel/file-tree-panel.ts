@@ -10,6 +10,7 @@ import { DialogService } from '../../../services/persistence/dialog.service';
 import { NotificationService } from '../../../services/notifications/notification.service';
 import { normalizePath } from '../../../services/utils/path.util';
 import { TreeControl, AppTreeNode, TreeControlConfig } from '../../shared/tree-control/tree-control';
+import { EditorTabsService } from '../../../services/editor/editor-tabs/editor-tabs.service';
 
 export type PanelNodeData = { kind: 'fs'; entry: FsEntry };
 
@@ -26,7 +27,8 @@ interface Crumb { label: string; path: string; }
 export class FileExplorerPanel {
   protected readonly explorerService = inject(FileExplorerService);
   private readonly dialogService = inject(DialogService);
-  private readonly notifications = inject(NotificationService);
+  private readonly notifications = inject(NotificationService)
+  private readonly editorTabs = inject(EditorTabsService);;
 
   private readonly crumbsEl = viewChild<ElementRef<HTMLElement>>('crumbsBar');
   private loadToken = 0;
@@ -134,7 +136,9 @@ export class FileExplorerPanel {
   }
 
   onNodeSelect(node: PanelNode): void {
-    if (node.data) this.explorerService.select(node.data.entry);
+    if (!node.data) return;
+    this.explorerService.select(node.data.entry);
+    this.editorTabs.openFile(node.data.entry);
   }
 
   private toFsNode(entry: FsEntry): PanelNode {

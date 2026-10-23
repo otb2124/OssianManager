@@ -12,6 +12,7 @@ import { EntryInfo, FsEntry, PersistenceService } from '../../../services/persis
 import { ResourceCatalogService } from '../../../services/data/resources/resource-catalog.service';
 import { NotificationService } from '../../../services/notifications/notification.service';
 import { RESOURCE_GROUP_META, ResourceEntry, resourceGroupOf } from '../../../model/resource.model';
+import { EditorTabsService } from '../../../services/editor/editor-tabs/editor-tabs.service';
 
 export interface InfoRow {
   label: string;
@@ -132,6 +133,7 @@ export class FileInspectorPanel {
   protected readonly catalog = inject(ResourceCatalogService);
   private readonly persistence = inject(PersistenceService);
   private readonly notifications = inject(NotificationService);
+  private readonly editorTabs = inject(EditorTabsService);
 
   protected readonly target = this.explorerService.inspected;
   protected readonly fsEntry = computed<FsEntry | null>(() => {
@@ -339,13 +341,12 @@ export class FileInspectorPanel {
   }
 
   protected openFile(info: EntryInfo): void {
-    this.explorerService.select({
-      name: info.name,
-      path: info.path,
-      isDirectory: info.isDirectory,
-      size: info.size,
+    const entry: FsEntry = {
+      name: info.name, path: info.path, isDirectory: info.isDirectory, size: info.size,
       modified: info.modifiedMs != null ? String(Math.floor(info.modifiedMs / 1000)) : null,
-    });
+    };
+    this.explorerService.select(entry);
+    this.editorTabs.openFile(entry);
   }
 
   protected async reveal(path: string): Promise<void> {

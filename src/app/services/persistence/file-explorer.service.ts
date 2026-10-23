@@ -3,6 +3,7 @@ import { PersistenceService, FsEntry } from '../persistence/persistence.service'
 import { ProjectService } from '../data/projects/project.service';
 import { ResourceEntry } from '../../model/resource.model';
 import { normalizePath, parentPath, samePath } from '../utils/path.util';
+import { Subject, tap } from 'rxjs';
 
 export type InspectTarget =
   | { kind: 'fs'; entry: FsEntry }
@@ -47,6 +48,8 @@ export class FileExplorerService {
     const root = this._rootPath();
     return !!home && !!root && !samePath(home, root);
   });
+
+  readonly renamed$ = new Subject<{ from: string; to: string }>();
 
   constructor() {
     // Opening another project starts a fresh history at its content folder.
@@ -135,6 +138,8 @@ export class FileExplorerService {
   }
 
   rename(oldPath: string, newName: string) {
-    return this.persistence.rename(oldPath, newName);
+    return this.persistence.rename(oldPath, newName).pipe(
+      tap(to => this.renamed$.next({ from: oldPath, to })),
+    );
   }
 }

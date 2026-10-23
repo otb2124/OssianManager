@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AppConfigService } from '../../services/data/app-config/app-config.service';
 import { ProjectService } from '../../services/data/projects/project.service';
 import { EngineIpcService } from '../../services/engine/ipc/engine-ipc';
+import { EditorTabsService } from '../../services/editor/editor-tabs/editor-tabs.service';
 
 @Component({
   selector: 'app-graph-page',
@@ -13,7 +14,7 @@ import { EngineIpcService } from '../../services/engine/ipc/engine-ipc';
   styleUrl: './graph-page.css',
 })
 export class GraphPage {
-  private router = inject(Router);
+  private readonly editorTabs = inject(EditorTabsService);
 
   config: GraphConfig = SCENE_GRAPH_CONFIG;
   model: GraphModel = SCENE_GRAPH_MODEL;
@@ -30,7 +31,7 @@ export class GraphPage {
 
   protected openScene(node: GraphNode): void {
     if (node.type !== 'scene') return;
-    this.router.navigate(['/project', 'scene', node.id]);
+    this.editorTabs.openScene(node.id, node.name ?? node.id);
   }
 }
 

@@ -3,7 +3,7 @@ import {
   OnDestroy, Type, ViewEncapsulation, createComponent, inject, input, output, viewChild,
 } from '@angular/core';
 import {
-  AddPanelOptions, DockviewApi, GroupPanelPartInitParameters, IContentRenderer, createDockview,
+  AddPanelOptions, DockviewApi, GroupPanelPartInitParameters, IContentRenderer, PanelUpdateEvent, createDockview,
   themeAbyss,
 } from 'dockview-core';
 
@@ -45,6 +45,12 @@ class AngularPanelRenderer implements IContentRenderer {
     this.appRef.attachView(this.ref.hostView);
   }
 
+  update(event: PanelUpdateEvent): void {
+    for (const [key, value] of Object.entries(event.params ?? {})) {
+      this.ref?.setInput(key, value);
+    }
+  }
+
   dispose(): void {
     if (!this.ref) return;
     this.appRef.detachView(this.ref.hostView);
@@ -63,6 +69,7 @@ class AngularPanelRenderer implements IContentRenderer {
 })
 export class DockGrid implements AfterViewInit, OnDestroy {
   readonly panels = input.required<DockPanelDef[]>();
+  readonly components = input<Record<string, Type<unknown>>>({});
   /** When set, the layout is saved to localStorage under this key and restored on start. */
   readonly layoutKey = input<string | null>(null);
   readonly ready = output<DockviewApi>();
@@ -80,9 +87,9 @@ export class DockGrid implements AfterViewInit, OnDestroy {
       theme: themeAbyss,
       disableFloatingGroups: true, // see the note on the native viewport below
       createComponent: ({ name }) => {
-        const def = this.panels().find(p => p.id === name);
-        if (!def) throw new Error(`[DockGrid] Unknown panel "${name}"`);
-        return new AngularPanelRenderer(def.component, this.injector, this.appRef);
+        const type = this.panels().find(p => p.id === name)?.component ?? this.components()[name];
+        if (!type) throw new Error(`[DockGrid] Unknown panel "${name}"`);
+        return new AngularPanelRenderer(type, this.injector, this.appRef);
       },
     });
 

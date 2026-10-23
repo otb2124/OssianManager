@@ -1,1 +1,5 @@
-<app-dock-grid class="block h-full w-full" [panels]="panels" layoutKey="ossian.scene.layout" />
+<app-dock-grid class="block h-full w-full"
+               [panels]="panels"
+               [components]="components"
+               layoutKey="ossian.sceneEditor.layout"
+               (ready)="onReady($event)" />

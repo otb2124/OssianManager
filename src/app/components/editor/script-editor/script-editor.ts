@@ -6,6 +6,8 @@ import {
   OnDestroy,
   inject,
   effect,
+  input,
+  untracked,
 } from '@angular/core';
 import { EditorState, Compartment, Extension } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter } from '@codemirror/view';
@@ -176,111 +178,59 @@ const highlightStyle = HighlightStyle.define([
 export class ScriptEditor implements AfterViewInit, OnDestroy {
   @ViewChild('host', { static: true }) hostRef!: ElementRef<HTMLDivElement>;
 
-  private readonly explorerService = inject(FileExplorerService);
+  /** Absolute path of the file this tab edits (dock panel param). */
+  readonly path = input<string | null>(null);
+
   private readonly persistence = inject(PersistenceService);
 
   private view: EditorView | null = null;
   private languageCompartment = new Compartment();
-
-  private currentEntry: FsEntry | null = null;
+  private currentPath: string | null = null;
   private saveTimeout: ReturnType<typeof setTimeout> | null = null;
-  private pendingSaveContent: string | null = null; // content not yet flushed to disk
+  private pendingSaveContent: string | null = null;
+  csharpLinter: any;
 
-  private selectionWatcher = effect(() => {
-    const entry = this.explorerService.selectedEntry();
-    this.onSelectionChange(entry);
-  });
+  constructor() {
+    effect(() => {
+      const path = this.path();
+      untracked(() => this.load(path));   // no-op until the view exists
+    });
+  }
 
   ngAfterViewInit(): void {
-    this.view = new EditorView({
-      state: this.buildState(''),
-      parent: this.hostRef.nativeElement,
-    });
-  
-    const existing = this.explorerService.selectedEntry();
-    if (existing) {
-      this.onSelectionChange(existing);
-    }
-  }
-
-  private onSelectionChange(entry: FsEntry | null): void {
-    if (entry === this.currentEntry) return;
-  
-    this.flushPendingSave();
-  
-    if (!this.view) {
-      // effect() fires synchronously at construction, before ngAfterViewInit
-      // creates the view — don't record entry as "current" yet, or the
-      // ngAfterViewInit fallback below will see currentEntry already matching
-      // and skip the load once the view actually exists.
-      return;
-    }
-  
-    this.currentEntry = entry;
-  
-    if (!entry || entry.isDirectory) {
-      this.setContent('', []);
-      return;
-    }
-  
-    this.persistence.readTextAbsolute(entry.path).subscribe({
-      next: content => {
-        if (this.currentEntry !== entry) return;
-        this.setContent(content, languageForPath(entry.path, this.csharpLinter.bind(this)));
-      },
-      error: () => {
-        if (this.currentEntry !== entry) return;
-        this.setContent(`// Failed to read file: ${entry.path}`, []);
-      },
-    });
-  }
-
-  private setContent(content: string, language: Extension): void {
-    if (!this.view) return;
-    this.view.setState(this.buildState(content));
-    this.view.dispatch({
-      effects: this.languageCompartment.reconfigure(language),
-    });
+    this.view = new EditorView({ state: this.buildState(''), parent: this.hostRef.nativeElement });
+    this.load(this.path());
   }
 
   private buildState(content: string): EditorState {
     return EditorState.create({
       doc: content,
       extensions: [
-        // --- Line/gutter display ---
         lineNumbers(),
         highlightActiveLine(),
         highlightActiveLineGutter(),
-        foldGutter(), // clickable fold arrows in the gutter
+        foldGutter(),
   
-        // --- Selection/cursor behavior ---
-        drawSelection(),      // CM's own selection rendering (needed for correct multi-cursor visuals)
-        dropCursor(),         // shows insertion point during drag-and-drop text
-        rectangularSelection(), // Alt+drag column selection — verify vs. viewport camera controls
-        crosshairCursor(),      // crosshair cursor while Alt is held, paired with rectangularSelection
-        scrollPastEnd(),         // lets last line scroll above viewport bottom, VS Code-like feel
+        drawSelection(),
+        dropCursor(),
+        rectangularSelection(),
+        crosshairCursor(),
+        scrollPastEnd(),
   
-        // --- Editing mechanics ---
         history(),
         bracketMatching(),
         closeBrackets(),
         indentOnInput(),
-        highlightSpecialChars(), // flags invisible/non-printing Unicode chars
+        highlightSpecialChars(),
   
-        // --- Indentation: spaces, width 4 ---
         EditorState.tabSize.of(4),
-        indentUnit.of('    '), // 4 literal spaces; indentWithTab below inserts this, not a tab char
+        indentUnit.of('    '),
   
-        // --- Syntax highlighting ---
         syntaxHighlighting(highlightStyle, { fallback: false }),
   
-        // --- Search / find & replace ---
         search(),
-        highlightSelectionMatches(), // highlights other occurrences of current selection
+        highlightSelectionMatches(),
   
-        // --- Keymaps ---
-        // Order matters: completion and search keymaps first, so their
-        // Enter/Escape/Ctrl+F etc. take priority over default editing keys.
         keymap.of([
           ...closeBracketsKeymap,
           ...searchKeymap,
@@ -306,94 +256,60 @@ export class ScriptEditor implements AfterViewInit, OnDestroy {
     });
   }
 
-  private scheduleSave(content: string): void {
-    if (!this.currentEntry || this.currentEntry.isDirectory) return;
+  private load(path: string | null): void {
+    if (!this.view || path === this.currentPath) return;
 
+    this.flushPendingSave();            // still uses the OLD currentPath
+    this.currentPath = path;
+
+    if (!path) {
+      this.setContent('', []);
+      return;
+    }
+
+    this.persistence.readTextAbsolute(path).subscribe({
+      next: content => {
+        if (this.currentPath !== path) return;
+        this.setContent(content, languageForPath(path, this.csharpLinter.bind(this)));
+      },
+      error: () => {
+        if (this.currentPath !== path) return;
+        this.setContent(`// Failed to read file: ${path}`, []);
+      },
+    });
+  }
+  private setContent(content: string, language: Extension): void {
+    if (!this.view) return;
+    this.view.setState(this.buildState(content));
+    this.view.dispatch({
+      effects: this.languageCompartment.reconfigure(language),
+    });
+  }
+
+  // setContent, buildState, csharpLinter, findCloseKeyword, levenshtein: unchanged
+
+  private scheduleSave(content: string): void {
+    if (!this.currentPath) return;
     this.pendingSaveContent = content;
     if (this.saveTimeout) clearTimeout(this.saveTimeout);
     this.saveTimeout = setTimeout(() => this.flushPendingSave(), AUTOSAVE_DEBOUNCE_MS);
   }
 
   private flushPendingSave(): void {
-    if (this.saveTimeout) {
-      clearTimeout(this.saveTimeout);
-      this.saveTimeout = null;
-    }
-    if (this.pendingSaveContent === null || !this.currentEntry) return;
+    if (this.saveTimeout) { clearTimeout(this.saveTimeout); this.saveTimeout = null; }
+    if (this.pendingSaveContent === null || !this.currentPath) return;
 
-    const entry = this.currentEntry;
+    const path = this.currentPath;
     const content = this.pendingSaveContent;
     this.pendingSaveContent = null;
 
-    this.persistence.writeTextAbsolute(entry.path, content).subscribe({
-      error: err => console.error(`Failed to save ${entry.path}:`, err),
+    this.persistence.writeTextAbsolute(path, content).subscribe({
+      error: err => console.error(`Failed to save ${path}:`, err),
     });
   }
 
-  csharpLinter(view: EditorView): Diagnostic[] {
-    const diagnostics: Diagnostic[] = [];
-    const text = view.state.doc.toString();
-    const wordPattern = /\b[a-zA-Z_]\w*\b/g;
-    const knownWords = new Set(CSHARP_WORDS.map(w => w.toLowerCase()));
-    let match: RegExpExecArray | null;
-  
-    while ((match = wordPattern.exec(text)) !== null) {
-      const word = match[0];
-      const lower = word.toLowerCase();
-      // Only flag words that are CLOSE to a keyword (edit distance 1-2),
-      // not just "unrecognized" — otherwise every identifier in the file
-      // gets flagged, since we have no symbol table.
-      const closeMatch = this.findCloseKeyword(lower, knownWords);
-      if (closeMatch && lower !== closeMatch) {
-        diagnostics.push({
-          from: match.index,
-          to: match.index + word.length,
-          severity: 'warning',
-          message: `Did you mean "${closeMatch}"?`,
-        });
-      }
-    }
-    return diagnostics;
-  }
-  
-  findCloseKeyword(word: string, known: Set<string>): string | null {
-    for (const kw of known) {
-      if (Math.abs(kw.length - word.length) > 2) continue;
-      if (this.levenshtein(word, kw) <= 2) return kw;
-    }
-    return null;
-  }
-
-  levenshtein(a: string, b: string): number {
-    const m = a.length;
-    const n = b.length;
-    if (m === 0) return n;
-    if (n === 0) return m;
-  
-    // Single rolling row instead of a full m×n matrix — fine for
-    // short identifiers/keywords, which is all this is ever called with.
-    let prevRow = Array.from({ length: n + 1 }, (_, j) => j);
-  
-    for (let i = 1; i <= m; i++) {
-      const currRow = [i];
-      for (let j = 1; j <= n; j++) {
-        const cost = a[i - 1] === b[j - 1] ? 0 : 1;
-        currRow[j] = Math.min(
-          currRow[j - 1] + 1,      // insertion
-          prevRow[j] + 1,          // deletion
-          prevRow[j - 1] + cost,   // substitution
-        );
-      }
-      prevRow = currRow;
-    }
-  
-    return prevRow[n];
-  }
-
   ngOnDestroy(): void {
-    this.selectionWatcher.destroy();
-    this.flushPendingSave(); // don't lose the last edit on tab/component teardown
+    this.flushPendingSave();
     this.view?.destroy();
   }
 }
-

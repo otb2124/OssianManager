@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, inject, input } from '@angular/core';
 import { EngineBridgeService } from '../../../services/engine/bridge/engine-bridge.service';
 
 @Component({
@@ -9,66 +9,66 @@ import { EngineBridgeService } from '../../../services/engine/bridge/engine-brid
 export class Viewport3D implements AfterViewInit, OnDestroy {
   @ViewChild('container') container?: ElementRef<HTMLDivElement>;
 
-  private engineBridgeService = inject(EngineBridgeService);
-  private resizeObserver?: ResizeObserver;
+  /** Scene this tab belongs to (dock panel param). */
+  readonly sceneId = input<string | null>(null);
 
+  private readonly bridge = inject(EngineBridgeService);
+  private resizeObserver?: ResizeObserver;
   private raf = 0;
   private lastKey = '';
-
   private visible = false;
-  
+  private pendingShow = false;
+
   private readonly track = () => {
     const el = this.container?.nativeElement;
     if (el) {
       const r = el.getBoundingClientRect();
-      // Hidden tab (display:none) or detached element => 0x0
       const shown = el.isConnected && r.width > 0 && r.height > 0;
-  
+
       if (shown) {
-        const key = `${r.left}|${r.top}|${r.width}|${r.height}`;
-        if (key !== this.lastKey) { this.lastKey = key; this.updateBounds(); }
-        if (!this.visible) { this.visible = true; void this.engineBridgeService.setVisibility(true); }
+        if (!this.visible) {                       // hidden -> shown: take over the engine window
+          this.visible = true;
+          this.lastKey = '';
+          this.pendingShow = true;
+          this.bridge.claimViewport(this);
+        }
+        if (this.bridge.isViewportOwner(this)) {
+          const key = `${r.left}|${r.top}|${r.width}|${r.height}`;
+          if (key !== this.lastKey) { this.lastKey = key; this.updateBounds(); }
+          if (this.pendingShow) {                  // bounds first, then show: no flash at the old position
+            this.pendingShow = false;
+            void this.bridge.setVisibility(true);
+          }
+        }
       } else if (this.visible) {
         this.visible = false;
-        this.lastKey = ''; // resend bounds when it comes back
-        void this.engineBridgeService.setVisibility(false);
+        this.pendingShow = false;
+        this.lastKey = '';
+        this.bridge.releaseViewport(this);
       }
     }
     this.raf = requestAnimationFrame(this.track);
   };
 
   async ngAfterViewInit(): Promise<void> {
-
     this.raf = requestAnimationFrame(this.track);
-    // 2. Attach resize tracking once DOM container exists
     if (this.container?.nativeElement) {
       this.resizeObserver = new ResizeObserver(() => this.updateBounds());
       this.resizeObserver.observe(this.container.nativeElement);
-
-      // Wait 1 animation frame for browser layout calculation after @switch insertion
-      requestAnimationFrame(() => {
-        this.updateBounds();
-      });
-    } else {
-      console.warn('[Viewport3D] #container element not found in DOM.');
     }
   }
 
-  async ngOnDestroy(): Promise<void> {
-    console.log('[Viewport3D] Component destroyed. Hiding engine...');
+  ngOnDestroy(): void {
     this.resizeObserver?.disconnect();
     cancelAnimationFrame(this.raf);
-    await this.engineBridgeService.setVisibility(false);
+    this.bridge.releaseViewport(this);
   }
 
   private updateBounds(): void {
-    if (!this.container?.nativeElement) return;
-
+    if (!this.container?.nativeElement || !this.bridge.isViewportOwner(this)) return;
     const rect = this.container.nativeElement.getBoundingClientRect();
-    
-    // Avoid sending 0x0 bounds during layout shifts
     if (rect.width > 0 && rect.height > 0) {
-      this.engineBridgeService.updateBounds(rect.left, rect.top, rect.width, rect.height);
+      void this.bridge.updateBounds(rect.left, rect.top, rect.width, rect.height);
     }
   }
 }

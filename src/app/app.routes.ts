@@ -347,10 +347,11 @@ const allRoutes: RouteChild[] =
         loadComponent: () => import('./pages/scene-graph/graph-page.js').then(m => m.GraphPage)
       },
       {
-        path: 'scene/:id',
-        title: 'Scene',
-        displayBreadcrumb: false,
-        displayModule: false,
+        path: 'scene-editor',
+        title: 'Scene Editor',
+        icon: 'pi pi-objects-column',
+        displayBreadcrumb: true,
+        displayModule: true,
         navigatesModule: true,
         loadComponent: () => import('./pages/scene/scene-page.js').then(m => m.ScenePage)
       },

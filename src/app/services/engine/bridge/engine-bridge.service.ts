@@ -10,7 +10,7 @@ import { NotificationService } from '../../notifications/notification.service';
 export class EngineBridgeService {
   private readonly appConfig = inject(AppConfigService);
   private readonly notifications = inject(NotificationService);
-
+  private viewportOwner: object | null = null;
   /**
    * Spawns the C# engine process. `path` defaults to `engineProjectPath` from app.json, which can be
    * the engine executable itself or a folder (the Rust side resolves the executable inside it).
@@ -63,5 +63,13 @@ export class EngineBridgeService {
 
   load(): Observable<boolean> {
     return of(true);
+  }
+
+  claimViewport(owner: object): void { this.viewportOwner = owner; }
+  isViewportOwner(owner: object): boolean { return this.viewportOwner === owner; }
+  releaseViewport(owner: object): void {
+    if (this.viewportOwner !== owner) return;   // another viewport already took over
+    this.viewportOwner = null;
+    void this.setVisibility(false);
   }
 }
