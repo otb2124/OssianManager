@@ -1,4 +1,4 @@
-import { FieldConfig } from '../components/field-list/field-list';
+import { FieldConfig } from '../components/fields/field-list/field-list';
 
 export interface SocketDef {
   id: string;            // unique within the node type

@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { PersistenceService } from '../../persistence/persistence.service';
+import { PersistenceService } from '../persistence.service';
 
 export interface IniEdit {
   section: string;

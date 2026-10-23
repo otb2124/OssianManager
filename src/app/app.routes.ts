@@ -41,7 +41,7 @@ const allRoutes: RouteChild[] =
         title: 'New Project',
         displayModule: true,
         windows: ['launcher'],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'projects',
@@ -65,7 +65,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-clock',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/projects/projects-page/projects-page.js').then(m => m.ProjectsPage),
+            loadComponent: () => import('./pages/projects/projects-page.js').then(m => m.ProjectsPage),
             data: { id:"projects-recents" }
           },
           {
@@ -74,7 +74,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-folder',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/projects/projects-page/projects-page.js').then(m => m.ProjectsPage),
+            loadComponent: () => import('./pages/projects/projects-page.js').then(m => m.ProjectsPage),
             data: { id:"projects-my-projects" }
           },
         ]
@@ -84,14 +84,14 @@ const allRoutes: RouteChild[] =
         title: 'Import Project...',
         displayModule: true,
         windows: ['launcher'],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-scan-project',
         title: 'Scan Project...',
         displayModule: true,
         windows: ['launcher'],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-save-project',
@@ -101,7 +101,7 @@ const allRoutes: RouteChild[] =
           { id: 'save_project', shortcut: { key: 's', ctrl: true } },
         ],
         windows: ['editor'],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-save-as-project',
@@ -111,13 +111,13 @@ const allRoutes: RouteChild[] =
           { id: 'save_project_as', shortcut: { key: 's', ctrl: true, shift: true } },
         ],
         windows: ['editor'],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-exit',
         title: 'Exit',
         displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       }
     ]
   },
@@ -132,19 +132,19 @@ const allRoutes: RouteChild[] =
         path: 'action-undo',
         title: 'Undo',
         displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-redo',
         title: 'Redo',
         displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-cut',
         title: 'Cut',
         displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-copy',
@@ -154,43 +154,43 @@ const allRoutes: RouteChild[] =
           { id: 'copy_selection', shortcut: { key: 'c', ctrl: true } },
           { id: 'copy_as_reference', shortcut: { key: 'c', ctrl: true, alt: true } },
         ],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-paste',
         title: 'Paste',
         displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-dublicate',
         title: 'Dublicate',
         displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-delete',
         title: 'Delete',
         displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-select-all',
         title: 'Select All',
         displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-find',
         title: 'Find',
         displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-replace',
         title: 'Replace',
         displayModule: true,
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       }
     ]
   },
@@ -208,7 +208,7 @@ const allRoutes: RouteChild[] =
         actions: [
           { id: 'toggle_file_explorer', shortcut: { key: 'e', ctrl: true, shift: true } },
         ],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-open-inspector',
@@ -217,7 +217,7 @@ const allRoutes: RouteChild[] =
         actions: [
           { id: 'toggle_inspector', shortcut: { key: 'i', ctrl: true, shift: true } },
         ],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-open-console',
@@ -226,7 +226,7 @@ const allRoutes: RouteChild[] =
         actions: [
           { id: 'toggle_console', shortcut: { key: 'y', ctrl: true, shift: true } },
         ],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-open-error-list',
@@ -235,7 +235,7 @@ const allRoutes: RouteChild[] =
         actions: [
           { id: 'toggle_error_list', shortcut: { key: 'm', ctrl: true, shift: true } },
         ],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       }
     ]
   },
@@ -272,7 +272,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cog',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"settings-app" }
           },
           {
@@ -281,7 +281,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-microchip',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"settings-engine" }
           },
           {
@@ -290,7 +290,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-palette',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"settings-theme" }
           },
         ]
@@ -302,7 +302,7 @@ const allRoutes: RouteChild[] =
         displayBreadcrumb: true,
         displayModule: true,
         navigatesModule: true,
-        loadComponent: () => import('./pages/libraries/libraries-page/libraries-page.js').then(m => m.LibrariesPage),
+        loadComponent: () => import('./pages/libraries/libraries-page.js').then(m => m.LibrariesPage),
       },
       {
         path: 'library/:id',
@@ -311,7 +311,7 @@ const allRoutes: RouteChild[] =
         displayBreadcrumb: false,
         displayModule: false,
         navigatesModule: true,
-        loadComponent: () => import('./pages/libraries/library-page/library-page.js').then(m => m.LibraryPage),
+        loadComponent: () => import('./pages/library/library-page.js').then(m => m.LibraryPage),
       },
       {
         path: 'logs',
@@ -320,7 +320,7 @@ const allRoutes: RouteChild[] =
         displayBreadcrumb: true,
         displayModule: true,
         navigatesModule: true,
-        loadComponent: () => import('./pages/logs/logs-page/logs-page.js').then(m => m.LogsPage),
+        loadComponent: () => import('./pages/logs/logs-page.js').then(m => m.LogsPage),
       },
     ]
   },
@@ -344,7 +344,7 @@ const allRoutes: RouteChild[] =
         displayModule: true,
         navigatesModule: true,
         displaySidebar: false,
-        loadComponent: () => import('./pages/graph-page/graph-page.js').then(m => m.GraphPage)
+        loadComponent: () => import('./pages/scene-graph/graph-page.js').then(m => m.GraphPage)
       },
       {
         path: 'scene/:id',
@@ -352,7 +352,7 @@ const allRoutes: RouteChild[] =
         displayBreadcrumb: false,
         displayModule: false,
         navigatesModule: true,
-        loadComponent: () => import('./pages/scene/scene-page/scene-page.js').then(m => m.ScenePage)
+        loadComponent: () => import('./pages/scene/scene-page.js').then(m => m.ScenePage)
       },
       {
         path: 'build',
@@ -374,7 +374,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cog',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"build-details" }
           },
           {
@@ -383,7 +383,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-palette',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"build-startup" }
           },
         ]
@@ -408,7 +408,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-search',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"display-window" }
           },
           {
@@ -417,7 +417,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"display-accessibility" }          },
           {
             path: 'rendering',
@@ -425,7 +425,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"display-rendering" }
           },
           {
@@ -434,7 +434,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"display-cursor" }
           },
           {
@@ -443,7 +443,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"display-physics" }
           },
         ]
@@ -468,7 +468,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-search',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"input-keys" }
           },
           {
@@ -477,7 +477,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"input-axis" }
           },
           {
@@ -486,7 +486,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"input-controllers" }
           },
         ]
@@ -511,7 +511,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-search',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"events-actions" }
           },
           {
@@ -520,7 +520,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-search',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"events-conditions" }
           },
           {
@@ -529,7 +529,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"events-state-machines" }
           },
           {
@@ -538,7 +538,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"events-pronouns" }
           },
         ]
@@ -563,7 +563,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-search',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"language-translations" }
           },
           {
@@ -572,7 +572,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"language-remap" }
           },
           {
@@ -581,7 +581,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"language-formats" }
           },
           {
@@ -590,7 +590,7 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-cloud-upload',
             displayBreadcrumb: true,
             displayModule: true,
-            loadComponent: () => import('./pages/settings/settings-page/settings-page.js').then(m => m.SettingsPage),
+            loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
             data: { id:"language-transnationalization" }
           },
         ]
@@ -611,35 +611,35 @@ const allRoutes: RouteChild[] =
         title: 'Build&Run',
         displayModule: true,
         actions: [{ id: 'build_and_run', shortcut: { key: 'F5' } }],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-build',
         title: 'Build',
         displayModule: true,
         actions: [{ id: 'build_project', shortcut: { key: 'b', ctrl: true, shift: true } }],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-cook',
         title: 'Cook Content',
         displayModule: true,
         actions: [{ id: 'cook_content' }],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-run',
         title: 'Run',
         displayModule: true,
         actions: [{ id: 'run_project', shortcut: { key: 'F5', ctrl: true } }],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       },
       {
         path: 'action-clear',
         title: 'Clear',
         displayModule: true,
         actions: [{ id: 'clean_project' }],
-        loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+        loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
       }
     ]
   },
@@ -647,7 +647,7 @@ const allRoutes: RouteChild[] =
     path: 'empty',
     title: undefined,
     displayBreadcrumb: false,
-    loadComponent: () => import('./components/empty/empty').then(m => m.Empty),
+    loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
   }
 ]
 

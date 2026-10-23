@@ -2,7 +2,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { FieldConfig } from '../../../components/field-list/field-list';
+import { FieldConfig } from '../../../components/fields/field-list/field-list';
 import { RoutesService } from '../../routes/routes.service';
 import { NODE_CONTROL_FIELDS_CONFIG, SETTINGS_PAGE_FIELDS_CONFIG } from '../../../model/fields.config.model';
 import { BackgroundService } from '../background/background.service';

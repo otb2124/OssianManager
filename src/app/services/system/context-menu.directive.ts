@@ -1,6 +1,6 @@
 import { Directive, HostListener, inject, Input } from '@angular/core';
-import { ContextMenuService } from '../../services/system/context-menu.service';
-import { ContextMenuTriggerService } from '../../services/system/context-menu-trigger.service';
+import { ContextMenuService } from './context-menu.service';
+import { ContextMenuTriggerService } from './context-menu-trigger.service';
 
 @Directive({
   selector: '[appContextMenu]',

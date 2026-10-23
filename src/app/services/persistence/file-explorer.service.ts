@@ -1,6 +1,6 @@
 // file-explorer.service.ts
 import { Injectable, inject, signal, effect } from '@angular/core';
-import { PersistenceService, FsEntry } from '../persistence/persistence.service';
+import { PersistenceService, FsEntry } from './persistence.service';
 import { ProjectService } from '../data/projects/project.service';
 import { ResourceEntry } from '../../model/resource.model';
 

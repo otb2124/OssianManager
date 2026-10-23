@@ -2,7 +2,7 @@ import { Injectable, inject, signal, effect } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { AppConfigService } from '../app-config/app-config.service';
+import { AppConfigService } from './app-config.service';
 import { RouteChild, routes } from '../../../app.routes';
 import { RoutesService } from '../../routes/routes.service';
 import { ProjectService } from '../projects/project.service';

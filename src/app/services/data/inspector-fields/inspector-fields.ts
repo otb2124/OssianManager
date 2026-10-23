@@ -1,4 +1,4 @@
-import { FieldConfig, FieldTarget } from "../../../components/field-list/field-list";
+import { FieldConfig, FieldTarget } from "../../../components/fields/field-list/field-list";
 
 
 export interface InspectorSection {

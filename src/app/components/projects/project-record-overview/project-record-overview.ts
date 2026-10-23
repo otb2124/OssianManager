@@ -1,0 +1,36 @@
+import { Component, Input, inject, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { TagModule } from 'primeng/tag';
+import { HydratedProjectRecord } from '../../../model/project-record.model';
+import { ButtonModule } from "primeng/button";
+import { ProjectService } from '../../../services/data/projects/project.service';
+import { FormsModule } from '@angular/forms';
+import { invoke } from '@tauri-apps/api/core';
+
+@Component({
+  selector: 'app-project-record-overview',
+  imports: [CommonModule, TagModule, ButtonModule, FormsModule],
+  templateUrl: './project-record-overview.html',
+})
+export class ProjectRecordOverview {
+  @Input({ required: true }) project!: HydratedProjectRecord;
+  @Input({ required: true }) directoryPath!: string;
+
+  private projectService = inject(ProjectService);
+  private router = inject(Router);
+
+  readonly isActive = computed(() => this.projectService.projectId() === this.project.id);
+
+  async openProject(event: Event): Promise<void> {
+    event.stopPropagation();
+    await invoke('open_editor', { projectId: this.project.id });
+  }
+
+  toggleFavorite(event: Event): void {
+    event.stopPropagation();
+    const updated = { ...this.project, isFavorite: !this.project.isFavorite };
+    this.project = updated;
+    this.projectService.save(updated, this.directoryPath).subscribe();
+  }
+}

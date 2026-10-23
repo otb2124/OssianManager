@@ -1,4 +1,4 @@
-import { FieldConfig } from "../components/field-list/field-list";
+import { FieldConfig } from "../components/fields/field-list/field-list";
 
 export const NODE_CONTROL_FIELDS_CONFIG: FieldConfig[] = [
   {

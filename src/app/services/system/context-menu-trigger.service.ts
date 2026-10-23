@@ -1,6 +1,6 @@
 // context-menu-trigger.service.ts
 import { Injectable } from '@angular/core';
-import { ContextMenu } from '../../components/context-menu/context-menu';
+import { ContextMenu } from '../../components/layout/context-menu/context-menu';
 
 @Injectable({ providedIn: 'root' })
 export class ContextMenuTriggerService {

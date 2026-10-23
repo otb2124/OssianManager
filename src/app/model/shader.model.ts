@@ -1,4 +1,4 @@
-import { FieldConfig } from '../components/field-list/field-list';
+import { FieldConfig } from '../components/fields/field-list/field-list';
 
 export type UniformDef =
   | { type: 'float'; label?: string; default: number; min?: number; max?: number; step?: number }
