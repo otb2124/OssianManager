@@ -1,8 +1,20 @@
 <!-- settings-page.html -->
-<div class="flex flex-col gap-3 p-3 h-full overflow-auto text-xs">
+<div class="flex flex-col gap-6 p-3 h-full overflow-auto text-xs">
 
-  @if (context.currentConfig(); as config) {
-    <app-field-list [fields]="config" [target]="fieldTarget()"></app-field-list>
+  @if (context.currentSections(); as sections) {
+    @for (section of sections; track section.id) {
+      <section class="flex flex-col gap-2">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 pb-1">
+          {{ section.header }}
+        </h2>
+
+        @if (section.fields.length) {
+          <app-field-list [fields]="section.fields" [target]="targetFor(section.id)"></app-field-list>
+        } @else {
+          <div class="text-gray-400 dark:text-gray-500 italic">Nothing to configure yet.</div>
+        }
+      </section>
+    }
   } @else {
     <div class="text-gray-400 dark:text-gray-500 italic">
       No settings configuration for this page.

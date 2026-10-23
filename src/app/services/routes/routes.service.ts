@@ -2,6 +2,11 @@ import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouteChild, routes } from '../../app.routes';
 
+export interface SidebarModel {
+  title: string;
+  items: { route: RouteChild; path: string }[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class RoutesService {
 
@@ -50,7 +55,7 @@ export class RoutesService {
       }
       return null;
     };
-  
+
     return walk(routes, '');
   }
 
@@ -60,11 +65,11 @@ export class RoutesService {
     if (i + parts.length > segments.length) return 0;
     return parts.every((p, k) => p.startsWith(':') || p === segments[i + k]) ? parts.length : 0;
   }
-  
+
   isParam(route: RouteChild): boolean {
     return !!route.path?.split('/').some(p => p.startsWith(':'));
   }
-  
+
   /** Walks the route tree along a url. Returns true if the whole url was matched. */
   private walk(
     url: string,
@@ -73,7 +78,7 @@ export class RoutesService {
     const segments = url.split(/[?#]/)[0].split('/').filter(Boolean);
     let level: RouteChild[] = routes;
     let i = 0;
-  
+
     while (i < segments.length) {
       let match: RouteChild | undefined;
       let n = 0;
@@ -88,13 +93,13 @@ export class RoutesService {
     }
     return true;
   }
-  
+
   findByPath(fullPath: string): RouteChild | null {
     let last: RouteChild | null = null;
     const ok = this.walk(fullPath, m => { last = m; });
     return ok ? (last as RouteChild | null) : null;
   }
-  
+
   getTitleParts(url: string): string[] {
     const parts: string[] = [];
     this.walk(url, (match, consumed) => {
@@ -106,7 +111,7 @@ export class RoutesService {
     });
     return parts;
   }
-  
+
   /** Tab label: the param value for param routes ("terrainScene"), otherwise the route title. */
   getLabel(url: string): string {
     const route = this.findByPath(url);
@@ -114,20 +119,39 @@ export class RoutesService {
     if (!this.isParam(route)) return route.title ?? '';
     return this.getTitleParts(url).at(-1) ?? route.title ?? '';
   }
-  
+
   getSiblings(url: string): RouteChild[] {
     let siblings: RouteChild[] = [];
     this.walk(url, (_m, _c, level) => { siblings = level; });
     return siblings.filter(r => r.displayBreadcrumb && r.path && !r.redirectTo && !this.isParam(r));
   }
-  
-  getSidebarSection(url: string): RouteChild | null {
-    let found: RouteChild | null = null;
-    this.walk(url, m => {
-      if (!m.displaySidebar) return true;   // keep walking
-      found = m;
-      return false;                         // stop
+
+  /**
+   * Sidebar for a url. A route with `displaySidebar` is listed in the sidebar together with
+   * the siblings that have the flag; the sidebar title is the parent route's title.
+   * Returns null when the url is not on a sidebar route.
+   */
+  getSidebar(url: string): SidebarModel | null {
+    let result: SidebarModel | null = null;
+    const prefix: string[] = [];
+    let parent: RouteChild | null = null;
+
+    this.walk(url, (match, consumed, level) => {
+      if (match.displaySidebar) {
+        const base = '/' + prefix.join('/');
+        result = {
+          title: parent?.title ?? '',
+          items: level
+            .filter(r => r.displaySidebar && r.path && !r.redirectTo && !this.isParam(r))
+            .map(r => ({ route: r, path: `${base}/${r.path}` })),
+        };
+        return false; // stop
+      }
+      prefix.push(...consumed);
+      parent = match;
+      return true;
     });
-    return found;
+
+    return result;
   }
 }

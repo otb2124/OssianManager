@@ -339,7 +339,58 @@ export const NODE_CONTROL_FIELDS_CONFIG: FieldConfig[] = [
   }
 ];
 
+/**
+ * One settings page = one route = a list of sections.
+ *
+ * - The page id is the route's `data.id` (see app.routes.ts).
+ * - A section id is a key of SETTINGS_PAGE_FIELDS_CONFIG (fields.config.model.ts), so the
+ *   existing per-topic field configs are reused as they are. A section whose id has no
+ *   field config yet is still shown, with an empty-state message.
+ * - SettingsPage picks the FieldTarget by section id, so 'settings-app' etc. keep working.
+ */
+export interface SettingsSection {
+  id: string;
+  header: string;
+}
 
+export const SETTINGS_PAGES: Record<string, SettingsSection[]> = {
+  // Tools > Settings
+  'settings': [
+    { id: 'settings-app', header: 'App' },
+    { id: 'settings-engine', header: 'Engine' },
+    { id: 'settings-theme', header: 'Theme' },
+  ],
+
+  // Project
+  'build': [
+    { id: 'build-details', header: 'Details' },
+    { id: 'build-startup', header: 'Startup' },
+  ],
+  'display': [
+    { id: 'display-window', header: 'Window' },
+    { id: 'display-accessibility', header: 'Accessibility' },
+    { id: 'display-rendering', header: 'Rendering' },
+    { id: 'display-cursor', header: 'Cursor' },
+    { id: 'display-physics', header: 'Physics' },
+  ],
+  'input': [
+    { id: 'input-keys', header: 'Keys' },
+    { id: 'input-axis', header: 'Axis' },
+    { id: 'input-controllers', header: 'Controllers' },
+  ],
+  'events': [
+    { id: 'events-actions', header: 'Actions' },
+    { id: 'events-conditions', header: 'Conditions' },
+    { id: 'events-state-machines', header: 'State Machines' },
+    { id: 'events-pronouns', header: 'Pronouns' },
+  ],
+  'language': [
+    { id: 'language-translations', header: 'Translations' },
+    { id: 'language-remap', header: 'Remap' },
+    { id: 'language-formats', header: 'Formats' },
+    { id: 'language-transnationalization', header: 'Transnationalization' },
+  ],
+};
 
 export const SETTINGS_PAGE_FIELDS_CONFIG: Record<string, FieldConfig[]> = {
     'settings-app':

@@ -4,10 +4,16 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { FieldConfig } from '../../../components/fields/field-list/field-list';
 import { RoutesService } from '../../routes/routes.service';
-import { NODE_CONTROL_FIELDS_CONFIG, SETTINGS_PAGE_FIELDS_CONFIG } from '../../../model/fields.config.model';
+import { NODE_CONTROL_FIELDS_CONFIG, SETTINGS_PAGE_FIELDS_CONFIG, SETTINGS_PAGES } from '../../../model/fields.config.model';
 import { BackgroundService } from '../background/background.service';
 import { ShaderDef } from '../../../model/shader.model';
 
+/** One header + its fields, ready for the settings page to render. */
+export interface SettingsSectionView {
+  id: string;
+  header: string;
+  fields: FieldConfig[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class FieldsDataService {
@@ -32,10 +38,16 @@ export class FieldsDataService {
     return typeof id === 'string' ? id : null;
   });
 
-  readonly currentConfig = computed<FieldConfig[] | null>(() => {
+  /** Sections of the current settings page (null when the route is not a settings page). */
+  readonly currentSections = computed<SettingsSectionView[] | null>(() => {
     const id = this.currentDataId();
-    const config = id ? SETTINGS_PAGE_FIELDS_CONFIG[id] ?? null : null;
-    return config ? config.map(f => this.withLiveOptions(f)) : null;
+    const sections = id ? SETTINGS_PAGES[id] ?? null : null;
+    if (!sections) return null;
+    return sections.map(s => ({
+      id: s.id,
+      header: s.header,
+      fields: (SETTINGS_PAGE_FIELDS_CONFIG[s.id] ?? []).map(f => this.withLiveOptions(f)),
+    }));
   });
 
   private withLiveOptions(field: FieldConfig): FieldConfig {
@@ -63,5 +75,5 @@ export class FieldsDataService {
       `</linearGradient></defs><rect width='96' height='96' fill='url(#g)'/></svg>`;
     return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
   }
-  
+
 }

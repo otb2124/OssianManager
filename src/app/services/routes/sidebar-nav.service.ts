@@ -25,31 +25,23 @@ export class SidebarNavService {
 
   readonly expanded = signal(false);
 
-  readonly visible = computed<boolean>(() => {
-    this.currentUrl();
-    return this.routesService.getSidebarSection(this.router.url) !== null;
-  });
-
-  readonly items = computed<SidebarNavItem[]>(() => {
+  // One lookup per navigation; visible / items / sectionTitle all derive from it.
+  private readonly sidebar = computed(() => {
     this.currentUrl(); // re-run on navigation
-    const section = this.routesService.getSidebarSection(this.router.url);
-    if (!section) return [];
-  
-    const basePath = this.routesService.getFullPath(section);
-    if (!basePath) return [];
-  
-    return this.routesService.getChildren(section).map(child => ({
-      label: child.title ?? child.path ?? '',
-      icon: child.icon ?? '',
-      route: `${basePath}/${child.path}`,
-    }));
+    return this.routesService.getSidebar(this.router.url);
   });
 
-  readonly sectionTitle = computed<string>(() => {
-    this.currentUrl();
-    const section = this.routesService.getSidebarSection(this.router.url);
-    return section?.title ?? '';
-  });
+  readonly visible = computed<boolean>(() => this.sidebar() !== null);
+
+  readonly items = computed<SidebarNavItem[]>(() =>
+    (this.sidebar()?.items ?? []).map(({ route, path }) => ({
+      label: route.title ?? route.path ?? '',
+      icon: route.icon ?? '',
+      route: path,
+    }))
+  );
+
+  readonly sectionTitle = computed<string>(() => this.sidebar()?.title ?? '');
 
   toggle(): void {
     this.expanded.update(v => !v);

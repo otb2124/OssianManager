@@ -1,5 +1,5 @@
 // settings-page.ts
-import { Component, OnDestroy, computed, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { FieldList, FieldTarget, PropertyPath } from '../../components/fields/field-list/field-list';
 import { FieldsDataService } from '../../services/ui/fields/fields-data.service';
 import { AppConfigService } from '../../services/data/app-config/app-config.service';
@@ -22,7 +22,7 @@ export class SettingsPage implements OnDestroy {
   private engineService = inject(EngineService);
   private notifications = inject(NotificationService);
 
-  // data id 'settings-app'
+  // section id 'settings-app'
   private readonly appTarget = new ConfigFieldTarget<AppConfig>(
     {
       versionString: 'version',
@@ -33,7 +33,7 @@ export class SettingsPage implements OnDestroy {
     err => this.notifications.error('Could not save app settings', String(err)),
   );
 
-  // data id 'settings-engine' (tree.json)
+  // section id 'settings-engine' (tree.json)
   private readonly engineTarget = new ConfigFieldTarget<EngineConfig>(
     {
       enginePath: 'executablePath',
@@ -45,7 +45,7 @@ export class SettingsPage implements OnDestroy {
     err => this.notifications.error('Could not save engine settings', String(err)),
   );
 
-  // data id 'settings-theme' (AppConfig.settings; ThemeService and BackgroundService follow it)
+  // section id 'settings-theme' (AppConfig.settings; ThemeService and BackgroundService follow it)
   private readonly themeTarget = new ConfigFieldTarget<AppConfigSettings>(
     {
       backgroundPreset: 'backgroundPreset',
@@ -62,18 +62,16 @@ export class SettingsPage implements OnDestroy {
     },
   );
 
-  /** Registry: data id -> target. Add an entry here for each new settings page. */
+  /** Registry: section id -> target. Add an entry here for each section that has a backing store. */
   private readonly targets: Record<string, FieldTarget> = {
     'settings-app': this.appTarget,
     'settings-engine': this.engineTarget,
     'settings-theme': this.themeTarget,
   };
 
-  // New reference only when the data id changes, so FieldList re-runs ngOnChanges.
-  protected readonly fieldTarget = computed<FieldTarget | undefined>(() => {
-    const id = this.context.currentDataId();
-    return id ? this.targets[id] : undefined;
-  });
+  protected targetFor(sectionId: string): FieldTarget | undefined {
+    return this.targets[sectionId];
+  }
 
   ngOnDestroy(): void {
     this.appTarget.flush();
@@ -81,11 +79,6 @@ export class SettingsPage implements OnDestroy {
     this.themeTarget.flush();
   }
 }
-
-
-
-
-
 
 export interface ConfigFieldTargetOptions<T> {
   /** Shown while the config has no value for a key. */
