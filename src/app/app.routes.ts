@@ -305,15 +305,6 @@ const allRoutes: RouteChild[] =
         loadComponent: () => import('./pages/libraries/libraries-page.js').then(m => m.LibrariesPage),
       },
       {
-        path: 'library/:id',
-        title: 'Library',
-        icon: 'pi pi-book',
-        displayBreadcrumb: false,
-        displayModule: false,
-        navigatesModule: true,
-        loadComponent: () => import('./pages/library/library-page.js').then(m => m.LibraryPage),
-      },
-      {
         path: 'logs',
         title: 'Logs',
         icon: 'pi pi-align-justify',

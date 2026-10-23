@@ -1,1 +1,8 @@
-<app-libraries-list class="block h-full"></app-libraries-list>
+<div class="flex h-full min-h-0">
+    <app-libraries-list class="block h-full w-[420px] shrink-0 border-r border-[var(--theme-color-border)]" />
+    <app-dock-grid class="block h-full min-w-0 flex-1"
+                   [panels]="panels"
+                   [components]="components"
+                   layoutKey="ossian.libraries.layout"
+                   (ready)="onReady($event)" />
+  </div>
