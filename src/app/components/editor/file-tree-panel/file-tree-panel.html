@@ -1,10 +1,52 @@
-<!-- file-tree-panel.html -->
-<div class="flex flex-col h-full">
-  <div class="flex items-center justify-between px-2 py-1.5 shrink-0">
-    <span class="text-xs text-gray-400 dark:text-gray-500 truncate">
-      {{ explorerService.rootPath() ?? 'No folder' }}
-    </span>
-    <p-button (onClick)="browseFolder()" [text]="true" icon="pi pi-folder-open" size="small"></p-button>
+<div class="flex flex-col h-full" tabindex="-1" (keydown)="onKeydown($event)">
+
+  <!-- Navigation toolbar -->
+  <div class="flex items-center gap-0.5 px-1.5 pt-1.5 pb-1 shrink-0">
+    <p-button icon="pi pi-arrow-left" [text]="true" size="small" severity="secondary" styleClass="!p-1"
+              pTooltip="Back (Alt+←)" tooltipPosition="bottom"
+              [disabled]="!explorerService.canBack()" (onClick)="explorerService.back()" />
+    <p-button icon="pi pi-arrow-right" [text]="true" size="small" severity="secondary" styleClass="!p-1"
+              pTooltip="Forward (Alt+→)" tooltipPosition="bottom"
+              [disabled]="!explorerService.canForward()" (onClick)="explorerService.forward()" />
+    <p-button icon="pi pi-arrow-up" [text]="true" size="small" severity="secondary" styleClass="!p-1"
+              pTooltip="Up one level (Alt+↑)" tooltipPosition="bottom"
+              [disabled]="!explorerService.canUp()" (onClick)="explorerService.up()" />
+    <p-button icon="pi pi-home" [text]="true" size="small" severity="secondary" styleClass="!p-1"
+              pTooltip="Project content folder" tooltipPosition="bottom"
+              [disabled]="!explorerService.canHome()" (onClick)="explorerService.home()" />
+
+    <span class="mx-1 h-4 w-px bg-[var(--theme-color-border)]"></span>
+
+    <p-button icon="pi pi-refresh" [text]="true" size="small" severity="secondary" styleClass="!p-1"
+              pTooltip="Refresh (F5)" tooltipPosition="bottom"
+              [disabled]="!explorerService.rootPath()" (onClick)="explorerService.refresh()" />
+    <p-button icon="pi pi-sign-in" [text]="true" size="small" severity="secondary" styleClass="!p-1"
+              pTooltip="Open selected folder" tooltipPosition="bottom"
+              [disabled]="!selectedFolder()" (onClick)="openSelectedFolder()" />
+    <p-button icon="pi pi-external-link" [text]="true" size="small" severity="secondary" styleClass="!p-1"
+              pTooltip="Reveal in system file explorer" tooltipPosition="bottom"
+              [disabled]="!explorerService.rootPath()" (onClick)="revealRoot()" />
+
+    <span class="flex-1"></span>
+
+    <p-button icon="pi pi-folder-open" [text]="true" size="small" severity="secondary" styleClass="!p-1"
+              pTooltip="Browse for folder..." tooltipPosition="bottom" (onClick)="browseFolder()" />
+  </div>
+
+  <!-- Address bar -->
+  <div #crumbsBar class="flex items-center gap-0.5 px-2 pb-1.5 shrink-0 overflow-x-auto whitespace-nowrap text-xs scrollbar-none">
+    @for (crumb of crumbs(); track crumb.path; let last = $last) {
+      <span class="px-1 py-0.5 rounded cursor-pointer select-none transition-colors hover:bg-[var(--theme-color-muted)]"
+            [class.font-medium]="last"
+            [style.color]="last ? 'var(--theme-color)' : null"
+            [title]="crumb.path"
+            (click)="explorerService.navigate(crumb.path)">{{ crumb.label }}</span>
+      @if (!last) {
+        <i class="pi pi-chevron-right text-[8px] text-gray-400 shrink-0"></i>
+      }
+    } @empty {
+      <span class="text-gray-400 dark:text-gray-500 italic px-1">No folder</span>
+    }
   </div>
 
   <div class="flex-1 min-h-0 p-2 overflow-auto">

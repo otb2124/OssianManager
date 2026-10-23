@@ -36,3 +36,21 @@ export function joinPath(...parts: string[]): string {
 export function resolveProjectPath(projectDir: string, path: string): string {
   return isAbsolutePath(path) ? normalizePath(path) : normalizePath(`${projectDir}\\${path}`);
 }
+
+
+export function samePath(a: string, b: string): boolean {
+  return normalizePath(a).toLowerCase() === normalizePath(b).toLowerCase();
+}
+
+/** Parent folder, or null at a drive root / UNC share root. */
+export function parentPath(path: string): string | null {
+  const p = normalizePath(path);
+  if (/^[A-Za-z]:\\?$/.test(p)) return null;
+  if (p.startsWith('\\\\') && p.slice(2).split('\\').length <= 2) return null;
+
+  const i = p.lastIndexOf('\\');
+  if (i < 0) return null;
+
+  const parent = p.slice(0, i);
+  return /^[A-Za-z]:$/.test(parent) ? parent + '\\' : parent;
+}
