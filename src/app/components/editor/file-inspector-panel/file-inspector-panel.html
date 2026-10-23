@@ -1,4 +1,3 @@
-<!-- file-inspector-panel.html -->
 <div class="flex flex-col gap-3 p-3 h-full overflow-auto text-xs">
 
   @if (fsEntry(); as entry) {
@@ -21,104 +20,7 @@
       }
     </div>
 
-    <!-- Actions -->
-    <div class="flex flex-wrap gap-1">
-      @if (!renaming()) {
-        <p-button label="Rename" icon="pi pi-pencil" (onClick)="startRename()" [text]="true" size="small" severity="secondary" />
-      } @else {
-        <p-button label="Save" icon="pi pi-check" (onClick)="confirmRename()" [text]="true" size="small" />
-        <p-button label="Cancel" icon="pi pi-times" (onClick)="cancelRename()" [text]="true" size="small" severity="secondary" />
-      }
-      <p-button label="Reveal" icon="pi pi-folder-open" (onClick)="reveal(entry.path)" [text]="true" size="small" severity="secondary" />
-      <p-button [label]="copied() === 'path' ? 'Copied' : 'Copy path'"
-                [icon]="copied() === 'path' ? 'pi pi-check' : 'pi pi-copy'"
-                (onClick)="copy(entry.path, 'path')" [text]="true" size="small" severity="secondary" />
-    </div>
-
-    @if (loading()) {
-      <div class="flex items-center gap-2 text-gray-400 dark:text-gray-500 italic">
-        <i class="pi pi-spin pi-spinner"></i><span>Reading details…</span>
-      </div>
-    }
-    @if (infoError(); as err) {
-      <div class="text-red-400 break-all">{{ err }}</div>
-    }
-
-    <!-- Preview -->
-    @if (previewUrl(); as url) {
-      <div class="flex flex-col gap-1.5">
-        <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Preview</span>
-        <div class="flex items-center justify-center p-2 rounded"
-             style="background: repeating-conic-gradient(#2a2a2e 0% 25%, #1f1f24 0% 50%) 50% / 16px 16px">
-          <img [src]="url" [alt]="entry.name" class="max-h-48 max-w-full object-contain" />
-        </div>
-      </div>
-    } @else if (info()?.textPreview; as preview) {
-      <div class="flex flex-col gap-1.5">
-        <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Preview</span>
-        <pre class="max-h-48 overflow-auto rounded p-2 font-mono text-[11px] leading-4 bg-[var(--theme-color-muted)]">{{ preview }}</pre>
-        @if (info()?.previewTruncated) {
-          <span class="text-gray-400 dark:text-gray-500 italic">Preview truncated</span>
-        }
-      </div>
-    }
-
-    <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'General', rows: generalRows() }" />
-    <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Dates', rows: dateRows() }" />
-    <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Attributes', rows: attributeRows() }" />
-    <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Content', rows: contentRows() }" />
-    <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Folder contents', rows: directoryRows() }" />
-
-    @if (info()?.dir; as dir) {
-      @if (dir.extensions.length) {
-        <div class="flex flex-col gap-1.5">
-          <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">File types</span>
-          <div class="flex flex-wrap gap-1.5">
-            @for (e of dir.extensions; track e.ext) {
-              <p-tag [value]="e.ext + ' ×' + e.count" severity="secondary" [rounded]="true" styleClass="text-xs" />
-            }
-          </div>
-        </div>
-      }
-    }
-
-    <!-- Checksum -->
-    @if (!entry.isDirectory) {
-      <div class="flex flex-col gap-1.5">
-        <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Checksum</span>
-        @switch (hash().state) {
-          @case ('idle') {
-            <div>
-              <p-button label="Compute SHA-256" icon="pi pi-key" (onClick)="computeHash()"
-                        [text]="true" size="small" severity="secondary" />
-            </div>
-          }
-          @case ('busy') {
-            <div class="flex items-center gap-2 text-gray-400 dark:text-gray-500 italic">
-              <i class="pi pi-spin pi-spinner"></i><span>Hashing…</span>
-            </div>
-          }
-          @case ('done') {
-            <div class="flex items-start gap-2">
-              <span class="font-mono break-all select-all flex-1">{{ hash().value }}</span>
-              <i [class]="(copied() === 'sha256' ? 'pi pi-check' : 'pi pi-copy') + ' text-[10px] cursor-pointer shrink-0 mt-0.5'"
-                 (click)="copy(hash().value ?? '', 'sha256')"></i>
-            </div>
-          }
-          @case ('error') {
-            <span class="text-red-400 break-all">{{ hash().error }}</span>
-          }
-        }
-      </div>
-    }
-
-    <!-- Build action (placeholder) -->
-    <div class="flex flex-col gap-1">
-      <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Build Action</span>
-      <div class="px-1.5 py-1 rounded bg-[var(--theme-color-muted)] text-gray-400 dark:text-gray-500 italic">
-        //
-      </div>
-    </div>
+    <ng-container *ngTemplateOutlet="fileDetails; context: { $implicit: entry, canRename: true }" />
 
   } @else if (resourceView(); as view) {
 
@@ -195,6 +97,17 @@
       }
     </div>
 
+    <!-- File behind a file-type resource -->
+    @if (fileEntry(); as file) {
+      <div class="flex items-center gap-2 pt-3 border-t border-[var(--theme-color-border)]">
+        <i [class]="(kind()?.icon ?? 'pi pi-file') + ' shrink-0'"></i>
+        <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">File</span>
+        <span class="font-mono truncate flex-1" [title]="file.path">{{ file.name }}</span>
+      </div>
+
+      <ng-container *ngTemplateOutlet="fileDetails; context: { $implicit: file, canRename: false }" />
+    }
+
     <!-- Used by -->
     <div class="flex flex-col gap-1.5">
       <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Used by ({{ view.usedBy.length }})</span>
@@ -234,4 +147,109 @@
       }
     </div>
   }
+</ng-template>
+
+<!-- Everything about one file: used for a selected file and for the file behind a file resource -->
+<ng-template #fileDetails let-entry let-canRename="canRename">
+
+  <!-- Actions -->
+  <div class="flex flex-wrap gap-1">
+    @if (canRename) {
+      @if (!renaming()) {
+        <p-button label="Rename" icon="pi pi-pencil" (onClick)="startRename()" [text]="true" size="small" severity="secondary" />
+      } @else {
+        <p-button label="Save" icon="pi pi-check" (onClick)="confirmRename()" [text]="true" size="small" />
+        <p-button label="Cancel" icon="pi pi-times" (onClick)="cancelRename()" [text]="true" size="small" severity="secondary" />
+      }
+    }
+    <p-button label="Reveal" icon="pi pi-folder-open" (onClick)="reveal(entry.path)" [text]="true" size="small" severity="secondary" />
+    <p-button [label]="copied() === 'path' ? 'Copied' : 'Copy path'"
+              [icon]="copied() === 'path' ? 'pi pi-check' : 'pi pi-copy'"
+              (onClick)="copy(entry.path, 'path')" [text]="true" size="small" severity="secondary" />
+  </div>
+
+  @if (loading()) {
+    <div class="flex items-center gap-2 text-gray-400 dark:text-gray-500 italic">
+      <i class="pi pi-spin pi-spinner"></i><span>Reading details…</span>
+    </div>
+  }
+  @if (infoError(); as err) {
+    <div class="text-red-400 break-all">{{ err }}</div>
+  }
+
+  <!-- Preview -->
+  @if (previewUrl(); as url) {
+    <div class="flex flex-col gap-1.5">
+      <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Preview</span>
+      <div class="flex items-center justify-center p-2 rounded"
+           style="background: repeating-conic-gradient(#2a2a2e 0% 25%, #1f1f24 0% 50%) 50% / 16px 16px">
+        <img [src]="url" [alt]="entry.name" class="max-h-48 max-w-full object-contain" />
+      </div>
+    </div>
+  } @else if (info()?.textPreview; as preview) {
+    <div class="flex flex-col gap-1.5">
+      <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Preview</span>
+      <pre class="max-h-48 overflow-auto rounded p-2 font-mono text-[11px] leading-4 bg-[var(--theme-color-muted)]">{{ preview }}</pre>
+      @if (info()?.previewTruncated) {
+        <span class="text-gray-400 dark:text-gray-500 italic">Preview truncated</span>
+      }
+    </div>
+  }
+
+  <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'General', rows: generalRows() }" />
+  <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Dates', rows: dateRows() }" />
+  <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Attributes', rows: attributeRows() }" />
+  <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Content', rows: contentRows() }" />
+  <ng-container *ngTemplateOutlet="rowsBlock; context: { $implicit: 'Folder contents', rows: directoryRows() }" />
+
+  @if (info()?.dir; as dir) {
+    @if (dir.extensions.length) {
+      <div class="flex flex-col gap-1.5">
+        <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">File types</span>
+        <div class="flex flex-wrap gap-1.5">
+          @for (e of dir.extensions; track e.ext) {
+            <p-tag [value]="e.ext + ' ×' + e.count" severity="secondary" [rounded]="true" styleClass="text-xs" />
+          }
+        </div>
+      </div>
+    }
+  }
+
+  <!-- Checksum -->
+  @if (!entry.isDirectory) {
+    <div class="flex flex-col gap-1.5">
+      <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Checksum</span>
+      @switch (hash().state) {
+        @case ('idle') {
+          <div>
+            <p-button label="Compute SHA-256" icon="pi pi-key" (onClick)="computeHash()"
+                      [text]="true" size="small" severity="secondary" />
+          </div>
+        }
+        @case ('busy') {
+          <div class="flex items-center gap-2 text-gray-400 dark:text-gray-500 italic">
+            <i class="pi pi-spin pi-spinner"></i><span>Hashing…</span>
+          </div>
+        }
+        @case ('done') {
+          <div class="flex items-start gap-2">
+            <span class="font-mono break-all select-all flex-1">{{ hash().value }}</span>
+            <i [class]="(copied() === 'sha256' ? 'pi pi-check' : 'pi pi-copy') + ' text-[10px] cursor-pointer shrink-0 mt-0.5'"
+               (click)="copy(hash().value ?? '', 'sha256')"></i>
+          </div>
+        }
+        @case ('error') {
+          <span class="text-red-400 break-all">{{ hash().error }}</span>
+        }
+      }
+    </div>
+  }
+
+  <!-- Build action (placeholder) -->
+  <div class="flex flex-col gap-1">
+    <span class="font-semibold uppercase tracking-wide text-gray-400 text-[10px]">Build Action</span>
+    <div class="px-1.5 py-1 rounded bg-[var(--theme-color-muted)] text-gray-400 dark:text-gray-500 italic">
+      //
+    </div>
+  </div>
 </ng-template>

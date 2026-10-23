@@ -165,8 +165,8 @@ export class FileInspectorPanel {
 
   constructor() {
     effect(() => {
-      const t = this.target();
-      untracked(() => void this.load(t));
+      const entry = this.fileEntry();
+      untracked(() => void this.load(entry));
     });
 
     effect(() => {
@@ -309,6 +309,17 @@ export class FileInspectorPanel {
     };
   });
 
+  private readonly resourceFileEntry = computed<FsEntry | null>(() => {
+    const item = this.resourceView()?.items.find(i => i.kind === 'file' && i.absolute);
+    if (!item?.absolute) return null;
+    return { name: this.baseName(item.absolute), path: item.absolute, isDirectory: false, size: 0, modified: null };
+  });
+
+  protected readonly fileEntry = computed<FsEntry | null>(
+    () => this.fsEntry() ?? this.resourceFileEntry(),
+    { equal: (a, b) => a?.path === b?.path },
+  );
+
   // ── template helpers ───────────────────────────────────────────────────
 
   protected fmtBytes(bytes: number): string {
@@ -320,7 +331,7 @@ export class FileInspectorPanel {
   }
 
   protected reload(): void {
-    void this.load(this.target());
+    void this.load(this.fileEntry());
   }
 
   protected openResource(entry: ResourceEntry): void {
@@ -405,24 +416,24 @@ export class FileInspectorPanel {
 
   // ── loading ────────────────────────────────────────────────────────────
 
-  private async load(target: InspectTarget | null): Promise<void> {
+  private async load(entry: FsEntry | null): Promise<void> {
     const token = ++this.token;
-
+  
     this.revokePreview();
     this.info.set(null);
     this.infoError.set(null);
     this.hash.set({ state: 'idle' });
     this.renaming.set(false);
     this.loading.set(false);
-
-    if (target?.kind !== 'fs') return;
-
+  
+    if (!entry) return;
+  
     this.loading.set(true);
     try {
-      const info = await firstValueFrom(this.persistence.inspectEntry(target.entry.path));
+      const info = await firstValueFrom(this.persistence.inspectEntry(entry.path));
       if (token !== this.token) return;
       this.info.set(info);
-
+  
       const mime = info.extension ? PREVIEW_MIME[info.extension] : undefined;
       if (mime && !info.isDirectory && info.size <= PREVIEW_MAX_BYTES) {
         await this.loadPreview(info, mime, token);
@@ -479,5 +490,9 @@ export class FileInspectorPanel {
     if (p.toLowerCase() === r.toLowerCase()) return '.';
     if (!p.toLowerCase().startsWith(`${r.toLowerCase()}/`)) return null;
     return p.slice(r.length + 1);
+  }
+
+  baseName(path: string): string {
+    return path.replace(/^.*[\\/]/, '');
   }
 }

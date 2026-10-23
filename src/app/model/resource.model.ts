@@ -14,7 +14,7 @@ export interface ResourceEntry {
   }
   
   export const RESOURCE_GROUP_META: ResourceGroupMeta[] = [
-    { key: 'files',      label: 'Files',      icon: 'pi pi-file' },
+    { key: 'files',      label: 'File Resources', icon: 'pi pi-file' },
     { key: 'meshes',     label: 'Meshes',     icon: 'pi pi-box' },
     { key: 'textures',   label: 'Textures',   icon: 'pi pi-image' },
     { key: 'shaders',    label: 'Shaders',    icon: 'pi pi-sliders-h' },

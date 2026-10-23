@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import { map } from 'rxjs';
 import { DockPanelDef, DockGrid } from '../../components/layout/dock-grid/dock-grid';
 import { Terminal } from '../../components/editor/terminal/terminal';
+import { ResourcesPanel } from '../../components/editor/resources-panel/resources-panel';
 
 /** The Render tab was only an empty placeholder in Workspaces, so it gets a tiny placeholder component. */
 @Component({
@@ -46,6 +47,8 @@ export class ScenePage {
       position: { referencePanel: 'hierarchy', direction: 'below' } },
     { id: 'files', title: 'Files', component: FileExplorerPanel,
       position: { referencePanel: 'viewport3d', direction: 'right' }, initialWidth: 320 },
+    { id: 'resources', title: 'Resources', component: ResourcesPanel, inactive: true,
+      position: { referencePanel: 'files', direction: 'within' } },
     { id: 'fileInspector', title: 'File Inspector', component: FileInspectorPanel,
       position: { referencePanel: 'files', direction: 'below' } },
 

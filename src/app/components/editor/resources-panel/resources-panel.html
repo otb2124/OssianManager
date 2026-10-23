@@ -1,1 +1,21 @@
-<p>resources-panel works!</p>
+<div class="flex flex-col h-full">
+    <div class="flex items-center justify-between px-2 py-1.5 shrink-0">
+      <span class="text-xs text-gray-400 dark:text-gray-500 truncate">
+        {{ catalog.entries().length }} resources
+      </span>
+      <p-button icon="pi pi-refresh" [text]="true" size="small" severity="secondary" styleClass="!p-1"
+                pTooltip="Reload resources.json" tooltipPosition="bottom" (onClick)="catalog.reload()" />
+    </div>
+  
+    @if (catalog.error(); as err) {
+      <div class="px-2 pb-2 text-xs text-red-400 break-all">{{ err }}</div>
+    }
+  
+    <div class="flex-1 min-h-0 p-2 overflow-auto">
+      @if (nodes().length) {
+        <app-tree-control [nodes]="nodes()" [config]="treeConfig" (nodeSelect)="onNodeSelect($event)" />
+      } @else {
+        <div class="text-xs italic text-gray-400 dark:text-gray-500">No resources found</div>
+      }
+    </div>
+  </div>
