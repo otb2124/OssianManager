@@ -19,18 +19,6 @@ import { LibrariesPage } from '../libraries/libraries-page';
 import { LogsPage } from '../logs/logs-page';
 import { ProjectsPage } from '../projects/projects-page';
 
-/** Shown in the centre until the first scene/file is opened. */
-@Component({
-  selector: 'app-editor-home',
-  template: `
-    <div class="h-full w-full flex flex-col items-center justify-center gap-3
-                text-gray-400 dark:text-gray-600 select-none">
-      <i class="pi pi-objects-column text-4xl"></i>
-      <span class="text-sm">Open a scene from the Scenes graph, or a file from Files</span>
-    </div>`,
-})
-export class EditorHome {}
-
 const EDITOR_PANEL = /^(scene|file):/;
 
 @Component({
@@ -49,38 +37,36 @@ export class ScenePage {
   protected readonly components = { scene: Viewport3D, file: ScriptEditor };
 
   protected readonly panels: DockPanelDef[] = [
-    { id: 'home', title: 'Editor', component: EditorHome },
-
+    // Center anchor of the editor layout. Scene/file tabs open "above" it (see open()).
+    { id: 'terminal', title: 'Terminal', component: Terminal, renderer: 'always', windows: ['editor'],
+      initialHeight: 240,
+      inputs: { showInput: true, hideStartupOutput: true } },
+    { id: 'console', title: 'Console', component: Terminal, renderer: 'always', inactive: true, windows: ['editor'],
+      position: { referencePanel: 'terminal', direction: 'within' },
+      inputs: { showInput: false, hideStartupOutput: false } },
+  
     { id: 'hierarchy', title: 'Hierarchy', component: HierarchyPanel, windows: ['editor'],
-      position: { referencePanel: 'home', direction: 'left' }, initialWidth: 320 },
+      position: { referencePanel: 'terminal', direction: 'left' }, initialWidth: 320 },
     { id: 'scenes', title: 'Scenes', component: GraphPage, inactive: true, windows: ['editor'],
       position: { referencePanel: 'hierarchy', direction: 'within' } },
-
+  
     { id: 'projects', title: 'Projects', component: ProjectsPage, inactive: true, windows: ['launcher'],
-        position: { referencePanel: 'hierarchy', direction: 'within' } },
-
+      position: { referencePanel: 'hierarchy', direction: 'within' } },
     { id: 'settings', title: 'Settings', component: SettingsPage, inactive: true, windows: ['editor'],
       position: { referencePanel: 'hierarchy', direction: 'within' } },
     { id: 'libraries', title: 'Libraries', component: LibrariesPage, inactive: true, windows: ['editor'],
       position: { referencePanel: 'hierarchy', direction: 'within' } },
     { id: 'logs', title: 'Logs', component: LogsPage, inactive: true,
-      position: { referencePanel: 'hierarchy', direction: 'within' } },
-
+      position: { referencePanel: 'projects', direction: 'within' } },
+  
     { id: 'inspector', title: 'Inspector', component: InspectorPanel, windows: ['editor'],
       position: { referencePanel: 'hierarchy', direction: 'below' } },
     { id: 'files', title: 'Files', component: FileExplorerPanel, windows: ['editor'],
-      position: { referencePanel: 'home', direction: 'right' }, initialWidth: 320 },
+      position: { referencePanel: 'terminal', direction: 'right' }, initialWidth: 320 },
     { id: 'resources', title: 'Resources', component: ResourcesPanel, inactive: true, windows: ['editor'],
       position: { referencePanel: 'files', direction: 'within' } },
     { id: 'fileInspector', title: 'File Inspector', component: FileInspectorPanel, windows: ['editor'],
       position: { referencePanel: 'files', direction: 'below' } },
-
-    { id: 'terminal', title: 'Terminal', component: Terminal, renderer: 'always', windows: ['editor'],
-      position: { referencePanel: 'home', direction: 'below' }, initialHeight: 240,
-      inputs: { showInput: true, hideStartupOutput: true } },
-    { id: 'console', title: 'Console', component: Terminal, renderer: 'always', inactive: true, windows: ['editor'],
-      position: { referencePanel: 'terminal', direction: 'within' },
-      inputs: { showInput: false, hideStartupOutput: false } },
   ];
 
   constructor() {
@@ -124,7 +110,7 @@ export class ScenePage {
     }
 
     // Join the group that already holds editor tabs (or the home placeholder).
-    const anchor = api.panels.find(p => EDITOR_PANEL.test(p.id)) ?? api.getPanel('home');
+    const anchor = api.panels.find(p => EDITOR_PANEL.test(p.id));
     const position = anchor
       ? { referenceGroup: anchor.group, direction: 'within' as const }
       : api.getPanel('terminal')
@@ -132,7 +118,7 @@ export class ScenePage {
         : api.getPanel('files')
           ? { referencePanel: 'files', direction: 'left' as const }
           : undefined;
-
+    
     api.addPanel({
       id: spec.id,
       component: req.kind,
