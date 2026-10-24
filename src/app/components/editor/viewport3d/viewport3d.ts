@@ -1,5 +1,7 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, inject, input } from '@angular/core';
+import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, inject, input, effect, untracked } from '@angular/core';
 import { EngineBridgeService } from '../../../services/engine/bridge/engine-bridge.service';
+import { EngineIpcService } from '../../../services/engine/ipc/engine-ipc';
+import { NotificationService } from '../../../services/notifications/notification.service';
 
 @Component({
   selector: 'app-viewport3d',
@@ -8,6 +10,9 @@ import { EngineBridgeService } from '../../../services/engine/bridge/engine-brid
 })
 export class Viewport3D implements AfterViewInit, OnDestroy {
   @ViewChild('container') container?: ElementRef<HTMLDivElement>;
+
+  private readonly engine = inject(EngineIpcService);
+private readonly notifications = inject(NotificationService);
 
   /** Scene this tab belongs to (dock panel param). */
   readonly sceneId = input<string | null>(null);
@@ -31,6 +36,7 @@ export class Viewport3D implements AfterViewInit, OnDestroy {
           this.lastKey = '';
           this.pendingShow = true;
           this.bridge.claimViewport(this);
+          this.activateScene();
         }
         if (this.bridge.isViewportOwner(this)) {
           const key = `${r.left}|${r.top}|${r.width}|${r.height}`;
@@ -49,6 +55,22 @@ export class Viewport3D implements AfterViewInit, OnDestroy {
     }
     this.raf = requestAnimationFrame(this.track);
   };
+
+  constructor() {
+    effect(() => {
+      this.engine.connected();
+      this.sceneId();
+      untracked(() => this.activateScene());
+    });
+  }
+
+  private activateScene(): void {
+    const id = this.sceneId();
+    if (!id || !this.visible || !this.engine.connected()) return;
+    if (this.engine.currentSceneId() === id) return;
+    this.engine.loadScene(id).catch(err =>
+      this.notifications.error(`Could not load scene '${id}'`, String(err)));
+  }
 
   async ngAfterViewInit(): Promise<void> {
     this.raf = requestAnimationFrame(this.track);

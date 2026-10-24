@@ -50,6 +50,9 @@ export class EngineIpcService {
   private readonly _selectedId = signal<string | null>(null);
   readonly selectedId = this._selectedId.asReadonly();
 
+  private readonly _currentSceneId = signal<string | null>(null);
+  readonly currentSceneId = this._currentSceneId.asReadonly();
+
   select(id: string | null): void {
     this._selectedId.set(id);
   }
@@ -57,26 +60,44 @@ export class EngineIpcService {
   /** Call BEFORE EngineBridgeService.spawnEngine() so the "connected" event isn't missed. */
   async init(): Promise<void> {
     if (this.unlisten.length) return;
-
+  
     this.unlisten = [
       await listen('engine://connected', () =>
         this.zone.run(() => {
           this._connected.set(true);
           void this.refreshTree();
+          void this.refreshCurrentScene();
         })),
       await listen('engine://disconnected', () =>
         this.zone.run(() => {
           this._connected.set(false);
           this._tree.set([]);
+          this._currentSceneId.set(null);
         })),
       await listen<EngineEvent>('engine://event', e =>
         this.zone.run(() => this.onEngineEvent(e.payload))),
     ];
-
+  
     // In case the engine connected before we started listening.
     this.request<string>('ping')
-      .then(() => this.zone.run(() => { this._connected.set(true); void this.refreshTree(); }))
+      .then(() => this.zone.run(() => {
+        this._connected.set(true);
+        void this.refreshTree();
+        void this.refreshCurrentScene();
+      }))
       .catch(() => { /* not connected yet; the event will tell us */ });
+  }
+
+  async loadScene(id: string): Promise<void> {
+    const res = await this.request<{ id: string | null }>('scene.load', { id });
+    this._currentSceneId.set(res.id);
+  }
+  
+  async refreshCurrentScene(): Promise<void> {
+    try {
+      const res = await this.request<{ id: string | null }>('scene.current');
+      this.zone.run(() => this._currentSceneId.set(res.id));
+    } catch { /* not connected yet */ }
   }
 
   dispose(): void {
