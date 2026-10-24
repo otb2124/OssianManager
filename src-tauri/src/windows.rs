@@ -1,7 +1,34 @@
-use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Manager, WebviewUrl, WebviewWindowBuilder, Window, WindowEvent};
+
+use crate::engine::Engine;
 
 pub const LAUNCHER: &str = "launcher";
 pub const EDITOR: &str = "editor";
+
+/// Global window-event hook (registered once in lib.rs).
+pub fn on_window_event(window: &Window, event: &WindowEvent) {
+    if window.label() != EDITOR {
+        return;
+    }
+    match event {
+        WindowEvent::Resized(_) | WindowEvent::Moved(_) => {
+            window
+                .state::<Engine>()
+                .viewport()
+                .apply(window.scale_factor().unwrap_or(1.0));
+        }
+        WindowEvent::Destroyed => on_editor_destroyed(window.app_handle()),
+        _ => {}
+    }
+}
+
+fn on_editor_destroyed(app: &AppHandle) {
+    app.state::<Engine>().shutdown();
+    if let Some(l) = app.get_webview_window(LAUNCHER) {
+        let _ = l.show();
+        let _ = l.set_focus();
+    }
+}
 
 #[tauri::command]
 pub async fn open_editor(app: AppHandle, project_id: String) -> Result<(), String> {
@@ -17,7 +44,7 @@ pub async fn open_editor(app: AppHandle, project_id: String) -> Result<(), Strin
         .title("Ossian Manager")
         .inner_size(1600.0, 900.0)
         .maximized(true)
-        .disable_drag_drop_handler()   // lets dockview's HTML5 tab dragging work on Windows
+        .disable_drag_drop_handler() // lets dockview's HTML5 tab dragging work on Windows
         .initialization_script(&format!("window.__OSSIAN_PROJECT_ID__ = {id_js};"))
         .build()
         .map_err(|e| e.to_string())?;
@@ -37,13 +64,4 @@ pub fn close_editor(app: AppHandle) -> Result<(), String> {
         w.close().map_err(|e| e.to_string())?;
     }
     Ok(())
-}
-
-/// Called from the global window-event handler when the editor window is destroyed.
-pub fn on_editor_destroyed(app: &AppHandle) {
-    crate::engine_host::shutdown_engine();
-    if let Some(l) = app.get_webview_window(LAUNCHER) {
-        let _ = l.show();
-        let _ = l.set_focus();
-    }
 }
