@@ -4,15 +4,17 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { FieldConfig } from '../../../components/fields/field-list/field-list';
 import { RoutesService } from '../../routes/routes.service';
-import { NODE_CONTROL_FIELDS_CONFIG, SETTINGS_PAGE_FIELDS_CONFIG, SETTINGS_PAGES } from '../../../model/fields.config.model';
+import { NODE_CONTROL_FIELDS_CONFIG, SETTINGS_PAGE_FIELDS_CONFIG, SETTINGS_PAGES, SettingsNode } from '../../../model/fields.config.model';
 import { BackgroundService } from '../background/background.service';
 import { ShaderDef } from '../../../model/shader.model';
 
 /** One header + its fields, ready for the settings page to render. */
-export interface SettingsSectionView {
+export interface SettingsNodeView {
   id: string;
   header: string;
+  icon?: string;
   fields: FieldConfig[];
+  children: SettingsNodeView[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -23,6 +25,12 @@ export class FieldsDataService {
 
   // Tracks the current url; updates on every completed navigation.
   private currentUrl = signal(this.router.url);
+
+  readonly currentTree = computed<SettingsNodeView[] | null>(() => {
+    const id = this.currentDataId();
+    const nodes = SETTINGS_PAGES['project-settings'];
+    return nodes ? nodes.map(n => this.toView(n)) : null;
+  });
 
   constructor() {
     this.router.events
@@ -38,18 +46,6 @@ export class FieldsDataService {
     return typeof id === 'string' ? id : null;
   });
 
-  /** Sections of the current settings page (null when the route is not a settings page). */
-  readonly currentSections = computed<SettingsSectionView[] | null>(() => {
-    const id = this.currentDataId();
-    const sections = id ? SETTINGS_PAGES[id] ?? null : null;
-    if (!sections) return null;
-    return sections.map(s => ({
-      id: s.id,
-      header: s.header,
-      fields: (SETTINGS_PAGE_FIELDS_CONFIG[s.id] ?? []).map(f => this.withLiveOptions(f)),
-    }));
-  });
-
   private withLiveOptions(field: FieldConfig): FieldConfig {
     if (field.kind === 'image-select' && field.path === 'backgroundPreset') {
       return {
@@ -62,6 +58,16 @@ export class FieldsDataService {
       };
     }
     return field;
+  }
+
+  private toView(node: SettingsNode): SettingsNodeView {
+    return {
+      id: node.id,
+      header: node.header,
+      icon: node.icon,
+      fields: (SETTINGS_PAGE_FIELDS_CONFIG[node.id] ?? []).map(f => this.withLiveOptions(f)),
+      children: (node.children ?? []).map(c => this.toView(c)),
+    };
   }
 
   presetThumbnail(def: ShaderDef): string {

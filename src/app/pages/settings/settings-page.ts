@@ -1,26 +1,32 @@
-// settings-page.ts
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, ElementRef, OnDestroy, computed, inject } from '@angular/core';
 import { FieldList, FieldTarget, PropertyPath } from '../../components/fields/field-list/field-list';
-import { FieldsDataService } from '../../services/ui/fields/fields-data.service';
+import { FieldsDataService, SettingsNodeView } from '../../services/ui/fields/fields-data.service';
 import { AppConfigService } from '../../services/data/app-config/app-config.service';
 import { EngineService } from '../../services/data/engine-config/engine.service';
 import { NotificationService } from '../../services/notifications/notification.service';
 import { AppConfig, AppConfigSettings } from '../../model/app-config.model';
 import { EngineConfig } from '../../model/engine-config.model';
 import { Observable } from 'rxjs';
+import { AppTreeNode, TreeControl, TreeControlConfig } from '../../components/shared/tree-control/tree-control';
+import { FormsModule } from '@angular/forms';
+import { NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'app-settings-page',
-  imports: [FieldList],
+  imports: [FieldList, TreeControl, FormsModule, NgTemplateOutlet],
   templateUrl: './settings-page.html',
   styleUrl: './settings-page.css',
 })
 export class SettingsPage implements OnDestroy {
 
   protected context = inject(FieldsDataService);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  
   private appConfigService = inject(AppConfigService);
   private engineService = inject(EngineService);
   private notifications = inject(NotificationService);
+
+  protected readonly tree = this.context.currentTree;
 
   // section id 'settings-app'
   private readonly appTarget = new ConfigFieldTarget<AppConfig>(
@@ -68,6 +74,43 @@ export class SettingsPage implements OnDestroy {
     'settings-engine': this.engineTarget,
     'settings-theme': this.themeTarget,
   };
+
+  protected readonly navNodes = computed<AppTreeNode<SettingsNodeView>[]>(() =>
+    (this.tree() ?? []).map(n => this.toNavNode(n)));
+
+  protected readonly navConfig: TreeControlConfig<SettingsNodeView> = { showIcons: true };
+
+  protected anchor(id: string): string {
+    return `settings-section-${id}`;
+  }
+
+  protected scrollTo(node: AppTreeNode<SettingsNodeView>): void {
+    this.host.nativeElement
+      .querySelector(`[id="${this.anchor(node.id)}"]`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  protected headingClass(depth: number): string {
+    switch (depth) {
+      case 0:  return 'text-base font-semibold pb-1';
+      case 1:  return 'text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400';
+      default: return 'text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500';
+    }
+  }
+
+  private toNavNode(n: SettingsNodeView): AppTreeNode<SettingsNodeView> {
+    const hasChildren = n.children.length > 0;
+    return {
+      id: n.id,
+      key: n.id,
+      label: n.header,
+      icon: n.icon,
+      data: n,
+      leaf: !hasChildren,
+      expanded: hasChildren,
+      children: hasChildren ? n.children.map(c => this.toNavNode(c)) : undefined,
+    };
+  }
 
   protected targetFor(sectionId: string): FieldTarget | undefined {
     return this.targets[sectionId];

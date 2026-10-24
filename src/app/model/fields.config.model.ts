@@ -340,55 +340,75 @@ export const NODE_CONTROL_FIELDS_CONFIG: FieldConfig[] = [
 ];
 
 /**
- * One settings page = one route = a list of sections.
+ * One settings page = one route = a tree of nodes.
  *
  * - The page id is the route's `data.id` (see app.routes.ts).
- * - A section id is a key of SETTINGS_PAGE_FIELDS_CONFIG (fields.config.model.ts), so the
- *   existing per-topic field configs are reused as they are. A section whose id has no
- *   field config yet is still shown, with an empty-state message.
- * - SettingsPage picks the FieldTarget by section id, so 'settings-app' etc. keep working.
+ * - A node id is a key of SETTINGS_PAGE_FIELDS_CONFIG. Group nodes (Build, Display...) usually have no
+ *   field config and only exist to group their children; any node may have both fields and children.
+ * - Node ids must be unique within a page (they are used as scroll anchors and as tree keys).
  */
-export interface SettingsSection {
+export interface SettingsNode {
   id: string;
   header: string;
+  icon?: string;
+  children?: SettingsNode[];
 }
 
-export const SETTINGS_PAGES: Record<string, SettingsSection[]> = {
-  // Tools > Settings
-  'settings': [
-    { id: 'settings-app', header: 'App' },
-    { id: 'settings-engine', header: 'Engine' },
-    { id: 'settings-theme', header: 'Theme' },
-  ],
+export const SETTINGS_PAGES: Record<string, SettingsNode[]> = {
 
-  // Project
-  'build': [
-    { id: 'build-details', header: 'Details' },
-    { id: 'build-startup', header: 'Startup' },
-  ],
-  'display': [
-    { id: 'display-window', header: 'Window' },
-    { id: 'display-accessibility', header: 'Accessibility' },
-    { id: 'display-rendering', header: 'Rendering' },
-    { id: 'display-cursor', header: 'Cursor' },
-    { id: 'display-physics', header: 'Physics' },
-  ],
-  'input': [
-    { id: 'input-keys', header: 'Keys' },
-    { id: 'input-axis', header: 'Axis' },
-    { id: 'input-controllers', header: 'Controllers' },
-  ],
-  'events': [
-    { id: 'events-actions', header: 'Actions' },
-    { id: 'events-conditions', header: 'Conditions' },
-    { id: 'events-state-machines', header: 'State Machines' },
-    { id: 'events-pronouns', header: 'Pronouns' },
-  ],
-  'language': [
-    { id: 'language-translations', header: 'Translations' },
-    { id: 'language-remap', header: 'Remap' },
-    { id: 'language-formats', header: 'Formats' },
-    { id: 'language-transnationalization', header: 'Transnationalization' },
+  // Project > Project Settings (one page, five main sections)
+  'project-settings': [
+    {
+      id: 'build', header: 'Build', icon: 'pi pi-wrench',
+      children: [
+        { id: 'build-details', header: 'Details' },
+        { id: 'build-startup', header: 'Startup' },
+      ],
+    },
+    {
+      id: 'display', header: 'Display', icon: 'pi pi-desktop',
+      children: [
+        { id: 'display-window', header: 'Window' },
+        { id: 'display-accessibility', header: 'Accessibility' },
+        { id: 'display-rendering', header: 'Rendering' },
+        { id: 'display-cursor', header: 'Cursor' },
+        { id: 'display-physics', header: 'Physics' },
+      ],
+    },
+    {
+      id: 'input', header: 'Input', icon: 'pi pi-sliders-h',
+      children: [
+        { id: 'input-keys', header: 'Keys' },
+        { id: 'input-axis', header: 'Axis' },
+        { id: 'input-controllers', header: 'Controllers' },
+      ],
+    },
+    {
+      id: 'events', header: 'Events', icon: 'pi pi-bolt',
+      children: [
+        { id: 'events-actions', header: 'Actions' },
+        { id: 'events-conditions', header: 'Conditions' },
+        { id: 'events-state-machines', header: 'State Machines' },
+        { id: 'events-pronouns', header: 'Pronouns' },
+      ],
+    },
+    {
+      id: 'language', header: 'Language', icon: 'pi pi-globe',
+      children: [
+        { id: 'language-translations', header: 'Translations' },
+        { id: 'language-remap', header: 'Remap' },
+        { id: 'language-formats', header: 'Formats' },
+        { id: 'language-transnationalization', header: 'Transnationalization' },
+      ],
+    },
+    {
+      id: 'settings', header: 'App Settings', icon: 'pi pi-cog',
+      children: [
+        { id: 'settings-app', header: 'App', icon: 'pi pi-desktop' },
+        { id: 'settings-engine', header: 'Engine', icon: 'pi pi-cog' },
+        { id: 'settings-theme', header: 'Theme', icon: 'pi pi-palette' },
+      ],
+    }
   ],
 };
 

@@ -9,7 +9,6 @@ export interface RouteChild extends Route {
   displayBreadcrumb?: boolean;
   displayModule?: boolean;
   /** This route is listed in the sidebar (together with its siblings that also have the flag). */
-  displaySidebar?: boolean;
   displayOnProjectLoad?: boolean;
   actions?: RouteAction[];
   navigatesModule?: boolean;
@@ -65,7 +64,6 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-clock',
             displayBreadcrumb: true,
             displayModule: true,
-            displaySidebar: true,
             loadComponent: () => import('./pages/projects/projects-page.js').then(m => m.ProjectsPage),
             data: { id:"projects-recents" }
           },
@@ -75,7 +73,6 @@ const allRoutes: RouteChild[] =
             icon: 'pi pi-folder',
             displayBreadcrumb: true,
             displayModule: true,
-            displaySidebar: true,
             loadComponent: () => import('./pages/projects/projects-page.js').then(m => m.ProjectsPage),
             data: { id:"projects-my-projects" }
           },
@@ -254,17 +251,6 @@ const allRoutes: RouteChild[] =
         pathMatch: 'full'
       },
       {
-        // One page: App / Engine / Theme sections (see settings-pages.model.ts)
-        path: 'settings',
-        title: 'Settings',
-        icon: 'pi pi-cog',
-        displayBreadcrumb: true,
-        displayModule: true,
-        navigatesModule: true,
-        loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
-        data: { id:"settings" }
-      },
-      {
         path: 'libraries',
         title: 'Libraries',
         icon: 'pi pi-book',
@@ -314,64 +300,7 @@ const allRoutes: RouteChild[] =
         navigatesModule: true,
         loadComponent: () => import('./pages/scene/scene-page.js').then(m => m.ScenePage)
       },
-
-      // The five project settings pages. Each one is a single page with a header per topic
-      // (see settings-pages.model.ts) and is listed in the sidebar.
-      {
-        path: 'build',
-        title: 'Build',
-        icon: 'pi pi-wrench',
-        displayBreadcrumb: true,
-        displayModule: true,
-        navigatesModule: true,
-        displaySidebar: true,
-        loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
-        data: { id:"build" }
-      },
-      {
-        path: 'display',
-        title: 'Display',
-        icon: 'pi pi-desktop',
-        displayBreadcrumb: true,
-        displayModule: true,
-        navigatesModule: true,
-        displaySidebar: true,
-        loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
-        data: { id:"display" }
-      },
-      {
-        path: 'input',
-        title: 'Input',
-        icon: 'pi pi-sliders-h',
-        displayBreadcrumb: true,
-        displayModule: true,
-        navigatesModule: true,
-        displaySidebar: true,
-        loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
-        data: { id:"input" }
-      },
-      {
-        path: 'events',
-        title: 'Events',
-        icon: 'pi pi-bolt',
-        displayBreadcrumb: true,
-        displayModule: true,
-        navigatesModule: true,
-        displaySidebar: true,
-        loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
-        data: { id:"events" }
-      },
-      {
-        path: 'language',
-        title: 'Language',
-        icon: 'pi pi-globe',
-        displayBreadcrumb: true,
-        displayModule: true,
-        navigatesModule: true,
-        displaySidebar: true,
-        loadComponent: () => import('./pages/settings/settings-page.js').then(m => m.SettingsPage),
-        data: { id:"language" }
-      },
+      
     ]
   },
 

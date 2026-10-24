@@ -137,12 +137,12 @@ export class RoutesService {
     let parent: RouteChild | null = null;
 
     this.walk(url, (match, consumed, level) => {
-      if (match.displaySidebar) {
+      if (true) {
         const base = '/' + prefix.join('/');
         result = {
           title: parent?.title ?? '',
           items: level
-            .filter(r => r.displaySidebar && r.path && !r.redirectTo && !this.isParam(r))
+            .filter(r => true && r.path && !r.redirectTo && !this.isParam(r))
             .map(r => ({ route: r, path: `${base}/${r.path}` })),
         };
         return false; // stop

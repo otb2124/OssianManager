@@ -1,24 +1,53 @@
-<!-- settings-page.html -->
-<div class="flex flex-col gap-6 p-3 h-full overflow-auto text-xs">
+<div class="flex h-full min-h-0">
 
-  @if (context.currentSections(); as sections) {
-    @for (section of sections; track section.id) {
-      <section class="flex flex-col gap-2">
-        <h2 class="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400 pb-1">
-          {{ section.header }}
-        </h2>
-
-        @if (section.fields.length) {
-          <app-field-list [fields]="section.fields" [target]="targetFor(section.id)"></app-field-list>
-        } @else {
-          <div class="text-gray-400 dark:text-gray-500 italic">Nothing to configure yet.</div>
-        }
-      </section>
-    }
-  } @else {
-    <div class="text-gray-400 dark:text-gray-500 italic">
-      No settings configuration for this page.
-    </div>
+  <!-- Section navigation -->
+  @if (navNodes().length > 1) {
+    <aside class="w-64 shrink-0 min-h-0 p-2 border-r border-[var(--theme-color-border)]">
+      <app-tree-control
+        [nodes]="navNodes()"
+        [config]="navConfig"
+        (nodeSelect)="scrollTo($event)"
+        (nodeUnselect)="scrollTo($event)">
+      </app-tree-control>
+    </aside>
   }
 
+  <!-- Sections -->
+  <div class="flex-1 min-w-0 overflow-auto p-3 text-xs">
+    @if (tree(); as nodes) {
+      <div class="flex flex-col gap-8">
+        @for (node of nodes; track node.id) {
+          <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: node, depth: 0 }" />
+        }
+      </div>
+    } @else {
+      <div class="text-gray-400 dark:text-gray-500 italic">
+        No settings configuration for this page.
+      </div>
+    }
+  </div>
 </div>
+
+<!-- One node: header, its fields, then its children (recursive) -->
+<ng-template #nodeTpl let-node let-depth="depth">
+  <section class="flex flex-col gap-3 scroll-mt-3" [attr.id]="anchor(node.id)">
+
+    <div role="heading" [attr.aria-level]="depth + 2" [class]="headingClass(depth)">
+      @if (node.icon) { <i [class]="node.icon + ' mr-2 text-xs'"></i> }{{ node.header }}
+    </div>
+
+    @if (node.fields.length) {
+      <app-field-list [fields]="node.fields" [target]="targetFor(node.id)"></app-field-list>
+    } @else if (!node.children.length) {
+      <div class="text-gray-400 dark:text-gray-500 italic">Nothing to configure yet.</div>
+    }
+
+    @if (node.children.length) {
+      <div class="flex flex-col gap-6 pl-3">
+        @for (child of node.children; track child.id) {
+          <ng-container *ngTemplateOutlet="nodeTpl; context: { $implicit: child, depth: depth + 1 }" />
+        }
+      </div>
+    }
+  </section>
+</ng-template>

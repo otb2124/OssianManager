@@ -13,6 +13,8 @@ import { DockGrid, DockPanelDef } from '../../components/layout/dock-grid/dock-g
 import { FileExplorerService } from '../../services/persistence/file-explorer.service';
 import { samePath } from '../../services/utils/path.util';
 import { EditorTabsService, OpenRequest } from '../../services/editor/editor-tabs/editor-tabs.service';
+import { GraphPage } from '../scene-graph/graph-page';
+import { SettingsPage } from '../settings/settings-page';
 
 /** Shown in the centre until the first scene/file is opened. */
 @Component({
@@ -48,6 +50,12 @@ export class ScenePage {
 
     { id: 'hierarchy', title: 'Hierarchy', component: HierarchyPanel,
       position: { referencePanel: 'home', direction: 'left' }, initialWidth: 320 },
+    { id: 'scenes', title: 'Scenes', component: GraphPage, inactive: true,
+      position: { referencePanel: 'hierarchy', direction: 'within' } },
+
+    { id: 'settings', title: 'Settings', component: SettingsPage, inactive: true,
+       position: { referencePanel: 'hierarchy', direction: 'within' } },
+
     { id: 'inspector', title: 'Inspector', component: InspectorPanel,
       position: { referencePanel: 'hierarchy', direction: 'below' } },
     { id: 'files', title: 'Files', component: FileExplorerPanel,
