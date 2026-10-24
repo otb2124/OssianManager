@@ -38,8 +38,8 @@
         @for (lib of items; track lib.id) {
           <div
             (click)="open(lib)"
-            class="flex gap-3 p-3 rounded-lg cursor-pointer
-                   transition-colors hover:bg-[var(--theme-color-muted)]">
+            class="flex gap-3 p-3 rounded-lg cursor-pointer transition-colors hover:bg-[var(--theme-color-muted)]"
+            [class.bg-[var(--theme-color-muted)]]="selection.selectedId() === lib.id">
   
             <div class="w-12 h-12 shrink-0 rounded-md flex items-center justify-center text-white"
                  [style.background]="lib.color">

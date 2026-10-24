@@ -1,19 +1,12 @@
 import { Injectable, signal } from '@angular/core';
 
-export interface LibraryOpenRequest { id: string; nonce: number; }
-
-/** Anyone (list rows, dependency links) can ask for a library tab; LibrariesPage consumes the request. */
+/** Which library is currently shown in the libraries page. */
 @Injectable({ providedIn: 'root' })
-export class LibraryTabsService {
-  private nonce = 0;
-  private readonly _request = signal<LibraryOpenRequest | null>(null);
-  readonly request = this._request.asReadonly();
+export class LibrarySelectionService {
+  private readonly _selectedId = signal<string | null>(null);
+  readonly selectedId = this._selectedId.asReadonly();
 
-  open(id: string): void {
-    this._request.set({ id, nonce: ++this.nonce });
-  }
-
-  consume(): void {
-    this._request.set(null);
+  select(id: string | null): void {
+    this._selectedId.set(id);
   }
 }

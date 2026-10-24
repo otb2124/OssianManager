@@ -15,6 +15,9 @@ import { samePath } from '../../services/utils/path.util';
 import { EditorTabsService, OpenRequest } from '../../services/editor/editor-tabs/editor-tabs.service';
 import { GraphPage } from '../scene-graph/graph-page';
 import { SettingsPage } from '../settings/settings-page';
+import { LibrariesPage } from '../libraries/libraries-page';
+import { LogsPage } from '../logs/logs-page';
+import { ProjectsPage } from '../projects/projects-page';
 
 /** Shown in the centre until the first scene/file is opened. */
 @Component({
@@ -48,27 +51,34 @@ export class ScenePage {
   protected readonly panels: DockPanelDef[] = [
     { id: 'home', title: 'Editor', component: EditorHome },
 
-    { id: 'hierarchy', title: 'Hierarchy', component: HierarchyPanel,
+    { id: 'hierarchy', title: 'Hierarchy', component: HierarchyPanel, windows: ['editor'],
       position: { referencePanel: 'home', direction: 'left' }, initialWidth: 320 },
-    { id: 'scenes', title: 'Scenes', component: GraphPage, inactive: true,
+    { id: 'scenes', title: 'Scenes', component: GraphPage, inactive: true, windows: ['editor'],
       position: { referencePanel: 'hierarchy', direction: 'within' } },
 
-    { id: 'settings', title: 'Settings', component: SettingsPage, inactive: true,
-       position: { referencePanel: 'hierarchy', direction: 'within' } },
+    { id: 'projects', title: 'Projects', component: ProjectsPage, inactive: true, windows: ['launcher'],
+        position: { referencePanel: 'hierarchy', direction: 'within' } },
 
-    { id: 'inspector', title: 'Inspector', component: InspectorPanel,
+    { id: 'settings', title: 'Settings', component: SettingsPage, inactive: true, windows: ['editor'],
+      position: { referencePanel: 'hierarchy', direction: 'within' } },
+    { id: 'libraries', title: 'Libraries', component: LibrariesPage, inactive: true, windows: ['editor'],
+      position: { referencePanel: 'hierarchy', direction: 'within' } },
+    { id: 'logs', title: 'Logs', component: LogsPage, inactive: true,
+      position: { referencePanel: 'hierarchy', direction: 'within' } },
+
+    { id: 'inspector', title: 'Inspector', component: InspectorPanel, windows: ['editor'],
       position: { referencePanel: 'hierarchy', direction: 'below' } },
-    { id: 'files', title: 'Files', component: FileExplorerPanel,
+    { id: 'files', title: 'Files', component: FileExplorerPanel, windows: ['editor'],
       position: { referencePanel: 'home', direction: 'right' }, initialWidth: 320 },
-    { id: 'resources', title: 'Resources', component: ResourcesPanel, inactive: true,
+    { id: 'resources', title: 'Resources', component: ResourcesPanel, inactive: true, windows: ['editor'],
       position: { referencePanel: 'files', direction: 'within' } },
-    { id: 'fileInspector', title: 'File Inspector', component: FileInspectorPanel,
+    { id: 'fileInspector', title: 'File Inspector', component: FileInspectorPanel, windows: ['editor'],
       position: { referencePanel: 'files', direction: 'below' } },
 
-    { id: 'terminal', title: 'Terminal', component: Terminal, renderer: 'always',
+    { id: 'terminal', title: 'Terminal', component: Terminal, renderer: 'always', windows: ['editor'],
       position: { referencePanel: 'home', direction: 'below' }, initialHeight: 240,
       inputs: { showInput: true, hideStartupOutput: true } },
-    { id: 'console', title: 'Console', component: Terminal, renderer: 'always', inactive: true,
+    { id: 'console', title: 'Console', component: Terminal, renderer: 'always', inactive: true, windows: ['editor'],
       position: { referencePanel: 'terminal', direction: 'within' },
       inputs: { showInput: false, hideStartupOutput: false } },
   ];

@@ -5,7 +5,7 @@ import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { TabsModule } from 'primeng/tabs';
 import { LibrariesService } from '../../../services/data/libraries/libraries.service';
-import { LibraryTabsService } from '../../../services/data/libraries/library-tabs/library-tabs.service';
+import { LibrarySelectionService } from '../../../services/data/libraries/library-tabs/library-tabs.service';
 
 @Component({
   selector: 'app-library',
@@ -17,7 +17,7 @@ export class Library {
   readonly libraryId = input<string | null>(null);
 
   protected readonly libs = inject(LibrariesService);
-  private readonly libraryTabs = inject(LibraryTabsService);
+  private readonly selection = inject(LibrarySelectionService);
   private readonly router = inject(Router);
 
   protected readonly activeTab = signal<string>('description');
@@ -56,7 +56,7 @@ export class Library {
   }
 
   protected openLibrary(id: string): void {
-    this.libraryTabs.open(id);
+    this.selection.select(id);
   }
 
   protected back(): void {

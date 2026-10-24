@@ -9,7 +9,7 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { LibraryEntry } from '../../../model/library.model';
 import { LibrariesService } from '../../../services/data/libraries/libraries.service';
-import { LibraryTabsService } from '../../../services/data/libraries/library-tabs/library-tabs.service';
+import { LibrarySelectionService } from '../../../services/data/libraries/library-tabs/library-tabs.service';
 
 @Component({
   selector: 'app-libraries-list',
@@ -19,8 +19,7 @@ import { LibraryTabsService } from '../../../services/data/libraries/library-tab
 })
 export class LibrariesList {
   protected readonly libraries = inject(LibrariesService);
-  private readonly libraryTabs = inject(LibraryTabsService); 
-  private readonly router = inject(Router);
+protected readonly selection = inject(LibrarySelectionService);
 
   protected readonly activeTab = signal<string>('installed');
   protected readonly query = signal('');
@@ -33,7 +32,7 @@ export class LibrariesList {
   }
 
   protected open(lib: LibraryEntry): void {
-    this.libraryTabs.open(lib.id);
+    this.selection.select(lib.id);
   }
 
   protected toggleInstall(lib: LibraryEntry, event: Event): void {

@@ -1,11 +1,12 @@
 import {
   AfterViewInit, ApplicationRef, Component, ComponentRef, ElementRef, EnvironmentInjector,
-  OnDestroy, Type, ViewEncapsulation, createComponent, inject, input, output, viewChild,
+  OnDestroy, Type, ViewEncapsulation, computed, createComponent, inject, input, output, viewChild,
 } from '@angular/core';
 import {
   AddPanelOptions, DockviewApi, GroupPanelPartInitParameters, IContentRenderer, PanelUpdateEvent, createDockview,
   themeAbyss,
 } from 'dockview-core';
+import { windowKind, WindowKind } from '../../../services/system/windows/window-kind';
 
 export interface DockPanelDef {
   id: string;
@@ -19,6 +20,9 @@ export interface DockPanelDef {
   /** 'always' keeps the component in the DOM while its tab is hidden. */
   renderer?: 'always' | 'onlyWhenVisible';
   inactive?: boolean;
+  floating?: Exclude<AddPanelOptions['floating'], false | undefined>;
+
+  windows?: WindowKind[];
 }
 
 /** Hosts any Angular component inside a dockview panel. */
@@ -68,6 +72,8 @@ class AngularPanelRenderer implements IContentRenderer {
   host: { class: 'block h-full w-full' },
 })
 export class DockGrid implements AfterViewInit, OnDestroy {
+
+  private readonly activePanels = computed(() => panelsForWindow(this.panels(), windowKind));
   readonly panels = input.required<DockPanelDef[]>();
   readonly components = input<Record<string, Type<unknown>>>({});
   /** When set, the layout is saved to localStorage under this key and restored on start. */
@@ -82,12 +88,15 @@ export class DockGrid implements AfterViewInit, OnDestroy {
   private saveTimer?: ReturnType<typeof setTimeout>;
   private readonly subs: { dispose(): void }[] = [];
 
+  readonly allowFloating = input(true);
+
   ngAfterViewInit(): void {
     this.api = createDockview(this.host().nativeElement, {
       theme: themeAbyss,
-      disableFloatingGroups: true, // see the note on the native viewport below
+      disableFloatingGroups: !this.allowFloating(),
+      floatingGroupBounds: 'boundedWithinViewport',
       createComponent: ({ name }) => {
-        const type = this.panels().find(p => p.id === name)?.component ?? this.components()[name];
+        const type = this.activePanels().find(p => p.id === name)?.component ?? this.components()[name];
         if (!type) throw new Error(`[DockGrid] Unknown panel "${name}"`);
         return new AngularPanelRenderer(type, this.injector, this.appRef);
       },
@@ -101,30 +110,36 @@ export class DockGrid implements AfterViewInit, OnDestroy {
 
   /** Throws away the saved layout and rebuilds the default one. */
   resetLayout(): void {
-    const key = this.layoutKey();
+    const key = this.storageKey();
     if (key) localStorage.removeItem(key);
     this.api?.clear();
     this.buildDefault();
   }
 
   private buildDefault(): void {
-    for (const def of this.panels()) {
-      this.api!.addPanel({
+    for (const def of this.activePanels()) {
+      const base = {
         id: def.id,
         component: def.id,
         title: def.title,
         params: def.inputs,
-        position: def.position,
         initialWidth: def.initialWidth,
         initialHeight: def.initialHeight,
         renderer: def.renderer,
         inactive: def.inactive,
-      });
+      };
+  
+      const floating = def.floating;
+      this.api!.addPanel(
+        floating
+          ? { ...base, floating }
+          : { ...base, position: def.position },
+      );
     }
   }
 
   private restore(): boolean {
-    const key = this.layoutKey();
+    const key = this.storageKey();
     const saved = key ? localStorage.getItem(key) : null;
     if (!saved) return false;
     try {
@@ -138,10 +153,15 @@ export class DockGrid implements AfterViewInit, OnDestroy {
   }
 
   private scheduleSave(): void {
-    const key = this.layoutKey();
+    const key = this.storageKey();
     if (!key || !this.api) return;
     clearTimeout(this.saveTimer);
     this.saveTimer = setTimeout(() => localStorage.setItem(key, JSON.stringify(this.api!.toJSON())), 300);
+  }
+
+  private storageKey(): string | null {
+    const key = this.layoutKey();
+    return key ? `${key}.${windowKind}` : null;
   }
 
   ngOnDestroy(): void {
@@ -149,4 +169,37 @@ export class DockGrid implements AfterViewInit, OnDestroy {
     this.subs.forEach(s => s.dispose());
     this.api?.dispose();
   }
+}
+
+/**
+ * Drops panels that don't belong in `kind`. A panel anchored to a dropped panel is re-anchored
+ * to whatever that panel was anchored to (transitively), or loses its position if nothing is left.
+ */
+export function panelsForWindow(defs: DockPanelDef[], kind: WindowKind): DockPanelDef[] {
+  const kept = defs.filter(d => !d.windows || d.windows.includes(kind));
+  const keptIds = new Set(kept.map(d => d.id));
+  const byId = new Map(defs.map(d => [d.id, d]));
+
+  const refOf = (d: DockPanelDef | undefined): string | null => {
+    const pos = d?.position as { referencePanel?: unknown } | undefined;
+    return typeof pos?.referencePanel === 'string' ? pos.referencePanel : null;
+  };
+
+  const resolve = (id: string, seen = new Set<string>()): string | null => {
+    if (keptIds.has(id)) return id;
+    if (seen.has(id)) return null;
+    seen.add(id);
+    const next = refOf(byId.get(id));
+    return next ? resolve(next, seen) : null;
+  };
+
+  return kept.map(d => {
+    const ref = refOf(d);
+    if (!ref || keptIds.has(ref)) return d;
+    const resolved = resolve(ref);
+    return {
+      ...d,
+      position: resolved ? ({ ...(d.position as object), referencePanel: resolved } as DockPanelDef['position']) : undefined,
+    };
+  });
 }

@@ -20,8 +20,15 @@ const allRoutes: RouteChild[] =
 [
   {
     path: '',
-    redirectTo: 'file',
+    redirectTo: 'workspace',
     pathMatch: 'full',
+  },
+  {
+    path: 'workspace',
+    title: 'Workspace',
+    displayBreadcrumb: true,
+    windows: ['launcher', 'editor'],
+    loadComponent: () => import('./pages/scene/scene-page.js').then(m => m.ScenePage),
   },
   {
     path: 'file',
@@ -42,41 +49,6 @@ const allRoutes: RouteChild[] =
         displayModule: true,
         windows: ['launcher'],
         loadComponent: () => import('./components/shared/empty/empty').then(m => m.Empty),
-      },
-      {
-        path: 'projects',
-        title: 'Projects',
-        icon: 'pi pi-folder',
-        displayBreadcrumb: true,
-        displayModule: true,
-        navigatesModule: true,
-        windows: ['launcher'],
-        children:
-        [
-          {
-            path: '',
-            redirectTo: 'recents',
-            pathMatch: 'full'
-          },
-          {
-            path: 'recents',
-            title: 'Recents',
-            icon: 'pi pi-clock',
-            displayBreadcrumb: true,
-            displayModule: true,
-            loadComponent: () => import('./pages/projects/projects-page.js').then(m => m.ProjectsPage),
-            data: { id:"projects-recents" }
-          },
-          {
-            path: 'my-projects',
-            title: 'My Projects',
-            icon: 'pi pi-folder',
-            displayBreadcrumb: true,
-            displayModule: true,
-            loadComponent: () => import('./pages/projects/projects-page.js').then(m => m.ProjectsPage),
-            data: { id:"projects-my-projects" }
-          },
-        ]
       },
       {
         path: 'action-import-project',
@@ -238,72 +210,6 @@ const allRoutes: RouteChild[] =
       }
     ]
   },
-  {
-    path: 'tools',
-    title: 'Tools',
-    displayBreadcrumb: true,
-    displayModule: true,
-    children:
-    [
-      {
-        path: '',
-        redirectTo: 'settings',
-        pathMatch: 'full'
-      },
-      {
-        path: 'libraries',
-        title: 'Libraries',
-        icon: 'pi pi-book',
-        displayBreadcrumb: true,
-        displayModule: true,
-        navigatesModule: true,
-        loadComponent: () => import('./pages/libraries/libraries-page.js').then(m => m.LibrariesPage),
-      },
-      {
-        path: 'logs',
-        title: 'Logs',
-        icon: 'pi pi-align-justify',
-        displayBreadcrumb: true,
-        displayModule: true,
-        navigatesModule: true,
-        loadComponent: () => import('./pages/logs/logs-page.js').then(m => m.LogsPage),
-      },
-    ]
-  },
-  {
-    path: 'project',
-    title: 'Project',
-    displayBreadcrumb: true,
-    displayModule: true,
-    windows: ['editor'],
-    children:
-    [
-      {
-        path: '',
-        redirectTo: 'scenes',
-        pathMatch: 'full'
-      },
-      {
-        path: 'scenes',
-        title: 'Scenes',
-        displayBreadcrumb: true,
-        displayModule: true,
-        navigatesModule: true,
-        loadComponent: () => import('./pages/scene-graph/graph-page.js').then(m => m.GraphPage)
-      },
-      {
-        path: 'scene-editor',
-        title: 'Scene Editor',
-        icon: 'pi pi-objects-column',
-        displayBreadcrumb: true,
-        displayModule: true,
-        navigatesModule: true,
-        loadComponent: () => import('./pages/scene/scene-page.js').then(m => m.ScenePage)
-      },
-      
-    ]
-  },
-
   {
     path: 'build',
     title: 'Build',
