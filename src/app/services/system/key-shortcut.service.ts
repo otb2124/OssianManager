@@ -1,8 +1,8 @@
 import { Injectable, inject, DestroyRef } from '@angular/core';
-import { Router } from '@angular/router';
-import { RouteChild, routes } from '../../app.routes';
 import { ProjectService } from '../data/projects/project.service';
 import { ActionRegistryService } from './action-registry.service';
+import { windowKind } from './windows/window-kind';
+import { MenuShortcut, collectMenuShortcuts, resolveMenu, MENU } from '../ui/menu/menu.model';
 
 export interface KeyboardShortcut {
   key: string;
@@ -12,24 +12,15 @@ export interface KeyboardShortcut {
   meta?: boolean;
 }
 
-interface KeyShortcutEntry {
-  shortcut: KeyboardShortcut;
-  actionId: string;
-  route: string;
-}
-
 @Injectable({ providedIn: 'root' })
 export class KeyShortcutService {
 
-  private readonly router = inject(Router);
   private readonly projectService = inject(ProjectService);
   private readonly destroyRef = inject(DestroyRef);
-
   private readonly actionRegistry = inject(ActionRegistryService);
 
   private listening = false;
 
-  /** Call once (e.g. from AppComponent) to start listening app-wide. */
   listen(): void {
     if (this.listening) return;
     this.listening = true;
@@ -58,38 +49,15 @@ export class KeyShortcutService {
   }
 
   private handleKeydown(event: KeyboardEvent): void {
-    const entries = this.collectShortcuts();
-    const match = entries.find(e => this.matchesShortcut(event, e.shortcut));
-    if (match) {
-      event.preventDefault();
-      this.actionRegistry.invoke(match.actionId);
-    }
+    const match = this.collectShortcuts().find(e =>
+      this.matchesShortcut(event, e.shortcut) && this.actionRegistry.has(e.actionId));
+    if (!match) return;
+
+    event.preventDefault();
+    this.actionRegistry.invoke(match.actionId);
   }
 
-  private collectShortcuts(): KeyShortcutEntry[] {
-    const hasProject = this.projectService.hasProject();
-    const result: KeyShortcutEntry[] = [];
-  
-    const walk = (nodes: RouteChild[], basePath: string) => {
-      for (const node of nodes) {
-        if (!node.path) continue;
-        if (node.displayOnProjectLoad && !hasProject) continue;
-  
-        const path = `${basePath}/${node.path}`;
-  
-        for (const action of node.actions ?? []) {
-          if (action.shortcut) {
-            result.push({ shortcut: action.shortcut, actionId: action.id, route: path });
-          }
-        }
-  
-        if (node.children?.length) {
-          walk(node.children, path);
-        }
-      }
-    };
-  
-    walk(routes, '');
-    return result;
+  private collectShortcuts(): MenuShortcut[] {
+    return collectMenuShortcuts(resolveMenu(MENU, windowKind, this.projectService.hasProject()));
   }
 }
