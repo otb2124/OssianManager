@@ -4,6 +4,7 @@ import { ProjectService } from '../data/projects/project.service';
 import { ResourceEntry } from '../../model/resource.model';
 import { normalizePath, parentPath, samePath } from '../utils/path.util';
 import { Subject, tap } from 'rxjs';
+import { AppStoreService } from '../data/app-config/app-store.service';
 
 export type InspectTarget =
   | { kind: 'fs'; entry: FsEntry }
@@ -15,6 +16,9 @@ const MAX_HISTORY = 100;
 export class FileExplorerService {
   private readonly persistence = inject(PersistenceService);
   private readonly projectService = inject(ProjectService);
+  private readonly store = inject(AppStoreService);
+
+  private get maxHistory(): number { return this.store.data()?.editor.fileExplorer.maxHistory ?? 100; }
 
   private readonly _rootPath = signal<string | null>(null);
   private readonly _selectedEntry = signal<FsEntry | null>(null);
@@ -74,7 +78,7 @@ export class FileExplorerService {
 
     const history = this._history().slice(0, this._cursor() + 1); // drop the forward entries
     history.push(target);
-    if (history.length > MAX_HISTORY) history.shift();
+    if (history.length > this.maxHistory) history.shift();
 
     this._history.set(history);
     this._cursor.set(history.length - 1);

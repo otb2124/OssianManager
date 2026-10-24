@@ -1,5 +1,5 @@
-import { KeyboardShortcut } from "../../system/key-shortcut.service";
-import { WindowKind } from "../../system/windows/window-kind";
+import { KeyboardShortcut } from "../../../model/keyboard-shortcut.model";
+import { WindowKind } from "../../../model/window-kind.model";
 
 
 export interface MenuEntry {

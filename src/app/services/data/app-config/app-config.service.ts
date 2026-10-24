@@ -1,64 +1,44 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
-import { EMPTY, Observable, switchMap, tap } from 'rxjs';
+import { Injectable, computed, inject } from '@angular/core';
+import { defer, map, Observable } from 'rxjs';
 import { AppConfig, WindowTabsState } from '../../../model/app-config.model';
-import { PersistenceService } from '../../persistence/persistence.service';
-import { WindowKind } from '../../system/windows/window-kind';
-
+import { WindowKind } from '../../../model/window-kind.model';
+import { AppStoreService } from './app-store.service';
 
 @Injectable({ providedIn: 'root' })
 export class AppConfigService {
+  private readonly store = inject(AppStoreService);
 
-  private persistence = inject(PersistenceService);
-  private readonly file = 'app.json';
+  readonly config = this.store.data;                       // AppFile | null
+  readonly hasConfig = computed(() => this.config() !== null);
 
-  private readonly _config = signal<AppConfig | null>(null);
-  readonly config = this._config.asReadonly();
-  readonly hasConfig = computed(() => this._config() !== null);
-  readonly version = computed(() => this._config()?.version ?? null);
-  readonly versionTags = computed(() => this._config()?.versionTags ?? []);
-  readonly appTitle = computed(() => this._config()?.appTitle ?? null);
-  readonly currentProjectId = computed(() => this._config()?.currentProjectId ?? null);
-  
-  readonly themeColor = computed(() => this._config()?.settings.themeColor ?? null);
-  readonly themeFont = computed(() => this._config()?.settings.themeFont ?? null);
-  readonly fontSize = computed(() => this._config()?.settings.fontSize ?? null);
-  readonly backgroundPreset = computed(() => this._config()?.settings.backgroundPreset ?? null);
+  readonly version = computed(() => this.config()?.version ?? null);
+  readonly versionTags = computed(() => this.config()?.versionTags ?? []);
+  readonly appTitle = computed(() => this.config()?.appTitle ?? null);
+  readonly engineProjectPath = computed(() => this.config()?.engineProjectPath ?? null);
+  readonly currentProjectId = computed(() => this.config()?.currentProjectId ?? null);
 
-  readonly engineProjectPath = computed(() => this._config()?.engineProjectPath ?? null);
+  readonly settings = computed(() => this.config()?.settings ?? null);
+  readonly themeColor = computed(() => this.settings()?.themeColor ?? null);
+  readonly themeFont = computed(() => this.settings()?.themeFont ?? null);
+  readonly fontSize = computed(() => this.settings()?.fontSize ?? null);
+  readonly backgroundPreset = computed(() => this.settings()?.backgroundPreset ?? null);
+  readonly background = computed(() => this.settings()?.background ?? null);
 
-  load(): Observable<AppConfig> {
-    return this.persistence.read<AppConfig>(this.file).pipe(
-      tap(config => this._config.set(config))
-    );
-  }
-
-  private mutate(fn: (disk: AppConfig) => AppConfig): Observable<void> {
-    return this.persistence.read<AppConfig>(this.file).pipe(
-      switchMap(disk => {
-        const next = Object.fromEntries(
-          Object.entries(fn(disk)).filter(([, v]) => v !== undefined)
-        ) as unknown as AppConfig;
-        return this.persistence.write(this.file, next).pipe(
-          tap(() => this._config.set(next))
-        );
-      })
-    );
+  load() {
+    return defer(() => this.store.load());
   }
 
   update(partial: Partial<AppConfig>): Observable<void> {
-    if (!this._config()) return EMPTY;
-    return this.mutate(disk => ({ ...disk, ...partial }));
+    return defer(() => this.store.update(d => ({ ...d, ...partial }))).pipe(map(() => void 0));
   }
-  
+
   updateSettings(partial: Partial<AppConfig['settings']>): Observable<void> {
-    if (!this._config()) throw new Error('AppConfig not loaded');
-    return this.mutate(disk => ({ ...disk, settings: { ...disk.settings, ...partial } }));
+    return defer(() => this.store.update(d => ({ ...d, settings: { ...d.settings, ...partial } })))
+      .pipe(map(() => void 0));
   }
-  
+
   updateWindowTabs(kind: WindowKind, state: WindowTabsState): Observable<void> {
-    return this.mutate(disk => ({
-      ...disk,
-      windowTabs: { ...disk.windowTabs, [kind]: state },
-    }));
+    return defer(() => this.store.update(d => ({ ...d, windowTabs: { ...d.windowTabs, [kind]: state } })))
+      .pipe(map(() => void 0));
   }
 }

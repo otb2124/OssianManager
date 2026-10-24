@@ -1,16 +1,16 @@
-import { Injectable } from '@angular/core';
-import { from, Observable, map } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { defer, map, Observable, switchMap } from 'rxjs';
 import { invoke } from '@tauri-apps/api/core';
 import { GitCommit, RawGitCommit } from '../../model/git.model';
-
+import { AppStoreService } from '../data/app-config/app-store.service';
 
 @Injectable({ providedIn: 'root' })
 export class GitService {
-
-  private readonly repoPath = '../';
+  private readonly store = inject(AppStoreService);
 
   getLatestCommit(): Observable<GitCommit> {
-    return from(invoke<RawGitCommit>('get_latest_commit', { path: this.repoPath })).pipe(
+    return defer(() => this.store.load()).pipe(
+      switchMap(app => invoke<RawGitCommit>('get_latest_commit', { path: app.git.repoPath })),
       map(raw => ({
         hash: raw.hash,
         hashShort: raw.hashShort,
@@ -18,8 +18,7 @@ export class GitService {
         author: raw.author,
         date: new Date(raw.date),
         branch: raw.branch,
-      }))
+      })),
     );
   }
 }
-

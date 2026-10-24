@@ -2,6 +2,7 @@
 import { Injectable, NgZone, inject, signal } from '@angular/core';
 import { invoke } from '@tauri-apps/api/core';
 import { listen, UnlistenFn } from '@tauri-apps/api/event';
+import { AppStoreService } from '../../data/app-config/app-store.service';
 
 export type ConsoleStream = 'stdout' | 'stderr' | 'input' | 'system';
 
@@ -31,6 +32,8 @@ export class EngineConsoleService {
   private static readonly MAX_HISTORY = 200;
   private static readonly FLUSH_MS = 50;
 
+  private readonly store = inject(AppStoreService);
+
   private readonly zone = inject(NgZone);
 
   private readonly _lines = signal<ConsoleLine[]>([]);
@@ -47,6 +50,10 @@ export class EngineConsoleService {
   private pending: ConsoleLine[] = [];
   private flushTimer?: ReturnType<typeof setTimeout>;
   private unlisten: UnlistenFn[] = [];
+
+  private get limits() {
+    return this.store.data()?.editor.console ?? { maxLines: 5000, maxHistory: 200, flushMs: 50 };
+  }
 
   /** Call BEFORE EngineBridgeService.spawnEngine() so early output isn't missed. */
   async init(): Promise<void> {

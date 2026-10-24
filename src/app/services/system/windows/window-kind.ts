@@ -1,6 +1,7 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
+import type { WindowKind } from '../../../model/window-kind.model';
 
-export type WindowKind = 'launcher' | 'editor';
+export type { WindowKind };
 
 export const windowKind: WindowKind =
   getCurrentWindow().label === 'editor' ? 'editor' : 'launcher';

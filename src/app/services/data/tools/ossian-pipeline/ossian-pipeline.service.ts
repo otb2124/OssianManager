@@ -8,27 +8,10 @@ import { joinPath } from '../../../utils/path.util';
 import { OssianToolsService } from '../ossian-tools/ossian-tools.service';
 import { OssianIniService } from '../ossian-ini/ossian-ini.service';
 import { ToolRunnerService, ToolRunResult } from '../tool-runner/tool-runner.service';
+import { ProjectBuildSettings } from '../../../../model/project-config.model';
+import { AppStoreService } from '../../app-config/app-store.service';
 
-const MANIFEST = 'ConfigFiles/Core/resources.json';
-const PAK_NAME = 'Content.pak';
-/** A Tools.ini in the project folder owns the app identity (name, icon, redist...) for `build`. */
-const TOOLS_INI = 'Tools.ini';
-
-export interface BuildRequest {
-  /** Defaults to the project title (ignored when the project has its own Tools.ini). */
-  name?: string;
-  version?: string;
-  company?: string;
-  copyright?: string;
-  description?: string;
-  /** Absolute path of an .ico / .png. */
-  icon?: string;
-  noConsole?: boolean;
-  zip?: boolean;
-  /** Replace an output folder that does not look like a previous build. */
-  force?: boolean;
-  allowCookErrors?: boolean;
-}
+export type BuildRequest = ProjectBuildSettings;
 
 export interface BuiltGame {
   game: string;
@@ -59,6 +42,7 @@ export class OssianPipelineService {
   private readonly tools = inject(OssianToolsService);
   private readonly ossianIni = inject(OssianIniService);
   private readonly runner = inject(ToolRunnerService);
+  private readonly store = inject(AppStoreService);
 
   /** Live progress of the running command (null when idle). */
   readonly status = this.runner.status;
@@ -66,6 +50,12 @@ export class OssianPipelineService {
 
   private readonly _lastBuild = signal<BuiltGame | null>(null);
   readonly lastBuild = this._lastBuild.asReadonly();
+
+  private get buildDefaults() {
+    const app = this.store.data();
+    if (!app) throw new Error('App settings are not loaded yet.');
+    return app.defaults.build;
+  }
 
   // ── engine (Ossian.ini) ──────────────────────────────────────────────────
 
@@ -93,8 +83,8 @@ export class OssianPipelineService {
 
       return this.runner.run('cook', [
         '--content', contentDir,
-        '--out', joinPath(targetDir, PAK_NAME),
-        '--manifest', MANIFEST,
+        '--out', joinPath(targetDir, this.buildDefaults.packName),
+        '--manifest', this.buildDefaults.manifest,
         '--engine-dir', layout.engineDir,   // scripts are compiled against the built engine
         '--json',
       ], { title: 'Cooking content', cwd: projectDir });
@@ -109,8 +99,9 @@ export class OssianPipelineService {
 
   // ── build ────────────────────────────────────────────────────────────────
 
-  async build(request: BuildRequest = {}): Promise<ToolRunResult | null> {
+  async build(overrides: BuildRequest = {}): Promise<ToolRunResult | null> {
     return this.execute('Build', async () => {
+      const request: BuildRequest = { ...this.project.currentConfig()?.build, ...overrides };
       const { projectDir, contentDir, targetDir, record } = this.paths();
       await this.assertContent(contentDir);
       const layout = await this.requireTools();
@@ -124,7 +115,7 @@ export class OssianPipelineService {
       ];
 
       // A Tools.ini in the project folder owns the app identity; otherwise it comes from the project record.
-      const projectHasToolsIni = await this.exists(joinPath(projectDir, TOOLS_INI));
+      const projectHasToolsIni = await this.exists(joinPath(projectDir, this.buildDefaults.toolsIni));
       if (request.name || !projectHasToolsIni) {
         args.push('--name', this.clean(request.name ?? record.title));
       }
@@ -225,7 +216,7 @@ export class OssianPipelineService {
       throw new Error(`The project's content folder does not exist: ${contentDir}`);
     }
 
-    const manifest = joinPath(contentDir, MANIFEST);
+    const manifest = joinPath(contentDir, this.buildDefaults.manifest);
     if (!(await this.exists(manifest))) {
       throw new Error(`The project content has no resources manifest: ${manifest}`);
     }

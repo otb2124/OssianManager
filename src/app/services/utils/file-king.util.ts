@@ -3,7 +3,7 @@ const TEXT_EXTENSIONS = new Set([
     'vert', 'frag', 'glsl', 'hlsl', 'comp', 'shader',
   ]);
   
-  export function isTextFile(name: string): boolean {
+  export function isTextFile(name: string, extensions: readonly string[]): boolean {
     const i = name.lastIndexOf('.');
-    return i > 0 && TEXT_EXTENSIONS.has(name.slice(i + 1).toLowerCase());
+    return i > 0 && extensions.includes(name.slice(i + 1).toLowerCase());
   }

@@ -28,7 +28,11 @@ pub fn read_text(path: &Path) -> AppResult<String> {
 }
 
 pub fn write_text(path: &Path, content: &str) -> AppResult<()> {
-    fs::write(path, content).at(path)
+    let mut tmp = path.as_os_str().to_owned();
+    tmp.push(".tmp");
+    let tmp = PathBuf::from(tmp);
+    fs::write(&tmp, content).at(&tmp)?;
+    fs::rename(&tmp, path).at(path)   // replaces the target on Windows
 }
 
 pub fn ensure_directory(path: &Path) -> AppResult<()> {

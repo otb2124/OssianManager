@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { KeyboardShortcut } from './key-shortcut.service';
+import { KeyboardShortcut } from '../../model/keyboard-shortcut.model';
 
 export type ActionHandler = () => void;
 

@@ -1,24 +1,33 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { forkJoin, map, Observable, switchMap, of, catchError, tap, filter, take, shareReplay } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
-import { PersistenceService } from '../../persistence/persistence.service';
 import { AppConfigService } from '../app-config/app-config.service';
-import { HydratedProjectRecord, ProjectRecord, ProjectRecordTag, ProjectRegistryEntry } from '../../../model/project-record.model';
-import { ProjectConfig, ProjectData } from '../../../model/project-config.model';
+import { HydratedProjectRecord, ProjectRecord, hydrateRecord, serializeRecord } from '../../../model/project-record.model';
+import { ProjectConfig } from '../../../model/project-config.model';
 import { NotificationService } from '../../notifications/notification.service';
 import { UserTagService } from '../user-tags/user-tag.service';
+import { ProjectRegistryRepository } from './project-registry.repository';
+import { ProjectConfigRepository } from './project-config.repository';
 import { resolveProjectPath } from '../../utils/path.util';
 
+export interface ProjectEntry {
+  project: HydratedProjectRecord;
+  directoryPath: string;
+}
+
+/**
+ * The open project (signals) plus the project catalog.
+ * Reading and writing files is delegated to ProjectRegistryRepository / ProjectConfigRepository,
+ * record <-> JSON mapping lives in project-record.model.ts; this service keeps the state and the user notifications.
+ */
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
 
-  private persistence = inject(PersistenceService);
+  private registry = inject(ProjectRegistryRepository);
+  private configs = inject(ProjectConfigRepository);
   private tagService = inject(UserTagService);
   private appConfigService = inject(AppConfigService);
   private notifications = inject(NotificationService);
-
-  private readonly registryFile = 'project-registry.json';
-  private readonly configFileName = '.ossian.project.json';
 
   // ─── Current project state ───────────────────────────────────────────────
 
@@ -37,7 +46,7 @@ export class ProjectService {
   readonly targetDirectory = computed(() => this.resolveDir(this._currentConfig()?.targetDirectory));
 
   readonly projectData = computed(() => this._currentConfig()?.data ?? null);
-  
+
   readonly currentDirectoryPath = this._currentDirectoryPath.asReadonly();
 
   private readonly currentProject$ = toObservable(this._currentProject);
@@ -48,12 +57,12 @@ export class ProjectService {
     this._currentProject.set(project);
     this._currentDirectoryPath.set(directoryPath);
     this.appConfigService.update({ currentProjectId: project.id }).subscribe();
-  
+
     const config$ = this.loadConfig(project, directoryPath).pipe(shareReplay(1));
     config$.subscribe({
       error: err => this.notifications.error('Could not load the project config', String(err)),
     });
-  
+
     this.notifications.info(`Project opened`, project.title);
     return config$;
   }
@@ -76,75 +85,75 @@ export class ProjectService {
     this.notifications.info('Project closed', title);
   }
 
-  // ─── Registry queries ─────────────────────────────────────────────────────
+  // ─── Catalog queries ──────────────────────────────────────────────────────
 
-  getAll(): Observable<{ project: HydratedProjectRecord; directoryPath: string }[]> {
+  getAll(): Observable<ProjectEntry[]> {
     return forkJoin({
-      entries: this.persistence.read<ProjectRegistryEntry[]>(this.registryFile),
-      tags: this.tagService.getAll()
+      entries: this.registry.getAll(),
+      tags: this.tagService.getAll(),
     }).pipe(
       switchMap(({ entries, tags }) => {
         if (!entries.length) return of([]);
         return forkJoin(
           entries.map(entry =>
-            this.persistence.readAbsolute<ProjectConfig>(
-              `${entry.directoryPath}/${this.configFileName}`
-            ).pipe(
+            this.configs.read(entry.directoryPath).pipe(
               map(config => ({
-                project: this.hydrate(config.projectRecord!, tags),
-                directoryPath: entry.directoryPath
-              }))
-            )
-          )
+                project: hydrateRecord(config.projectRecord!, tags),
+                directoryPath: entry.directoryPath,
+              })),
+            ),
+          ),
         );
-      })
+      }),
     );
   }
 
-  getFavorites(): Observable<{ project: HydratedProjectRecord; directoryPath: string }[]> {
+  getFavorites(): Observable<ProjectEntry[]> {
     return this.getAll().pipe(map(items => items.filter(i => i.project.isFavorite)));
   }
 
-  getById(id: string): Observable<{ project: HydratedProjectRecord; directoryPath: string } | undefined> {
+  getById(id: string): Observable<ProjectEntry | undefined> {
     return this.getAll().pipe(map(items => items.find(i => i.project.id === id)));
   }
 
-  // ─── Registry persistence ─────────────────────────────────────────────────
+  // ─── Catalog persistence ──────────────────────────────────────────────────
 
   save(project: HydratedProjectRecord, directoryPath: string): Observable<void> {
-    return this.saveRegistry(project, directoryPath).pipe(
-      switchMap(() => this.saveRecord(project, directoryPath))
+    return this.registry.save({ id: project.id, directoryPath }).pipe(
+      switchMap(() => this.saveRecord(project, directoryPath)),
     );
   }
 
   delete(id: string): Observable<void> {
-    return this.persistence.read<ProjectRegistryEntry[]>(this.registryFile).pipe(
-      map(entries => entries.filter(e => e.id !== id)),
-      switchMap(entries => this.persistence.write(this.registryFile, entries)),
-      tap(() => this.notifications.success('Project removed', id))
+    return this.registry.delete(id).pipe(
+      tap(() => this.notifications.success('Project removed', id)),
+    );
+  }
+
+  /**
+   * Registers a project folder. A folder with a project record is imported as it is;
+   * a folder without a readable config (or without a record in it) becomes a new project.
+   * Failures while saving or registering are NOT mistaken for "no config" and reach the caller.
+   */
+  importFromDirectory(directoryPath: string): Observable<HydratedProjectRecord> {
+    return this.configs.read(directoryPath).pipe(
+      catchError(() => of(null)),
+      switchMap(config => config?.projectRecord
+        ? this.registerExisting(config.projectRecord, directoryPath)
+        : this.createForDirectory(directoryPath)),
     );
   }
 
   // ─── Project config ───────────────────────────────────────────────────────
 
   loadConfig(project: HydratedProjectRecord, directoryPath: string): Observable<ProjectConfig> {
-    const path = this.configPath(directoryPath);
-    return this.persistence.readAbsolute<ProjectConfig>(path).pipe(
-      catchError(() => {
-        const config: ProjectConfig = {
-          projectRecord: this.serializeRecord(project),
-          resDirectory: '/res',
-          targetDirectory: '/target',
-        };
-        return this.persistence.writeAbsolute(path, config).pipe(
-          switchMap(() => [config])
-        );
-      }),
+    const record = serializeRecord(project);
+    return this.configs.readOrCreate(directoryPath, record).pipe(
       tap(config => {
-        const synced: ProjectConfig = { ...config, projectRecord: this.serializeRecord(project) };
-        this.persistence.writeAbsolute(path, synced).subscribe();
+        const synced: ProjectConfig = { ...config, projectRecord: record };
+        this.configs.write(directoryPath, synced).subscribe();
         this._currentConfig.set(synced);
-      })
+      }),
     );
   }
 
@@ -154,7 +163,7 @@ export class ProjectService {
     return this.currentProject$.pipe(
       filter(p => !!p),
       take(1),
-      switchMap(p => this.loadConfig(p!, directoryPath))
+      switchMap(p => this.loadConfig(p!, directoryPath)),
     );
   }
 
@@ -166,10 +175,10 @@ export class ProjectService {
     const updated: ProjectConfig = {
       ...config,
       ...partial,
-      projectRecord: this.serializeRecord(project),
+      projectRecord: serializeRecord(project),
     };
-    return this.persistence.writeAbsolute(this.configPath(directoryPath), updated).pipe(
-      tap(() => this._currentConfig.set(updated))
+    return this.configs.write(directoryPath, updated).pipe(
+      tap(() => this._currentConfig.set(updated)),
     );
   }
 
@@ -179,94 +188,48 @@ export class ProjectService {
 
   // ─── Private helpers ──────────────────────────────────────────────────────
 
-  private saveRegistry(project: HydratedProjectRecord, directoryPath: string): Observable<void> {
-    return this.persistence.read<ProjectRegistryEntry[]>(this.registryFile).pipe(
-      map(entries => {
-        const entry: ProjectRegistryEntry = { id: project.id, directoryPath };
-        const index = entries.findIndex(e => e.id === project.id);
-        if (index !== -1) entries[index] = entry;
-        else entries.push(entry);
-        return entries;
-      }),
-      switchMap(entries => this.persistence.write(this.registryFile, entries))
-    );
-  }
-
+  /** Writes the project record into the folder's config, telling the user which fields changed. */
   private saveRecord(project: HydratedProjectRecord, directoryPath: string): Observable<void> {
-    const path = this.configPath(directoryPath);
-    return this.persistence.readAbsolute<ProjectConfig>(path).pipe(
-      catchError(() => of({ projectRecord: undefined, resDirectory: '/res', targetDirectory: '/target' } as ProjectConfig)),
-      tap(config => {
-        if (config.projectRecord) {
-          const changedFields = (Object.keys(project) as (keyof ProjectRecord)[])
-            .filter(key => JSON.stringify((config.projectRecord as any)[key]) !== JSON.stringify((this.serializeRecord(project) as any)[key]))
-            .map(key => `${key}: ${JSON.stringify((config.projectRecord as any)[key])} → ${JSON.stringify((this.serializeRecord(project) as any)[key])}`);
-          if (changedFields.length) {
-            this.notifications.info(`${project.title} record saved`, changedFields.join('\n'));
-          }
-        }
-      }),
-      map(config => ({ ...config, projectRecord: this.serializeRecord(project) })),
-      switchMap(config => this.persistence.writeAbsolute(path, config))
+    const record = serializeRecord(project);
+    return this.configs.readOrDefault(directoryPath).pipe(
+      tap(config => this.notifyRecordChanges(project.title, config.projectRecord, record)),
+      switchMap(config => this.configs.write(directoryPath, { ...config, projectRecord: record })),
     );
   }
 
-  importFromDirectory(directoryPath: string): Observable<HydratedProjectRecord> {
-    const configPath = `${directoryPath}/${this.configFileName}`;
-    return this.persistence.readAbsolute<ProjectConfig>(configPath).pipe(
-      switchMap(config => {
-        if (!config.projectRecord) throw new Error('No project record in config');
-        return this.tagService.getAll().pipe(
-          map(tags => this.hydrate(config.projectRecord!, tags)),
-          switchMap(project => this.saveRegistry(project, directoryPath).pipe(map(() => project))),
-          tap(project => this.notifications.success('Project imported', project.title))
-        );
-      }),
-      catchError(() => {
-        const title = directoryPath.split(/[\\/]/).pop() ?? 'Imported Project';
-        const newProject: HydratedProjectRecord = {
-          id: crypto.randomUUID(),
-          title,
-          isFavorite: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          tags: [],
-        };
-        return this.saveRecord(newProject, directoryPath).pipe(
-          switchMap(() => this.saveRegistry(newProject, directoryPath)),
-          map(() => newProject),
-          tap(() => this.notifications.success('Project created', title))
-        );
-      })
+  private notifyRecordChanges(title: string, stored: ProjectRecord | undefined, next: ProjectRecord): void {
+    if (!stored) return;
+    const changes = (Object.keys(next) as (keyof ProjectRecord)[])
+      .filter(key => JSON.stringify(stored[key]) !== JSON.stringify(next[key]))
+      .map(key => `${key}: ${JSON.stringify(stored[key])} → ${JSON.stringify(next[key])}`);
+    if (changes.length) {
+      this.notifications.info(`${title} record saved`, changes.join('\n'));
+    }
+  }
+
+  private registerExisting(record: ProjectRecord, directoryPath: string): Observable<HydratedProjectRecord> {
+    return this.tagService.getAll().pipe(
+      map(tags => hydrateRecord(record, tags)),
+      switchMap(project => this.registry.save({ id: project.id, directoryPath }).pipe(map(() => project))),
+      tap(project => this.notifications.success('Project imported', project.title)),
     );
   }
 
-  private hydrate(record: ProjectRecord, tags: ProjectRecordTag[]): HydratedProjectRecord {
-    return {
-      ...record,
-      createdAt: new Date(record.createdAt),
-      updatedAt: new Date(record.updatedAt),
-      lastOpenedAt: record.lastOpenedAt ? new Date(record.lastOpenedAt) : undefined,
-      tags: record.tags.map(id => tags.find(t => t.id === id)).filter((t): t is ProjectRecordTag => !!t),
+  private createForDirectory(directoryPath: string): Observable<HydratedProjectRecord> {
+    const title = directoryPath.split(/[\\/]/).pop() ?? 'Imported Project';
+    const project: HydratedProjectRecord = {
+      id: crypto.randomUUID(),
+      title,
+      isFavorite: false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      tags: [],
     };
-  }
-
-  private serializeRecord(project: HydratedProjectRecord): ProjectRecord {
-    return {
-      id: project.id,
-      title: project.title,
-      description: project.description,
-      color: project.color,
-      isFavorite: project.isFavorite,
-      createdAt: project.createdAt,
-      updatedAt: project.updatedAt,
-      lastOpenedAt: project.lastOpenedAt ?? undefined,
-      tags: project.tags.map(t => t.id),
-    };
-  }
-
-  private configPath(directoryPath: string): string {
-    return `${directoryPath}/${this.configFileName}`;
+    return this.saveRecord(project, directoryPath).pipe(
+      switchMap(() => this.registry.save({ id: project.id, directoryPath })),
+      map(() => project),
+      tap(() => this.notifications.success('Project created', title)),
+    );
   }
 
   private resolveDir(path: string | undefined): string | null {

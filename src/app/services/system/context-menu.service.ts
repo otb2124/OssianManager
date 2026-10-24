@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { KeyboardShortcut } from './key-shortcut.service';
+import { KeyboardShortcut } from '../../model/keyboard-shortcut.model';
 import { ActionRegistryService } from './action-registry.service';
 
 export interface ContextMenuItem {
@@ -44,3 +44,4 @@ export class ContextMenuService {
     this.actionRegistry.invoke(actionId);
   }
 }
+

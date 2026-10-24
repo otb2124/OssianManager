@@ -1,65 +1,63 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { PersistenceService } from '../persistence/persistence.service';
-import { NotificationLogEntry, Notification } from '../../model/notification.model';
+import { Notification, NotificationLogEntry, NotificationSeverity } from '../../model/notification.model';
+import { AppStoreService } from '../data/app-config/app-store.service';
+
+const FALLBACK_LIFE: Record<NotificationSeverity, number> = { success: 3000, info: 3000, warn: 0, error: 8000 };
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
+  private readonly messageService = inject(MessageService);
+  private readonly store = inject(AppStoreService);
 
-  private messageService = inject(MessageService);
-  private persistence = inject(PersistenceService);
-
-  private readonly logFile = 'notification-log.json';
-
-  private readonly _log = signal<NotificationLogEntry[]>([]);
-  readonly log = this._log.asReadonly();
-
-  constructor() {
-    this.persistence.read<NotificationLogEntry[]>(this.logFile).subscribe({
-      next: entries => this._log.set(entries.map(e => ({ ...e, timestamp: new Date(e.timestamp) }))),
-      error: () => this._log.set([])
-    });
-  }
+  readonly log = computed<NotificationLogEntry[]>(() =>
+    (this.store.data()?.notifications.log ?? []).map(e => ({ ...e, timestamp: new Date(e.timestamp) })));
 
   show(notification: Notification): void {
+    const life = notification.life ?? this.lifetime(notification.severity);
     this.messageService.add({
       severity: notification.severity,
       summary: notification.title,
       detail: notification.description,
-      life: notification.life,
+      life,
     });
-    this.writeLog(notification);
+    this.writeLog({ ...notification, life });
   }
 
-  success(title: string, description?: string, life = 3000): void {
+  success(title: string, description?: string, life?: number): void {
     this.show({ severity: 'success', title, description, life });
   }
 
-  info(title: string, description?: string, life = 3000): void {
+  info(title: string, description?: string, life?: number): void {
     this.show({ severity: 'info', title, description, life });
   }
 
-  warn(title: string, description?: string): void {
-    this.show({ severity: 'warn', title, description });
+  warn(title: string, description?: string, life?: number): void {
+    this.show({ severity: 'warn', title, description, life });
   }
 
   error(title: string, description?: string, life?: number): void {
-    this.show({ severity: 'error', title, description, life: life ?? 8000 });
+    this.show({ severity: 'error', title, description, life });
   }
 
   clearLog(): void {
-    this._log.set([]);
-    this.persistence.write(this.logFile, []).subscribe();
+    void this.store.update(d => ({ ...d, notifications: { ...d.notifications, log: [] } }));
   }
 
-  private writeLog(notification: Notification): void {
-    const entry: NotificationLogEntry = {
-      ...notification,
-      id: crypto.randomUUID(),
-      timestamp: new Date(),
-    };
-    const updated = [entry, ...this._log()];
-    this._log.set(updated);
-    this.persistence.write(this.logFile, updated).subscribe();
+  private writeLog(n: Notification): void {
+    const entry: NotificationLogEntry = { ...n, id: crypto.randomUUID(), timestamp: new Date() };
+    void this.store.update(d => ({
+      ...d,
+      notifications: {
+        ...d.notifications,
+        log: [entry, ...d.notifications.log].slice(0, d.notifications.maxEntries),
+      },
+    }));
+  }
+
+  /** undefined = the toast stays until closed. */
+  private lifetime(severity: NotificationSeverity): number | undefined {
+    const ms = this.store.data()?.notifications.lifetimes[severity] ?? FALLBACK_LIFE[severity];
+    return ms > 0 ? ms : undefined;
   }
 }

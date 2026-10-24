@@ -3,14 +3,9 @@ import { ProjectService } from '../data/projects/project.service';
 import { ActionRegistryService } from './action-registry.service';
 import { windowKind } from './windows/window-kind';
 import { MenuShortcut, collectMenuShortcuts, resolveMenu, MENU } from '../ui/menu/menu.model';
+import type { KeyboardShortcut } from '../../model/keyboard-shortcut.model';
 
-export interface KeyboardShortcut {
-  key: string;
-  ctrl?: boolean;
-  shift?: boolean;
-  alt?: boolean;
-  meta?: boolean;
-}
+export type { KeyboardShortcut };
 
 @Injectable({ providedIn: 'root' })
 export class KeyShortcutService {

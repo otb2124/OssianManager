@@ -90,9 +90,6 @@ export class AppComponent implements OnInit {
         ];
       },
     });
-
-    this.bg.setShader('cosmos');
-    this.bg.patch({ uCoverage: 0.9, uDrift: 0.2, uPerspective: 0.75 });   // flat top-down, faster
   }
 
 

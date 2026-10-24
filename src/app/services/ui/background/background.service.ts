@@ -38,13 +38,17 @@ export class BackgroundService {
   readonly fields = computed(() => uniformFields(this._shader()));
 
   constructor() {
-    // Follows the saved setting. Skips when that shader is already active, so the
-    // startup patch in AppComponent is not wiped by a reset to defaults.
     effect(() => {
       const id = this.appConfig.backgroundPreset();
-      if (!id) return;
+      const bg = this.appConfig.background();
       untracked(() => {
-        if (this._shader().id !== id) this.setShader(id);
+        if (bg) {
+          this._enabled.set(bg.enabled);
+          this._speed.set(clamp(bg.speed, 0, 10));
+          this._quality.set(clamp(bg.quality, 0.25, 1.5));
+          this._dim.set(clamp(bg.dim, 0, 1));
+        }
+        if (id && this._shader().id !== id) this.setShader(id, (bg?.values[id] ?? {}) as UniformValues);
       });
     });
   }

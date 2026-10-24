@@ -1,44 +1,17 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { PersistenceService } from '../../persistence/persistence.service';
+import { CollectionRepository } from '../../persistence/collection.repository';
 import { ProjectRecordTag } from '../../../model/project-record.model';
 
+/** The user's tag catalog (user-tags.json). getAll / getById / save / delete come from CollectionRepository. */
 @Injectable({ providedIn: 'root' })
-export class UserTagService {
+export class UserTagService extends CollectionRepository<ProjectRecordTag> {
 
-  private persistence = inject(PersistenceService);
-  private readonly file = 'user-tags.json';
+  protected readonly key = 'tags';
 
-  getAll(): Observable<ProjectRecordTag[]> {
-    return this.persistence.read<ProjectRecordTag[]>(this.file);
-  }
-
-  getById(id: string): Observable<ProjectRecordTag | undefined> {
-    return this.getAll().pipe(map(tags => tags.find(t => t.id === id)));
-  }
+  protected readonly file = 'user-tags.json';
 
   getByLabel(label: string): Observable<ProjectRecordTag | undefined> {
     return this.getAll().pipe(map(tags => tags.find(t => t.label === label)));
-  }
-
-  save(tag: ProjectRecordTag): Observable<void> {
-    return this.getAll().pipe(
-      map(tags => {
-        const index = tags.findIndex(t => t.id === tag.id);
-        if (index !== -1) tags[index] = tag;
-        else tags.push(tag);
-        return tags;
-      }),
-      map(tags => this.persistence.write(this.file, tags)),
-      map(() => void 0)
-    );
-  }
-
-  delete(id: string): Observable<void> {
-    return this.getAll().pipe(
-      map(tags => tags.filter(t => t.id !== id)),
-      map(tags => this.persistence.write(this.file, tags)),
-      map(() => void 0)
-    );
   }
 }

@@ -1,4 +1,5 @@
-import { WindowKind } from "../services/system/windows/window-kind";
+import { BackgroundSettings } from "./app-file.model";
+import { WindowKind } from "./window-kind.model";
 
 export interface WindowTabsState { openTabs: string[]; activeTab: string; }
 
@@ -18,4 +19,5 @@ export interface AppConfig {
     themeFont?: string;
     fontSize?: number;          // percent
     backgroundPreset?: string;  // ShaderDef id
+    background?: BackgroundSettings;
 }

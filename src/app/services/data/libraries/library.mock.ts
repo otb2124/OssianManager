@@ -1,5 +1,5 @@
 // MOCK DATA - replace with a real source (registry / engine scriptPacks.json) later.
-import { LibraryEntry } from './library.model';
+import { LibraryEntry } from '../../../model/library.model';
 
 export const MOCK_INSTALLED_IDS: string[] = ['state-machine', 'motion', 'vehicle'];
 

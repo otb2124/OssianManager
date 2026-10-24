@@ -1,13 +1,26 @@
 {
   "projectRecord": {
-    "id": "ce95ea9d-a24a-41f5-80fc-0cd937debcf7",
-    "title": "config project",
-    "color": "#00a6ed",
+    "id": "ce95ea9d-a24a-41f5-80fc-0cd937debc11",
+    "title": "dev",
+    "description": "Development project",
+    "color": "#ff9ef7",
     "isFavorite": false,
     "createdAt": "2026-10-12T11:18:42.719Z",
-    "updatedAt": "2026-10-12T12:02:13.956Z",
-    "tags": []
+    "updatedAt": "2026-10-23T11:06:59.734Z",
+    "tags": ["4dd4b4ec-a966-47bc-ac4a-c3e60718b529"]
   },
   "resDirectory": "./Content",
-  "targetDirectory": "./Target"
+  "targetDirectory": "./Target",
+  "build": {
+    "name": "dev",
+    "version": "0.1.0",
+    "versionTags": ["dev"],
+    "noConsole": false,
+    "zip": false,
+    "force": false,
+    "allowCookErrors": false
+  },
+  "display": {},
+  "language": {},
+  "libraries": { "installed": ["state-machine", "motion", "vehicle"] }
 }

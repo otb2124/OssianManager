@@ -50,19 +50,11 @@ export class PersistenceService {
 
   private readonly basePath = '.ossian';
 
-  read<T>(fileName: string): Observable<T> {
-    const path = `${this.basePath}/${fileName}`;
-    return from(invoke<string>('read_config', { relativePath: path })).pipe(
-      map(text => JSON.parse(text) as T)
-    );
+  read<T>(fileName: string) {
+    return from(invoke<string>('read_config', { relativePath: fileName })).pipe(map(t => JSON.parse(t) as T));
   }
-
-  write<T>(fileName: string, data: T): Observable<void> {
-    const path = `${this.basePath}/${fileName}`;
-    return from(invoke<void>('write_config', {
-      relativePath: path,
-      content: JSON.stringify(data, null, 2)
-    }));
+  write<T>(fileName: string, data: T) {
+    return from(invoke<void>('write_config', { relativePath: fileName, content: JSON.stringify(data, null, 2) }));
   }
 
   readAbsolute<T>(absolutePath: string): Observable<T> {
